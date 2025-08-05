@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Briefcase, Zap, Shield, TrendingUp, Award, Target, Eye, Handshake, Heart, BookOpen, Users, Leaf, Heartbeat, CheckCircle } from 'lucide-react';
+import { Briefcase, Zap, Shield, TrendingUp, Award, Target, Eye, Handshake, Heart, BookOpen, Users, Leaf, HeartPulse, CheckCircle } from 'lucide-react';
 
 const coreValues = [
   {
@@ -49,7 +49,7 @@ const csrItems = [
 
 const sustainabilityItems = [
     { title: "Commitment", icon: Leaf, description: "We are committed to conducting our business in an environmentally responsible manner, implementing sustainable practices across all our operations and encouraging eco-friendly solutions." },
-    { title: "Health & Safety", icon: Heartbeat, description: "The health and safety of our employees, clients, and communities is paramount. We maintain strict safety protocols and promote a culture of well-being in all our activities." },
+    { title: "Health & Safety", icon: HeartPulse, description: "The health and safety of our employees, clients, and communities is paramount. We maintain strict safety protocols and promote a culture of well-being in all our activities." },
     { title: "Quality Standard", icon: CheckCircle, description: "Our commitment to quality extends beyond service delivery to include sustainable business practices, continuous improvement, and responsible resource management that benefits all stakeholders." }
 ];
 
@@ -96,7 +96,7 @@ export default function DiscoverUsPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
-                className="bg-card rounded-lg p-8 shadow-lg"
+                className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow"
               >
                 <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3"><Target className="h-7 w-7" /> Mission</h2>
                 <p className="text-muted-foreground leading-relaxed">
@@ -109,7 +109,7 @@ export default function DiscoverUsPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className="bg-card rounded-lg p-8 shadow-lg"
+                className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow"
               >
                 <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3"><Eye className="h-7 w-7" /> Vision</h2>
                 <p className="text-muted-foreground leading-relaxed">
@@ -138,7 +138,7 @@ export default function DiscoverUsPage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-start gap-4"
+                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-start gap-4 dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)]"
                   >
                     <div className="bg-primary/10 p-3 rounded-full">
                         <value.icon className="h-6 w-6 text-primary" />
@@ -231,7 +231,7 @@ export default function DiscoverUsPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
+                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)]"
                 >
                     <div className="inline-block bg-primary/10 p-4 rounded-full mb-4">
                         <item.icon className="h-8 w-8 text-primary" />
@@ -260,7 +260,7 @@ export default function DiscoverUsPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center"
+                    className="bg-card rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)]"
                 >
                     <div className="inline-block bg-primary/10 p-4 rounded-full mb-4">
                         <item.icon className="h-8 w-8 text-primary" />

@@ -2,6 +2,8 @@
 import { motion } from 'framer-motion';
 import { Shield, FileText, Users, Cookie, Calendar, Lock, Mail, Phone } from 'lucide-react';
 
+const easeOut = "easeOut";
+
 const policySection = {
   hidden: { opacity: 0, y: 20 },
   visible: {
@@ -9,7 +11,7 @@ const policySection = {
     y: 0,
     transition: {
       duration: 0.6,
-      ease: "easeOut"
+      ease: easeOut
     }
   }
 };
