@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const quickLinks = [
@@ -25,8 +26,8 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="space-y-4">
-            <Link href="/" className="text-2xl font-bold text-[#ffbb00]">
-              Task Systems
+            <Link href="/" className="flex items-center lg:hidden">
+              <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
             </Link>
             <p className="text-muted-foreground text-sm leading-6">
               For more than three decades, Task has remained an industry leader with the implementation of various ICT projects in the Oil & Gas, Banking, Telecoms, Manufacturing and Public sectors.

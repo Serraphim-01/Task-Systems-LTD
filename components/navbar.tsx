@@ -66,7 +66,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center lg:hidden">
-              <Image src="/task-logo.svg" alt="Task Systems" width={100} height={40} />
+              <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
             </Link>
           </div>
 
@@ -145,7 +145,7 @@ export function Navbar() {
             </div>
             <div className="hidden lg:flex items-center">
               <Link href="/" className="flex items-center ml-6">
-                <Image src="/task-logo.svg" alt="Task Systems" width={100} height={40} />
+                <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
               </Link>
             </div>
             {/* Mobile header */}
@@ -184,7 +184,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="absolute w-full bg-background lg:hidden"
+              className="absolute w-[90%] right-0 bg-background lg:hidden"
             >
               <div className="pb-4 space-y-2 max-h-screen overflow-y-auto">
                 {/* Mobile Search */}
