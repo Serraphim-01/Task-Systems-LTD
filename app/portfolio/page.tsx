@@ -1,23 +1,23 @@
 "use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Trophy, Award, Star } from 'lucide-react';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Trophy, Award, Star } from "lucide-react";
 
 const portfolioTabs = [
   {
-    id: 'achievements',
-    title: 'Achievements',
+    id: "achievements",
+    title: "Achievements",
     icon: Trophy,
     content: `Over three decades of excellence in the ICT industry, Task Systems has achieved numerous milestones that demonstrate our commitment to delivering world-class solutions. We have successfully implemented over 500 enterprise-level projects across Nigeria and Sub-Saharan Africa, serving clients in critical sectors including Oil & Gas, Banking, Telecommunications, Manufacturing, and Public sector organizations.
 
 Our achievements include being recognized as a Microsoft Gold Partner, Cisco Premier Partner, and maintaining ISO 9001:2015 certification for quality management systems. We have consistently delivered projects on time and within budget, maintaining a 98% client satisfaction rate and establishing long-term partnerships with leading global technology vendors.
 
-Key achievements include the successful deployment of nationwide network infrastructure for major telecommunications providers, implementation of core banking systems for tier-1 financial institutions, and development of custom enterprise applications that have transformed business operations for our clients.`
+Key achievements include the successful deployment of nationwide network infrastructure for major telecommunications providers, implementation of core banking systems for tier-1 financial institutions, and development of custom enterprise applications that have transformed business operations for our clients.`,
   },
   {
-    id: 'awards',
-    title: 'Awards',
+    id: "awards",
+    title: "Awards",
     icon: Award,
     content: `Task Systems has been honored with multiple industry awards and recognitions that validate our expertise and commitment to excellence in ICT solutions delivery.
 
@@ -29,11 +29,11 @@ Awards and Recognitions:
 • Outstanding Partnership Award - Microsoft Nigeria 2019
 • Cisco Partner of Excellence Award - West Africa Region 2018
 
-These awards reflect our dedication to innovation, quality service delivery, and our role as a trusted technology partner. Our recognition by industry peers and clients alike demonstrates our consistent ability to exceed expectations and deliver solutions that drive business success.`
+These awards reflect our dedication to innovation, quality service delivery, and our role as a trusted technology partner. Our recognition by industry peers and clients alike demonstrates our consistent ability to exceed expectations and deliver solutions that drive business success.`,
   },
   {
-    id: 'references',
-    title: 'References',
+    id: "references",
+    title: "References",
     icon: Star,
     content: `Task Systems has built strong relationships with leading organizations across various industries. Our client references span multiple sectors and include some of the most respected names in Nigerian and Sub-Saharan business.
 
@@ -52,14 +52,14 @@ We have modernized operations for manufacturing companies through enterprise res
 Public Sector:
 Our e-governance solutions have enhanced service delivery for government agencies, improving citizen engagement and operational efficiency.
 
-All our client relationships are built on trust, transparency, and proven results. We maintain confidentiality agreements that protect our clients' sensitive information while demonstrating our capability through successful project outcomes.`
-  }
+All our client relationships are built on trust, transparency, and proven results. We maintain confidentiality agreements that protect our clients' sensitive information while demonstrating our capability through successful project outcomes.`,
+  },
 ];
 
 export default function PortfolioPage() {
-  const [activeTab, setActiveTab] = useState('achievements');
+  const [activeTab, setActiveTab] = useState("achievements");
 
-  const activeContent = portfolioTabs.find(tab => tab.id === activeTab);
+  const activeContent = portfolioTabs.find((tab) => tab.id === activeTab);
 
   return (
     <div className="min-h-screen bg-background">
@@ -76,7 +76,8 @@ export default function PortfolioPage() {
               Our Portfolio
             </h1>
             <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our achievements, awards, and client references that showcase our expertise and commitment to excellence
+              Discover our achievements, awards, and client references that
+              showcase our expertise and commitment to excellence
             </p>
           </motion.div>
         </div>
@@ -93,8 +94,8 @@ export default function PortfolioPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-t-lg transition-all duration-300 group-hover:animate-shake ${
                   activeTab === tab.id
-                    ? 'bg-[#ffbb00] text-black border-b-2 border-[#ffbb00]'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    ? "bg-[#ffbb00] text-black border-b-2 border-[#ffbb00]"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                 }`}
               >
                 <tab.icon className="h-5 w-5 animate-move-up-down shake-icon" />
@@ -111,19 +112,26 @@ export default function PortfolioPage() {
             transition={{ duration: 0.5 }}
             className="max-w-4xl mx-auto"
           >
-            <div className="bg-card rounded-lg p-8 shadow-lg">
-              <h2 className="text-3xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <activeContent.icon className="h-8 w-8 text-primary" />
-                {activeContent?.title}
-              </h2>
-              <div className="prose prose-lg max-w-none">
-                {activeContent?.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index} className="text-muted-foreground leading-relaxed mb-4">
-                    {paragraph}
-                  </p>
-                ))}
+            {activeContent && (
+              <div className="bg-card rounded-lg p-8 shadow-lg">
+                <h2 className="text-3xl font-bold text-foreground mb-6 flex items-center gap-3">
+                  <activeContent.icon className="h-8 w-8 text-primary" />
+                  {activeContent.title}
+                </h2>
+                <div className="prose prose-lg max-w-none">
+                  {activeContent.content
+                    .split("\n\n")
+                    .map((paragraph, index) => (
+                      <p
+                        key={index}
+                        className="text-muted-foreground leading-relaxed mb-4"
+                      >
+                        {paragraph}
+                      </p>
+                    ))}
+                </div>
               </div>
-            </div>
+            )}
           </motion.div>
         </div>
       </section>
