@@ -2,22 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const heroSlides = [
   {
     title: "POWER YOUR BUSINESS WITH OUR:",
     subtitle: "ENTERPRISE SOLUTIONS",
-    background: "linear-gradient(135deg, #ffbb00 0%, #ff8800 100%)"
+    image: "https://picsum.photos/1920/1080?random=1"
   },
   {
     title: "YOUR TRUSTED PARTNER IN:",
     subtitle: "DIGITAL TRANSFORMATION",
-    background: "linear-gradient(135deg, #000000 0%, #333333 100%)"
+    image: "https://picsum.photos/1920/1080?random=2"
   },
   {
     title: "DELIVERING EXCELLENCE IN:",
     subtitle: "EVERY SOLUTION",
-    background: "linear-gradient(135deg, #ffbb00 0%, #cc9900 100%)"
+    image: "https://picsum.photos/1920/1080?random=3"
   }
 ];
 
@@ -37,13 +38,22 @@ export function HeroSection() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentSlide}
-          initial={{ opacity: 0, x: 100 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -100 }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
           className="absolute inset-0"
-          style={{ background: heroSlides[currentSlide].background }}
-        />
+        >
+          <Image
+            src={heroSlides[currentSlide].image}
+            alt={heroSlides[currentSlide].title}
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+            priority
+          />
+          <div className="absolute inset-0 bg-black/50" />
+        </motion.div>
       </AnimatePresence>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
