@@ -84,7 +84,7 @@ export function Navbar() {
                   className="text-foreground hover:text-[#ffbb00] transition-colors duration-200 flex items-center gap-1"
                 >
                   {item.name}
-                  {item.dropdown && <ChevronDown className="h-4 w-4" />}
+                  {item.dropdown && <ChevronDown className="h-4 w-4 animate-move-up-down" />}
                 </Link>
                 
                 {item.dropdown && (
@@ -116,7 +116,7 @@ export function Navbar() {
 
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground animate-move-up-down" />
               <Input
                 type="search"
                 placeholder="Search..."
@@ -134,12 +134,12 @@ export function Navbar() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="h-9 w-9"
+                  className="h-9 w-9 group-hover:animate-shake"
                 >
                   {theme === 'dark' ? (
-                    <Sun className="h-4 w-4" />
+                    <Sun className="h-4 w-4 animate-move-up-down shake-icon" />
                   ) : (
-                    <Moon className="h-4 w-4" />
+                    <Moon className="h-4 w-4 animate-move-up-down shake-icon" />
                   )}
                 </Button>
               )}
@@ -151,12 +151,12 @@ export function Navbar() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="h-9 w-9"
+                  className="h-9 w-9 group-hover:animate-shake"
                 >
                   {theme === 'dark' ? (
-                    <Sun className="h-4 w-4" />
+                    <Sun className="h-4 w-4 animate-move-up-down shake-icon" />
                   ) : (
-                    <Moon className="h-4 w-4" />
+                    <Moon className="h-4 w-4 animate-move-up-down shake-icon" />
                   )}
                 </Button>
               )}
@@ -164,8 +164,9 @@ export function Navbar() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsOpen(!isOpen)}
+                className="group-hover:animate-shake"
               >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isOpen ? <X className="h-6 w-6 animate-move-up-down shake-icon" /> : <Menu className="h-6 w-6 animate-move-up-down shake-icon" />}
               </Button>
             </div>
           </div>
@@ -181,11 +182,11 @@ export function Navbar() {
               transition={{ duration: 0.3 }}
               className="absolute w-full bg-background lg:hidden"
             >
-              <div className="pb-4 space-y-2">
+              <div className="pb-4 space-y-2 max-h-screen overflow-y-auto">
                 {/* Mobile Search */}
                 <div className="md:hidden px-2 pb-2">
                   <form onSubmit={handleSearch} className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground animate-move-up-down" />
                     <Input
                       type="search"
                       placeholder="Search..."
@@ -215,9 +216,9 @@ export function Navbar() {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDropdownToggle(item.name)}
-                          className="h-9 w-9"
+                          className="h-9 w-9 group-hover:animate-shake"
                         >
-                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.name ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`h-4 w-4 transition-transform animate-move-up-down shake-icon ${openDropdown === item.name ? 'rotate-180' : ''}`} />
                         </Button>
                       )}
                     </div>

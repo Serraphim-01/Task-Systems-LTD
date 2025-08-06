@@ -54,8 +54,8 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">Contact Us</h3>
             <div className="space-y-3">
-              <div className="flex items-start space-x-3">
-                <Mail className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0" />
+              <div className="flex items-start space-x-3 group-hover:animate-shake">
+                <Mail className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <a
                   href="mailto:engage@tasksystems.com"
                   className="text-muted-foreground transition-colors duration-200 hover-underline-animation"
@@ -63,15 +63,15 @@ export function Footer() {
                   engage@tasksystems.com
                 </a>
               </div>
-              <div className="flex items-start space-x-3">
-                <Phone className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0" />
+              <div className="flex items-start space-x-3 group-hover:animate-shake">
+                <Phone className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <div className="space-y-1">
                   <div className="text-muted-foreground">+234 123 783 3843</div>
                   <div className="text-muted-foreground">+234 911 080 8619</div>
                 </div>
               </div>
-              <div className="flex items-start space-x-3">
-                <MapPin className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0" />
+              <div className="flex items-start space-x-3 group-hover:animate-shake">
+                <MapPin className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <div className="text-muted-foreground">
                   Yudala Heights Building<br />
                   13 Idowu Martins Street,<br />
@@ -91,10 +91,10 @@ export function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
-                    className="text-muted-foreground hover:text-[#ffbb00] transition-colors duration-200"
+                    className="text-muted-foreground hover:text-[#ffbb00] transition-colors duration-200 group-hover:animate-shake"
                     aria-label={social.name}
                   >
-                    <Icon className="h-6 w-6" />
+                    <Icon className="h-6 w-6 animate-move-up-down shake-icon" />
                   </a>
                 );
               })}

@@ -15,7 +15,7 @@ export default function CareersPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Job Openings
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             Join our team of innovators and help shape the future of technology in Africa.
           </p>
         </motion.div>

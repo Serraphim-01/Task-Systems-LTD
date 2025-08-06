@@ -78,7 +78,7 @@ export default function DiscoverUsPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Discover Us
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
               Learn about our mission, vision, and the values that drive our commitment to excellence
             </p>
           </motion.div>

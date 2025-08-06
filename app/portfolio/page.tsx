@@ -75,7 +75,7 @@ export default function PortfolioPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Our Portfolio
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
               Discover our achievements, awards, and client references that showcase our expertise and commitment to excellence
             </p>
           </motion.div>
@@ -91,13 +91,13 @@ export default function PortfolioPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-t-lg transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-t-lg transition-all duration-300 group-hover:animate-shake ${
                   activeTab === tab.id
                     ? 'bg-[#ffbb00] text-black border-b-2 border-[#ffbb00]'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
-                <tab.icon className="h-5 w-5" />
+                <tab.icon className="h-5 w-5 animate-move-up-down shake-icon" />
                 {tab.title}
               </button>
             ))}

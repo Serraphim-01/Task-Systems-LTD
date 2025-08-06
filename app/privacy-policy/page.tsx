@@ -34,7 +34,7 @@ export default function PrivacyPolicyPage() {
               Data Privacy Policy for TaskSystems
             </motion.h1>
             <motion.p
-              className="text-lg text-muted-foreground"
+              className="text-base md:text-lg text-muted-foreground"
               variants={policySection}
             >
               Last Revised: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}

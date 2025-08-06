@@ -15,7 +15,7 @@ export default function BlogsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Blogs & Articles
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             Explore insights, trends, and stories from the world of technology.
           </p>
         </motion.div>

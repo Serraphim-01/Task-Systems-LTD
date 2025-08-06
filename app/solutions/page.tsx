@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { ChevronDown, Globe, Smartphone, Zap, Users, Shield, Code, LifeBuoy, Cloud } from 'lucide-react';
@@ -67,13 +68,31 @@ const solutionTabs = [
 export default function SolutionsPage() {
   const [activeTab, setActiveTab] = useState('network');
   const [expandedMobile, setExpandedMobile] = useState<string | null>('network');
+  const searchParams = useSearchParams();
+  const tabsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const tabId = searchParams.get('tab');
+    if (tabId && solutionTabs.some(tab => tab.id === tabId)) {
+      setActiveTab(tabId);
+      setExpandedMobile(tabId);
+      setTimeout(() => {
+        tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [searchParams]);
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+    tabsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const activeSolution = solutionTabs.find(tab => tab.id === activeTab);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="py-16 bg-gradient-to-r from-[#ffbb00]/10 to-transparent">
+      <section className="py-8 bg-gradient-to-r from-[#ffbb00]/10 to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -84,7 +103,7 @@ export default function SolutionsPage() {
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
               Our Solutions
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
               Comprehensive ICT solutions designed to power your business transformation and drive sustainable growth
             </p>
           </motion.div>
@@ -92,14 +111,14 @@ export default function SolutionsPage() {
       </section>
 
       {/* Tabbed Content */}
-      <section className="py-16">
+      <section className="py-8" ref={tabsRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Tab Navigation - Desktop */}
           <div className="hidden md:flex flex-wrap justify-center gap-2 mb-12 border-b border-border">
             {solutionTabs.map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabClick(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-all duration-300 ${
                   activeTab === tab.id
                     ? 'bg-[#ffbb00] text-black border-b-2 border-[#ffbb00]'

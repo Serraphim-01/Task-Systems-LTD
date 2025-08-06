@@ -46,7 +46,7 @@ export default function ReachUsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Reach Us
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             We're here to help and answer any question you might have.
           </p>
         </motion.div>

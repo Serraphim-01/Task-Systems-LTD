@@ -15,7 +15,7 @@ export default function EventsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Events
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             Join us at our upcoming events and connect with our team.
           </p>
         </motion.div>

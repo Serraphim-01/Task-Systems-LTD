@@ -15,7 +15,7 @@ export default function AnnouncementsPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Announcements & Press Releases
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             Stay updated with the latest news and official statements from Task Systems.
           </p>
         </motion.div>

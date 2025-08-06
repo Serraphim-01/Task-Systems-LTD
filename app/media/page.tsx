@@ -37,7 +37,7 @@ export default function MediaPage() {
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
             Media Hub
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base md:text-lg text-muted-foreground">
             Explore our latest announcements, events, and articles.
           </p>
         </motion.div>
