@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { Switch } from '@/components/ui/switch';
 import { VideoHero } from './video-hero';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const heroSlides = [
   {
@@ -26,29 +26,20 @@ const heroSlides = [
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [showVideoHero, setShowVideoHero] = useState(false);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
 
   useEffect(() => {
-    if (showVideoHero) return;
+    if (isDesktop) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 4000);
 
     return () => clearInterval(timer);
-  }, [showVideoHero]);
+  }, [isDesktop]);
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
-      <div className="absolute top-8 right-8 z-20 flex items-center space-x-2">
-        <span className="text-white">Slideshow</span>
-        <Switch
-          checked={showVideoHero}
-          onCheckedChange={setShowVideoHero}
-        />
-        <span className="text-white">Video</span>
-      </div>
-
-      {showVideoHero ? (
+    <section className="relative h-[85vh] max-h-[800px] flex items-center justify-center overflow-hidden">
+      {isDesktop ? (
         <VideoHero />
       ) : (
         <>

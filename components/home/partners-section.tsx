@@ -49,33 +49,33 @@ export function PartnersSection() {
           </p>
         </motion.div>
 
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden group">
           <motion.div
             className="flex space-x-12"
             animate={{
-              x: [-1200, 0],
+              x: [0, -1660],
             }}
             transition={{
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: 20,
+                duration: 40,
                 ease: "linear",
               },
             }}
-            whileHover={{ animationPlayState: 'paused' }}
+
           >
             {[...partners, ...partners].map((partner, index) => (
               <div
                 key={`${partner.name}-${index}`}
-                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background border rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <div className="relative w-24 h-24 rounded-full overflow-hidden">
+                <div className="relative w-24 h-24 rounded-full overflow-hidden p-2">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
                     fill
-                    className="object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                   />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center text-xs py-1 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">

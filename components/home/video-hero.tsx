@@ -18,13 +18,13 @@ export function VideoHero() {
   const text2 = "for a better future";
 
   return (
-    <div className="relative h-screen w-full overflow-hidden">
+    <div className="relative h-[85vh] max-h-[800px] w-full overflow-hidden">
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
+        className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover object-center"
       >
         <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.

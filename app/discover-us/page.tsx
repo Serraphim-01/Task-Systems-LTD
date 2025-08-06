@@ -33,12 +33,23 @@ const coreValues = [
   }
 ];
 
-const strategyImages = [
-  "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800&h=600",
-  "https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg?auto=compress&cs=tinysrgb&w=800&h=600",
-  "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=800&h=600",
-  "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=800&h=600"
-];
+const strategyItems = [
+    {
+      title: "Customer-Centric Approach",
+      description: "Our foremost strategy is to place our customers at the heart of everything we do. We are committed to understanding their unique needs and challenges, allowing us to deliver tailored solutions that drive their success. By fostering strong partnerships, we aim to become a trusted advisor and an integral part of their growth journey.",
+      image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800&h=600"
+    },
+    {
+      title: "Innovation and Agility",
+      description: "In a rapidly evolving technological landscape, we prioritize innovation and agility. We continuously explore emerging technologies, embrace new ideas, and adapt our strategies to stay ahead of the curve. Our agile approach enables us to respond swiftly to market changes and deliver cutting-edge solutions that provide a competitive edge.",
+      image: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=800&h=600"
+    },
+    {
+      title: "Sustainable Growth",
+      description: "We are dedicated to achieving sustainable growth that benefits our clients, employees, and the wider community. Our strategy involves long-term planning, responsible business practices, and a commitment to environmental and social responsibility. By building a resilient and sustainable business, we create lasting value for all stakeholders.",
+      image: "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=800&h=600"
+    }
+  ];
 
 const csrItems = [
     { title: "Charity", icon: Heart, description: "We actively support charitable causes and community development initiatives, contributing to the welfare of underserved communities across Nigeria." },
@@ -54,16 +65,6 @@ const sustainabilityItems = [
 ];
 
 export default function DiscoverUsPage() {
-  const [currentStrategyImage, setCurrentStrategyImage] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentStrategyImage((prev) => (prev + 1) % strategyImages.length);
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -159,61 +160,56 @@ export default function DiscoverUsPage() {
         </div>
       </section>
 
-      {/* Corporate Strategy Slideshow */}
-      <section className="py-16 bg-muted/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Corporate Strategy
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-              Our strategic approach to delivering innovative solutions and driving business growth
-            </p>
-          </motion.div>
+      {/* Corporate Strategy Section */}
+        <section className="py-16 bg-muted/50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-center mb-12"
+            >
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                Corporate Strategy
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+                Our strategic approach to delivering innovative solutions and driving business growth
+                </p>
+            </motion.div>
 
-          <div className="relative max-w-4xl mx-auto">
-            <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
-              <AnimatePresence mode="wait">
+            <div className="space-y-16">
+                {strategyItems.map((item, index) => (
                 <motion.div
-                  key={currentStrategyImage}
-                  initial={{ opacity: 0, scale: 1.1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.8 }}
-                  className="absolute inset-0"
+                    key={item.title}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.2 }}
+                    viewport={{ once: true }}
+                    className={`flex flex-col lg:flex-row items-center gap-12 ${index % 2 !== 0 ? 'lg:flex-row-reverse' : ''}`}
                 >
-                  <Image
-                    src={strategyImages[currentStrategyImage]}
-                    alt="Corporate Strategy"
-                    fill
-                    className="object-cover"
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
+                    {/* Text Content */}
+                    <div className="lg:w-1/2">
+                    <h3 className="text-2xl font-bold text-primary mb-4">{item.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                    </div>
 
-            {/* Progress Indicators */}
-            <div className="flex justify-center mt-6 space-x-2">
-              {strategyImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentStrategyImage(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentStrategyImage ? 'bg-[#ffbb00]' : 'bg-border'
-                  }`}
-                  aria-label={`Go to strategy image ${index + 1}`}
-                />
-              ))}
+                    {/* Image */}
+                    <div className="lg:w-1/2">
+                    <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-xl">
+                        <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        />
+                    </div>
+                    </div>
+                </motion.div>
+                ))}
             </div>
-          </div>
-        </div>
-      </section>
+            </div>
+        </section>
 
       {/* Corporate Social Responsibility */}
       <section className="py-16">
