@@ -100,7 +100,7 @@ export default function DiscoverUsPage() {
               >
                 <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3"><Target className="h-7 w-7" /> Mission</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  "To sustain a best-in-class technology solutions company that anticipates the future and delivers value to our customers, through a highly motivated and professional team."
+                  &quot;To sustain a best-in-class technology solutions company that anticipates the future and delivers value to our customers, through a highly motivated and professional team.&quot;
                 </p>
               </motion.div>
 
@@ -113,7 +113,7 @@ export default function DiscoverUsPage() {
               >
                 <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3"><Eye className="h-7 w-7" /> Vision</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  "To be the leading and preferred technology solution provider in Africa, as adjudged by our customers and stakeholders, by the year 2030."
+                  &quot;To be the leading and preferred technology solution provider in Africa, as adjudged by our customers and stakeholders, by the year 2030.&quot;
                 </p>
               </motion.div>
             </div>
