@@ -26,7 +26,7 @@ export function VideoHero() {
         playsInline
         className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
       >
-        <source src="https://videos.pexels.com/video-files/854132/854132-hd_1920_1080_25fps.mp4" type="video/mp4" />
+        <source src="/" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
