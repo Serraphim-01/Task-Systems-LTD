@@ -41,7 +41,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-muted-foreground hover:text-[#ffbb00] transition-colors duration-200"
+                    className="text-muted-foreground transition-colors duration-200 hover-underline-animation"
                   >
                     {link.name}
                   </Link>
@@ -58,7 +58,7 @@ export function Footer() {
                 <Mail className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0" />
                 <a
                   href="mailto:engage@tasksystems.com"
-                  className="text-muted-foreground hover:text-[#ffbb00] transition-colors duration-200"
+                  className="text-muted-foreground transition-colors duration-200 hover-underline-animation"
                 >
                   engage@tasksystems.com
                 </a>
