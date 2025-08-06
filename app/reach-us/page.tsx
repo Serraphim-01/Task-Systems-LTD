@@ -51,20 +51,21 @@ export default function ReachUsPage() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+        <div className="grid md:grid-cols-2 gap-12 items-stretch">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="rounded-lg overflow-hidden shadow-xl"
           >
-            <Image
-              src="/location.png"
-              alt="Task Systems Office Location"
-              width={800}
-              height={600}
-              className="w-full h-full object-cover"
-            />
+            <div className="relative w-full h-full">
+              <Image
+                src="/location.png"
+                alt="Task Systems Office Location"
+                layout="fill"
+                className="object-cover"
+              />
+            </div>
           </motion.div>
 
           <motion.div
