@@ -41,6 +41,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -54,11 +55,39 @@ export function Navbar() {
     console.log('Search query:', searchQuery);
   };
 
+  const handleDropdownToggle = (name: string) => {
+    setOpenDropdown(openDropdown === name ? null : name);
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Navigation Links - Left */}
+          {/* Mobile header */}
+          <div className="flex items-center lg:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+            {mounted && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="h-9 w-9"
+              >
+                {theme === 'dark' ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+          </div>
+
           <div className="hidden lg:flex items-center space-x-8">
             {navigationItems.map((item) => (
               <div
@@ -102,7 +131,6 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Search - Center */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -116,7 +144,6 @@ export function Navbar() {
             </form>
           </div>
 
-          {/* Logo and Theme Toggle - Right */}
           <div className="flex items-center space-x-4">
             <Link href="/" className="flex items-center">
               <div className="text-2xl font-bold text-[#ffbb00]">
@@ -124,30 +151,25 @@ export function Navbar() {
               </div>
             </Link>
             
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="h-9 w-9"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-            )}
+            <div className="hidden lg:flex">
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+            </div>
 
             {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            <div className="lg:hidden"></div>
           </div>
         </div>
 
@@ -178,27 +200,51 @@ export function Navbar() {
 
                 {navigationItems.map((item) => (
                   <div key={item.name} className="space-y-1">
-                    <Link
-                      href={item.href}
-                      className="block px-3 py-2 text-base font-medium text-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                    {item.dropdown && (
-                      <div className="pl-4 space-y-1">
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="block px-3 py-2 text-sm text-muted-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center">
+                      <Link
+                        href={item.href}
+                        className="block px-3 py-2 text-base font-medium text-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
+                        onClick={() => {
+                          if (!item.dropdown) {
+                            setIsOpen(false);
+                          }
+                        }}
+                      >
+                        {item.name}
+                      </Link>
+                      {item.dropdown && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDropdownToggle(item.name)}
+                          className="h-9 w-9"
+                        >
+                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.name ? 'rotate-180' : ''}`} />
+                        </Button>
+                      )}
+                    </div>
+                    <AnimatePresence>
+                      {item.dropdown && openDropdown === item.name && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="pl-4 space-y-1"
+                        >
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              className="block px-3 py-2 text-sm text-muted-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
               </div>
