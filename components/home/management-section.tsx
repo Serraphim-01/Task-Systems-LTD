@@ -5,23 +5,33 @@ import Image from 'next/image';
 
 const management = [
   {
-    name: "David Emeka",
-    position: "Head of Sales",
-    image: "https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
-  },
-  {
-    name: "Fatima Bello",
-    position: "Head of Marketing",
+    name: "Gozy Ijogun",
+    position: "CEO",
     image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
   },
   {
-    name: "Robert Nnamdi",
-    position: "Head of Engineering",
+    name: "Eky Ovie-Fidelis",
+    position: "General Manager",
+    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+  },
+  {
+    name: "Charles Adigwe",
+    position: "Executive Director",
     image: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
   },
   {
-    name: "Aisha Yakubu",
-    position: "Head of Human Resources",
+    name: "Henrietta Onyebuchi-Akobi",
+    position: "CFO",
+    image: "https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+  },
+  {
+    name: "Ifeoma Chigbo-Ndukwe",
+    position: "HR Manager",
+    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+  },
+  {
+    name: "Ugonna Onyido-Okoro",
+    position: "Compliance Manager",
     image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
   }
 ];
@@ -45,7 +55,7 @@ export function ManagementSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {management.map((member, index) => (
             <motion.div
               key={member.name}

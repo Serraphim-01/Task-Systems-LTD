@@ -63,29 +63,12 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Mobile header */}
-          <div className="flex items-center lg:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-            {mounted && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="h-9 w-9"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-              </Button>
-            )}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center">
+              <div className="text-2xl font-bold text-[#ffbb00]">
+                Task Systems
+              </div>
+            </Link>
           </div>
 
           <div className="hidden lg:flex items-center space-x-8">
@@ -145,12 +128,6 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center">
-              <div className="text-2xl font-bold text-[#ffbb00]">
-                Task Systems
-              </div>
-            </Link>
-            
             <div className="hidden lg:flex">
               {mounted && (
                 <Button
@@ -167,9 +144,30 @@ export function Navbar() {
                 </Button>
               )}
             </div>
-
-            {/* Mobile menu button */}
-            <div className="lg:hidden"></div>
+            {/* Mobile header */}
+            <div className="flex items-center lg:hidden">
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -181,7 +179,7 @@ export function Navbar() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden"
+              className="absolute w-full bg-background lg:hidden"
             >
               <div className="pb-4 space-y-2">
                 {/* Mobile Search */}

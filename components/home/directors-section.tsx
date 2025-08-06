@@ -5,24 +5,19 @@ import Image from 'next/image';
 
 const directors = [
   {
-    name: "John Adebayo",
-    position: "Chief Executive Officer",
+    name: "Leo-stan Ekeh",
+    position: "Group Chairman",
     image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
   },
   {
-    name: "Sarah Okafor",
-    position: "Chief Technology Officer",
-    image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
-  },
-  {
-    name: "Michael Adamu",
-    position: "Chief Operations Officer",
-    image: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
-  },
-  {
-    name: "Grace Onyeka",
-    position: "Chief Financial Officer",
+    name: "Chioma Ekeh",
+    position: "Director",
     image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+  },
+  {
+    name: "Ukoha Agatha Adaku",
+    position: "Director",
+    image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
   }
 ];
 
@@ -45,7 +40,7 @@ export function DirectorsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {directors.map((director, index) => (
             <motion.div
               key={director.name}
