@@ -75,6 +75,7 @@ export function PartnersSection() {
                     src={partner.logo}
                     alt={partner.name}
                     fill
+                    sizes="(max-width: 768px) 80px, 96px"
                     className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                   />
                 </div>

@@ -7,32 +7,32 @@ const management = [
   {
     name: "Gozy Ijogun",
     position: "CEO",
-    image: "/CEO-GOZY IJOGUN.jpg"
+    image: "/directors_management/CEO-GOZY IJOGUN.jpg"
   },
   {
     name: "Eky Ovie-Fidelis",
     position: "General Manager",
-    image: "/GM_EKY-OVIE-FIDELIS.png"
+    image: "/directors_management/GM_EKY-OVIE-FIDELIS.png"
   },
   {
     name: "Charles Adigwe",
     position: "Executive Director",
-    image: "/ED-Head of Operations.png"
+    image: "/directors_management/ED-Head of Operations.png"
   },
   {
     name: "Henrietta Onyebuchi-Akobi",
     position: "CFO",
-    image: "/CFO- Henrietta Onyebuchi-Akobi.png"
+    image: "/directors_management/CFO- Henrietta Onyebuchi-Akobi.png"
   },
   {
     name: "Ifeoma Chigbo-Ndukwe",
     position: "HR Manager",
-    image: "/Head-HR_Ifeoma-Chigbo-Ndukwe.jpg"
+    image: "/directors_management/Head-HR_Ifeoma-Chigbo-Ndukwe.jpg"
   },
   {
     name: "Ugonna Onyido-Okoro",
     position: "Compliance Manager",
-    image: "/COMPLIANCE- Ugonna Onyido-Okoro.png"
+    image: "/directors_management/COMPLIANCE- Ugonna Onyido-Okoro.png"
   }
 ];
 
@@ -71,6 +71,7 @@ export function ManagementSection() {
                     src={member.image}
                     alt={member.name}
                     fill
+                    
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

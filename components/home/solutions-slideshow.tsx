@@ -1,40 +1,46 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const solutionSlides = [
   {
     id: 1,
     title: "Network Solutions",
-    image: "https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=800"
+    image:
+      "https://images.pexels.com/photos/442150/pexels-photo-442150.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
     id: 2,
     title: "Cloud Solutions",
-    image: "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=800"
+    image:
+      "https://images.pexels.com/photos/1148820/pexels-photo-1148820.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
     id: 3,
     title: "Security Solutions",
-    image: "https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=800"
+    image:
+      "https://images.pexels.com/photos/60504/security-protection-anti-virus-software-60504.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
     id: 4,
     title: "Enterprise Mobility",
-    image: "https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=800"
+    image:
+      "https://images.pexels.com/photos/267350/pexels-photo-267350.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
     id: 5,
     title: "Collaboration Solutions",
-    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800"
+    image:
+      "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800",
   },
   {
     id: 6,
     title: "Managed Support",
-    image: "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=800"
-  }
+    image:
+      "https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
 ];
 
 export function SolutionsSlideshow() {
@@ -97,11 +103,14 @@ export function SolutionsSlideshow() {
                       src={slide.image}
                       alt={slide.title}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-colors duration-300"></div>
                     <div className="absolute bottom-0 left-0 right-0 p-6">
-                      <h3 className="text-xl font-bold text-white">{slide.title}</h3>
+                      <h3 className="text-xl font-bold text-white">
+                        {slide.title}
+                      </h3>
                     </div>
                   </div>
                 </motion.div>
@@ -112,16 +121,20 @@ export function SolutionsSlideshow() {
 
         {/* Progress Indicators */}
         <div className="flex justify-center mt-8 space-x-2">
-          {Array.from({ length: Math.ceil(solutionSlides.length / 3) }).map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index * 3)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                Math.floor(currentIndex / 3) === index ? 'bg-[#ffbb00]' : 'bg-border'
-              }`}
-              aria-label={`Go to slide group ${index + 1}`}
-            />
-          ))}
+          {Array.from({ length: Math.ceil(solutionSlides.length / 3) }).map(
+            (_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index * 3)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  Math.floor(currentIndex / 3) === index
+                    ? "bg-[#ffbb00]"
+                    : "bg-border"
+                }`}
+                aria-label={`Go to slide group ${index + 1}`}
+              />
+            )
+          )}
         </div>
       </div>
     </section>

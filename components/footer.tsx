@@ -1,22 +1,30 @@
 "use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { Facebook, Instagram, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  Mail,
+  Phone,
+  MapPin,
+} from "lucide-react";
 
 const quickLinks = [
-  { name: 'Solutions', href: '/solutions' },
-  { name: 'Discover Us', href: '/discover-us' },
-  { name: 'Careers', href: '/careers' },
-  { name: 'Reach Us', href: '/reach-us' },
-  { name: 'Privacy Policy', href: '/privacy-policy' },
+  { name: "Solutions", href: "/solutions" },
+  { name: "Discover Us", href: "/discover-us" },
+  { name: "Careers", href: "/careers" },
+  { name: "Reach Us", href: "/reach-us" },
+  { name: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 const socialLinks = [
-  { name: 'Facebook', icon: Facebook, href: '#' },
-  { name: 'Instagram', icon: Instagram, href: '#' },
-  { name: 'LinkedIn', icon: Linkedin, href: '#' },
-  { name: 'Twitter', icon: Twitter, href: '#' },
+  { name: "Facebook", icon: Facebook, href: "#" },
+  { name: "Instagram", icon: Instagram, href: "#" },
+  { name: "LinkedIn", icon: Linkedin, href: "#" },
+  { name: "Twitter", icon: Twitter, href: "#" },
 ];
 
 export function Footer() {
@@ -27,16 +35,27 @@ export function Footer() {
           {/* Logo & About */}
           <div className="space-y-4">
             <Link href="/" className="flex items-center lg:hidden">
-              <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
+              <Image
+                src="/task-logo.png"
+                alt="Task Systems"
+                width={100}
+                height={40}
+                style={{ height: "auto" }}
+                priority
+              />
             </Link>
             <p className="text-muted-foreground text-sm leading-6">
-              For more than three decades, Task has remained an industry leader with the implementation of various ICT projects in the Oil & Gas, Banking, Telecoms, Manufacturing and Public sectors.
+              For more than three decades, Task has remained an industry leader
+              with the implementation of various ICT projects in the Oil & Gas,
+              Banking, Telecoms, Manufacturing and Public sectors.
             </p>
           </div>
 
           {/* Quick Links */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Quick Links</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              Quick Links
+            </h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -53,7 +72,9 @@ export function Footer() {
 
           {/* Contact Us */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Contact Us</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              Contact Us
+            </h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3 group-hover:animate-shake">
                 <Mail className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
@@ -74,8 +95,10 @@ export function Footer() {
               <div className="flex items-start space-x-3 group-hover:animate-shake">
                 <MapPin className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <div className="text-muted-foreground">
-                  Yudala Heights Building<br />
-                  13 Idowu Martins Street,<br />
+                  Yudala Heights Building
+                  <br />
+                  13 Idowu Martins Street,
+                  <br />
                   Victoria Island, Lagos
                 </div>
               </div>
@@ -84,7 +107,9 @@ export function Footer() {
 
           {/* Stay in Touch */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-foreground">Stay in Touch</h3>
+            <h3 className="text-lg font-semibold text-foreground">
+              Stay in Touch
+            </h3>
             <div className="flex space-x-4">
               {socialLinks.map((social) => {
                 const Icon = social.icon;

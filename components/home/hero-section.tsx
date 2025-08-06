@@ -1,32 +1,32 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
-import { VideoHero } from './video-hero';
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import { VideoHero } from "./video-hero";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 const heroSlides = [
   {
     title: "POWER YOUR BUSINESS WITH OUR:",
     subtitle: "ENTERPRISE SOLUTIONS",
-    image: "/Slider-1.png"
+    image: "/slider/Slider-1.png",
   },
   {
     title: "YOUR TRUSTED PARTNER IN:",
     subtitle: "DIGITAL TRANSFORMATION",
-    image: "/Slider-2.png"
+    image: "/slider/Slider-2.png",
   },
   {
     title: "DELIVERING EXCELLENCE IN:",
     subtitle: "EVERY SOLUTION",
-    image: "/Slider-3.png"
-  }
+    image: "/slider/Slider-3.png",
+  },
 ];
 
 export function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (isDesktop) return;
@@ -55,8 +55,8 @@ export function HeroSection() {
               <Image
                 src={heroSlides[currentSlide].image}
                 alt={heroSlides[currentSlide].title}
-                layout="fill"
-                objectFit="cover"
+                fill
+                style={{ objectFit: "cover" }}
                 quality={100}
                 priority
               />
@@ -93,7 +93,7 @@ export function HeroSection() {
                 key={index}
                 onClick={() => setCurrentSlide(index)}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentSlide ? 'bg-white' : 'bg-white/50'
+                  index === currentSlide ? "bg-white" : "bg-white/50"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
