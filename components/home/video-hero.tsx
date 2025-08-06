@@ -26,7 +26,7 @@ export function VideoHero() {
         playsInline
         className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover"
       >
-        <source src="/" type="video/mp4" />
+        <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 

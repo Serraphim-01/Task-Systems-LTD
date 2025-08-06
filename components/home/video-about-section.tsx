@@ -20,9 +20,9 @@ export function VideoAboutSection() {
               muted
               loop
               playsInline
-              poster="https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg"
+              poster=""
             >
-              <source src="/video-placeholder.mp4" type="video/mp4" />
+              <source src="/videos/Task systems  Logo Reveal.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-black/20"></div>

@@ -59,7 +59,7 @@ export default function ReachUsPage() {
             className="rounded-lg overflow-hidden shadow-xl"
           >
             <Image
-              src="https://images.unsplash.com/photo-1586370434639-0fe43b1654e2?q=80&w=3432&auto=format&fit=crop"
+              src="/location.png"
               alt="Task Systems Office Location"
               width={800}
               height={600}

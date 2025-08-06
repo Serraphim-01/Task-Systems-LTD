@@ -4,14 +4,30 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 const partners = [
-  { name: "Microsoft", logo: "/" },
-  { name: "Cisco", logo: "/" },
-  { name: "IBM", logo: "/" },
-  { name: "Oracle", logo: "/" },
-  { name: "Dell", logo: "/" },
-  { name: "HP", logo: "/" },
-  { name: "VMware", logo: "/" },
-  { name: "Amazon", logo: "/" },
+  { name: "APC", logo: "/partners/apc.png" },
+  { name: "Apple", logo: "/partners/apple.png" },
+  { name: "ASUS", logo: "/partners/asus.png" },
+  { name: "AWS", logo: "/partners/aws.png" },
+  { name: "Cisco", logo: "/partners/cisco.svg" },
+  { name: "Check Point", logo: "/partners/CP.png" },
+  { name: "D-Link", logo: "/partners/d-link.jpeg" },
+  { name: "Dell", logo: "/partners/dell.png" },
+  { name: "EMC", logo: "/partners/emc.png" },
+  { name: "HP", logo: "/partners/hp.png" },
+  { name: "Hewlett Packard", logo: "/partners/hpe.png" },
+  { name: "Huawei", logo: "/partners/huawei.png" },
+  { name: "IBM", logo: "/partners/ibm.png" },
+  { name: "Kaspersky", logo: "/partners/kaspersky.png" },
+  { name: "Lenovo", logo: "/partners/lenovo.png" },
+  { name: "Logitech", logo: "/partners/logitech.png" },
+  { name: "Microsoft", logo: "/partners/microsoft.png" },
+  { name: "Netapp", logo: "/partners/netapp.webp" },
+  { name: "Neverfail", logo: "/partners/Nf.jpg" },
+  { name: "Nokia", logo: "/partners/nokia_new.png" },
+  { name: "Oracle", logo: "/partners/oracle.png" },
+  { name: "Schneider Electric", logo: "/partners/Sch-ele.png" },
+  { name: "Starlink", logo: "/partners/starlink.png" },
+  { name: "Zebra", logo: "/partners/zebra.png" },
 ];
 
 export function PartnersSection() {
@@ -52,7 +68,7 @@ export function PartnersSection() {
             {[...partners, ...partners].map((partner, index) => (
               <div
                 key={`${partner.name}-${index}`}
-                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background border border-border rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background border rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
               >
                 <div className="relative w-24 h-24 rounded-full overflow-hidden">
                   <Image

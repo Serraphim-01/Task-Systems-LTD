@@ -3,7 +3,7 @@
 import { HeroSection } from '@/components/home/hero-section';
 import { AboutIntro } from '@/components/home/about-intro';
 import { VideoAboutSection } from '@/components/home/video-about-section';
-import { CorporateStrategy } from '@/components/home/corporate-strategy';
+import { SolutionsSlideshow } from '@/components/home/solutions-slideshow';
 import { SolutionsGrid } from '@/components/home/solutions-grid';
 import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
@@ -16,7 +16,7 @@ export default function Home() {
       <HeroSection />
       <AboutIntro />
       <VideoAboutSection />
-      <CorporateStrategy />
+      <SolutionsSlideshow />
       <SolutionsGrid />
       <DirectorsSection />
       <ManagementSection />
