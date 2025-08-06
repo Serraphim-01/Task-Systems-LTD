@@ -111,7 +111,7 @@ export default function SolutionsPage() {
       </section>
 
       {/* Tabbed Content */}
-      <section className="py-8" ref={tabsRef}>
+      <section className="py-8 scroll-mt-[4.5rem]" ref={tabsRef}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Tab Navigation - Desktop */}
           <div className="hidden md:flex flex-wrap justify-center gap-2 mb-12 border-b border-border">
