@@ -4,14 +4,14 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 const partners = [
-  { name: "Microsoft", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Cisco", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "IBM", logo: "https://images.pexels.com/photos/4439444/pexels-photo-4439444.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Oracle", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Dell", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "HP", logo: "https://images.pexels.com/photos/4439444/pexels-photo-4439444.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "VMware", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Amazon", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
+  { name: "Microsoft", logo: "/" },
+  { name: "Cisco", logo: "/" },
+  { name: "IBM", logo: "/" },
+  { name: "Oracle", logo: "/" },
+  { name: "Dell", logo: "/" },
+  { name: "HP", logo: "/" },
+  { name: "VMware", logo: "/" },
+  { name: "Amazon", logo: "/" },
 ];
 
 export function PartnersSection() {

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -11,6 +11,7 @@ const nextConfig = {
         hostname: 'picsum.photos',
       },
     ],
+    domains: ['images.pexels.com'],
   },
 };
 

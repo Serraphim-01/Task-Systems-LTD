@@ -9,27 +9,27 @@ const coreValues = [
   {
     title: "Professionalism",
     icon: Briefcase,
-    description: "We maintain the highest standards of professional conduct in all our interactions and deliverables."
+    description: "in our staff, in our procedures and processes and in our services."
   },
   {
     title: "Responsiveness",
     icon: Zap,
-    description: "We are committed to providing timely and effective responses to our clients' needs and concerns."
+    description: "to any and all factors that can affect our clients’ business productivity."
   },
   {
     title: "Integrity",
     icon: Shield,
-    description: "We conduct our business with honesty, transparency, and ethical practices at all times."
+    description: "we honestly and ethically take responsibility in order to earn the trust of our clients."
   },
   {
     title: "Dynamism",
     icon: TrendingUp,
-    description: "We embrace change and innovation, continuously adapting to meet evolving market demands."
+    description: "to deliver best value each time Excellence; to stand out from the competition."
   },
   {
     title: "Excellence",
     icon: Award,
-    description: "We strive for excellence in everything we do, setting high standards and consistently exceeding expectations."
+    description: "to stand out from competition."
   }
 ];
 

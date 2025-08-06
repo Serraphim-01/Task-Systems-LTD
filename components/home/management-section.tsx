@@ -7,32 +7,32 @@ const management = [
   {
     name: "Gozy Ijogun",
     position: "CEO",
-    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/CEO-GOZY IJOGUN.jpg"
   },
   {
     name: "Eky Ovie-Fidelis",
     position: "General Manager",
-    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/GM_EKY-OVIE-FIDELIS.png"
   },
   {
     name: "Charles Adigwe",
     position: "Executive Director",
-    image: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/ED-Head of Operations.png"
   },
   {
     name: "Henrietta Onyebuchi-Akobi",
     position: "CFO",
-    image: "https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/CFO- Henrietta Onyebuchi-Akobi.png"
   },
   {
     name: "Ifeoma Chigbo-Ndukwe",
     position: "HR Manager",
-    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/Head-HR_Ifeoma-Chigbo-Ndukwe.jpg"
   },
   {
     name: "Ugonna Onyido-Okoro",
     position: "Compliance Manager",
-    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/COMPLIANCE- Ugonna Onyido-Okoro.png"
   }
 ];
 

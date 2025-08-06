@@ -8,17 +8,17 @@ const heroSlides = [
   {
     title: "POWER YOUR BUSINESS WITH OUR:",
     subtitle: "ENTERPRISE SOLUTIONS",
-    image: "https://picsum.photos/1920/1080?random=1"
+    image: "/Slider-1.png"
   },
   {
     title: "YOUR TRUSTED PARTNER IN:",
     subtitle: "DIGITAL TRANSFORMATION",
-    image: "https://picsum.photos/1920/1080?random=2"
+    image: "/Slider-2.png"
   },
   {
     title: "DELIVERING EXCELLENCE IN:",
     subtitle: "EVERY SOLUTION",
-    image: "https://picsum.photos/1920/1080?random=3"
+    image: "/Slider-3.png"
   }
 ];
 
