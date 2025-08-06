@@ -1,22 +1,20 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { motion, easeInOut, easeOut, easeIn } from "framer-motion";
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
+      // children (letters) will start after the box lands
       staggerChildren: 0.1,
-      delayChildren: 0.2,
+      delayChildren: 0.7, 
     },
   },
   exit: {
     opacity: 0,
-    transition: {
-      duration: 0.5,
-      ease: 'easeInOut',
-    },
+    transition: { duration: 0.5, ease: easeInOut },
   },
 };
 
@@ -26,97 +24,30 @@ const letterVariants = {
   exit: {
     x: -20,
     opacity: 0,
-    transition: {
-      duration: 0.2
-    }
-  }
+    transition: { duration: 0.2 },
+  },
 };
 
 const boxVariants = {
-  hidden: { x: '-100%', skewX: -10 },
+  hidden: { x: "-100%", opacity: 0, borderRadius: "10px" },
   visible: {
     x: 0,
-    skewX: 0,
-    borderRadius: '20px',
+    opacity: 1,
+    borderRadius: "20px",
     transition: {
-      duration: 0.5,
-      ease: 'easeOut',
+      duration: 0.7,
+      ease: easeOut,
     },
-  },
-  straight: {
-    borderRadius: '0px',
-    transition: {
-      duration: 0.3,
-      delay: 0.5,
-    }
   },
   exit: {
-    x: '100%',
-    skewX: 10,
+    x: "100%",
+    opacity: 0,
     transition: {
       duration: 0.5,
-      ease: 'easeIn',
-      delay: 0.2,
+      ease: easeIn,
     },
   },
 };
-
-const circuitLineVariants = {
-    initial: {
-        pathLength: 0,
-    },
-    animate: (i: number) => ({
-        pathLength: 1,
-        transition: {
-            duration: 0.5,
-            delay: i * 0.2 + 0.5,
-            ease: "easeInOut",
-        }
-    }),
-    exit: {
-        pathLength: 0,
-        transition: {
-            duration: 0.3,
-            ease: "easeInOut",
-        }
-    }
-};
-
-const CircuitLines = () => {
-    const lines = [
-        { d: "M-50 0 L-20 0", i: 0 },
-        { d: "M-50 20 L-20 20 L-20 0", i: 1 },
-        { d: "M-50 -20 L-20 -20 L-20 0", i: 2 },
-        { d: "M150 0 L120 0", i: 0 },
-        { d: "M150 20 L120 20 L120 0", i: 1 },
-        { d: "M150 -20 L120 -20 L120 0", i: 2 },
-    ];
-
-    return (
-        <motion.svg
-            width="200"
-            height="100"
-            viewBox="-50 -50 200 100"
-            className="absolute"
-            initial="initial"
-            animate="animate"
-            exit="exit"
-        >
-            {lines.map(line => (
-                <motion.path
-                    key={line.d}
-                    d={line.d}
-                    stroke="hsl(var(--primary))"
-                    strokeWidth="2"
-                    fill="none"
-                    variants={circuitLineVariants}
-                    custom={line.i}
-                />
-            ))}
-        </motion.svg>
-    )
-}
-
 
 export function LoadingScreen() {
   const text = "Task";
@@ -129,24 +60,23 @@ export function LoadingScreen() {
       animate="visible"
       exit="exit"
     >
-        <CircuitLines />
-      <motion.div className="relative flex items-center justify-center">
+      <motion.div
+        className="relative flex items-center justify-center"
+        variants={boxVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+      >
         <motion.div
           className="absolute bg-primary"
-          style={{ width: '150%', height: '120%' }}
-          variants={boxVariants}
-          animate={["visible", "straight"]}
-          exit="exit"
+          style={{ width: "150%", height: "120%", borderRadius: "inherit" }}
         />
         <motion.div className="relative flex overflow-hidden">
-          {text.split('').map((char, index) => (
+          {text.split("").map((char, index) => (
             <motion.span
               key={index}
               className="text-5xl font-bold text-primary-foreground"
-              style={{
-                display: 'inline-block',
-                padding: '0 2px'
-              }}
+              style={{ display: "inline-block", padding: "0 2px" }}
               variants={letterVariants}
             >
               {char}
