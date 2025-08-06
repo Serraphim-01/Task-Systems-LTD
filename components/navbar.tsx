@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
@@ -14,14 +15,14 @@ const navigationItems = [
     name: 'Solutions',
     href: '/solutions',
     dropdown: [
-      { name: 'Network Solutions', href: '/solutions' },
-      { name: 'Enterprise Mobility', href: '/solutions' },
-      { name: 'Convergence Solutions', href: '/solutions' },
-      { name: 'Collaboration Solutions', href: '/solutions' },
-      { name: 'Security Solutions', href: '/solutions' },
-      { name: 'Enterprise Applications', href: '/solutions' },
-      { name: 'Managed Support', href: '/solutions' },
-      { name: 'Cloud Solutions', href: '/solutions' },
+      { name: 'Network Solutions', href: '/solutions?tab=network' },
+      { name: 'Enterprise Mobility', href: '/solutions?tab=mobility' },
+      { name: 'Convergence Solutions', href: '/solutions?tab=convergence' },
+      { name: 'Collaboration Solutions', href: '/solutions?tab=collaboration' },
+      { name: 'Security Solutions', href: '/solutions?tab=security' },
+      { name: 'Enterprise Applications', href: '/solutions?tab=applications' },
+      { name: 'Managed Support', href: '/solutions?tab=support' },
+      { name: 'Cloud Solutions', href: '/solutions?tab=cloud' },
     ]
   },
   { name: 'Portfolio', href: '/portfolio' },
@@ -41,6 +42,7 @@ export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -54,11 +56,20 @@ export function Navbar() {
     console.log('Search query:', searchQuery);
   };
 
+  const handleDropdownToggle = (name: string) => {
+    setOpenDropdown(openDropdown === name ? null : name);
+  };
+
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Navigation Links - Left */}
+          <div className="flex items-center">
+            <Link href="/" className="flex items-center lg:hidden">
+              <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
+            </Link>
+          </div>
+
           <div className="hidden lg:flex items-center space-x-8">
             {navigationItems.map((item) => (
               <div
@@ -102,7 +113,6 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* Search - Center */}
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
             <form onSubmit={handleSearch} className="relative w-full">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -116,38 +126,53 @@ export function Navbar() {
             </form>
           </div>
 
-          {/* Logo and Theme Toggle - Right */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center">
-              <div className="text-2xl font-bold text-[#ffbb00]">
-                Task Systems
-              </div>
-            </Link>
-            
-            {mounted && (
+            <div className="hidden lg:flex">
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
+            </div>
+            <div className="hidden lg:flex items-center">
+              <Link href="/" className="flex items-center ml-6">
+                <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
+              </Link>
+            </div>
+            {/* Mobile header */}
+            <div className="flex items-center lg:hidden">
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="h-9 w-9"
+                >
+                  {theme === 'dark' ? (
+                    <Sun className="h-4 w-4" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  )}
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="h-9 w-9"
+                onClick={() => setIsOpen(!isOpen)}
+                className=""
               >
-                {theme === 'dark' ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
+                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
-            )}
-
-            {/* Mobile menu button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsOpen(!isOpen)}
-            >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
+            </div>
           </div>
         </div>
 
@@ -159,9 +184,9 @@ export function Navbar() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden"
+              className="absolute w-[90%] right-0 bg-background lg:hidden"
             >
-              <div className="pb-4 space-y-2">
+              <div className="pb-4 space-y-2 max-h-screen overflow-y-auto">
                 {/* Mobile Search */}
                 <div className="md:hidden px-2 pb-2">
                   <form onSubmit={handleSearch} className="relative">
@@ -178,27 +203,51 @@ export function Navbar() {
 
                 {navigationItems.map((item) => (
                   <div key={item.name} className="space-y-1">
-                    <Link
-                      href={item.href}
-                      className="block px-3 py-2 text-base font-medium text-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {item.name}
-                    </Link>
-                    {item.dropdown && (
-                      <div className="pl-4 space-y-1">
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="block px-3 py-2 text-sm text-muted-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
-                            onClick={() => setIsOpen(false)}
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <div className="flex justify-between items-center">
+                      <Link
+                        href={item.href}
+                        className="block px-3 py-2 text-base font-medium text-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
+                        onClick={() => {
+                          if (!item.dropdown) {
+                            setIsOpen(false);
+                          }
+                        }}
+                      >
+                        {item.name}
+                      </Link>
+                      {item.dropdown && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDropdownToggle(item.name)}
+                          className="h-9 w-9"
+                        >
+                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.name ? 'rotate-180' : ''}`} />
+                        </Button>
+                      )}
+                    </div>
+                    <AnimatePresence>
+                      {item.dropdown && openDropdown === item.name && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="pl-4 space-y-1"
+                        >
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              className="block px-3 py-2 text-sm text-muted-foreground hover:text-[#ffbb00] hover:bg-[#ffbb00]/10 rounded-md transition-colors duration-200"
+                              onClick={() => setIsOpen(false)}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
               </div>
