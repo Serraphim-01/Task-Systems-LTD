@@ -86,7 +86,7 @@ export default function PortfolioPage() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Tab Navigation */}
-          <div className="flex justify-center gap-4 mb-12 border-b border-border">
+          <div className="flex flex-wrap justify-center gap-4 mb-12 border-b border-border">
             {portfolioTabs.map((tab) => (
               <button
                 key={tab.id}
