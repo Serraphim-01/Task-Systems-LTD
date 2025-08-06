@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
@@ -65,9 +66,7 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center lg:hidden">
-              <div className="text-2xl font-bold text-[#ffbb00]">
-                Task Systems
-              </div>
+              <Image src="/task-logo.svg" alt="Task Systems" width={100} height={40} />
             </Link>
           </div>
 
@@ -146,9 +145,7 @@ export function Navbar() {
             </div>
             <div className="hidden lg:flex items-center">
               <Link href="/" className="flex items-center ml-6">
-                <div className="text-2xl font-bold text-[#ffbb00]">
-                  Task Systems
-                </div>
+                <Image src="/task-logo.svg" alt="Task Systems" width={100} height={40} />
               </Link>
             </div>
             {/* Mobile header */}
