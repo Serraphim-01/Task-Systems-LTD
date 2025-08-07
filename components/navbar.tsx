@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -8,6 +8,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Menu, X, Sun, Moon, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { SEARCH_DATA } from "@/lib/search";
 
 const navigationItems = [
   { name: "Home", href: "/" },
@@ -38,9 +48,101 @@ const navigationItems = [
   { name: "Reach Us", href: "/reach-us" },
 ];
 
+const SearchComponent = ({
+  onResultClick,
+}: {
+  onResultClick?: () => void;
+}) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<
+    { name: string; href: string }[]
+  >([]);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(event.target as Node)
+      ) {
+        setIsSearchFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const results = SEARCH_DATA.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, isMobile ? 5 : 10);
+      setSearchResults(results);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery, isMobile]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchResults.length > 0) {
+      window.location.href = searchResults[0].href;
+    }
+  };
+
+  return (
+    <div className="relative w-full" ref={searchRef}>
+      <form onSubmit={handleSearch} className="relative w-full">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onFocus={() => setIsSearchFocused(true)}
+          className="pl-10 pr-4 w-full"
+        />
+      </form>
+      {isSearchFocused && searchQuery && (
+        <div className="absolute top-full mt-2 w-full bg-background border border-border rounded-lg shadow-lg z-10">
+          <Command>
+            <CommandList>
+              {searchResults.length > 0 ? (
+                <CommandGroup>
+                  {searchResults.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      passHref
+                      onClick={() => {
+                        onResultClick?.();
+                        setIsSearchFocused(false);
+                        setSearchQuery("");
+                      }}
+                    >
+                      <CommandItem className="cursor-pointer">
+                        {item.name}
+                      </CommandItem>
+                    </Link>
+                  ))}
+                </CommandGroup>
+              ) : (
+                <CommandEmpty>No results found.</CommandEmpty>
+              )}
+            </CommandList>
+          </Command>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
@@ -49,12 +151,6 @@ export function Navbar() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Implement search functionality
-    console.log("Search query:", searchQuery);
-  };
 
   const handleDropdownToggle = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -123,16 +219,7 @@ export function Navbar() {
           </div>
 
           <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <form onSubmit={handleSearch} className="relative w-full">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 w-full"
-              />
-            </form>
+            <SearchComponent />
           </div>
 
           <div className="flex items-center space-x-4">
@@ -197,7 +284,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <AnimatePresence>
+        <AnatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
@@ -209,16 +296,7 @@ export function Navbar() {
               <div className="pb-4 space-y-2 max-h-screen overflow-y-auto">
                 {/* Mobile Search */}
                 <div className="md:hidden px-2 pb-2">
-                  <form onSubmit={handleSearch} className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="search"
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 pr-4 w-full"
-                    />
-                  </form>
+                  <SearchComponent onResultClick={() => setIsOpen(false)} />
                 </div>
 
                 {navigationItems.map((item) => (
