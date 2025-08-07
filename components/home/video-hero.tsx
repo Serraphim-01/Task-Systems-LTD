@@ -1,40 +1,68 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 
 export function VideoHero() {
   const [startTyping, setStartTyping] = useState(false);
+  const [showSecondText, setShowSecondText] = useState(false);
+  const [videoHeight, setVideoHeight] = useState<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const text1 = "We build Innovative Technology";
+  const text2 = "for a better future";
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setStartTyping(true);
-    }, 1000); // Delay typing animation to allow page to settle
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
-
-  const [showSecondText, setShowSecondText] = useState(false);
-  const text1 = "We build Innovative Technology";
-  const text2 = "for a better future";
 
   useEffect(() => {
     if (startTyping) {
       const timer = setTimeout(() => {
         setShowSecondText(true);
-      }, text1.length * 50 + 500); 
+      }, text1.length * 50 + 500);
       return () => clearTimeout(timer);
     }
   }, [startTyping]);
 
+  // Measure the video height dynamically
+  useEffect(() => {
+    const video = videoRef.current;
+    const container = containerRef.current;
+
+    if (!video || !container) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (video && container) {
+        const height = video.getBoundingClientRect().height;
+        setVideoHeight(height);
+        container.style.height = `${height}px`;
+      }
+    });
+
+    resizeObserver.observe(video);
+
+    return () => resizeObserver.disconnect();
+  }, []);
+
   return (
-    <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+    <div
+      ref={containerRef}
+      className="relative w-full transition-all duration-500 ease-in-out overflow-hidden"
+      style={{ height: videoHeight ?? 'auto' }}
+    >
       <video
+        ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
-        className="absolute top-0 left-0 w-full h-full object-cover"
+        className="w-full h-auto object-cover"
       >
         <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.
@@ -65,7 +93,7 @@ export function VideoHero() {
                     sequence={[text2]}
                     wrapper="span"
                     speed={50}
-                    cursor={false} 
+                    cursor={false}
                   />
                 </h2>
               )}
