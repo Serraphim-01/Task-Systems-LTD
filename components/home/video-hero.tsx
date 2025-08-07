@@ -18,21 +18,21 @@ export function VideoHero() {
   const text2 = "for a better future";
 
   return (
-    <div className="relative h-[85vh] max-h-[800px] w-full overflow-hidden">
+    <div className="relative w-full">
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover object-center"
+        className="w-full h-auto"
       >
         <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      <div className="absolute inset-0 bg-black/60 z-10" />
+      <div className="absolute inset-0 bg-black/60" />
 
-      <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white">
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white">
         <motion.div
           initial={{ filter: 'blur(10px)', opacity: 0 }}
           animate={{ filter: startTyping ? 'blur(0px)' : 'blur(10px)', opacity: startTyping ? 1 : 0 }}
