@@ -33,7 +33,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         ) : (
           <>
             <Navbar />
-            <main className="min-h-screen">{children}</main>
+            <main>{children}</main>
             <Footer />
           </>
         )}
