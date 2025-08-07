@@ -41,7 +41,7 @@ export function DirectorsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-1 max-w-[70%] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-[100%] md:max-w-[70%] mx-auto">
           {directors.map((director, index) => (
             <div key={director.name} className="flex justify-center">
               <motion.div

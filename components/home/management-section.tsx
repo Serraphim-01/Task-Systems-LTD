@@ -55,7 +55,7 @@ export function ManagementSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-[70%] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:max-w-[70%] max-w-[100%] mx-auto">
           {management.map((member, index) => (
             <div key={member.name} className="flex justify-center">
               <motion.div

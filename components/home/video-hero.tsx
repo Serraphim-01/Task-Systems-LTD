@@ -72,7 +72,7 @@ export function VideoHero() {
 
       <div className="absolute inset-0 bg-black/60" />
 
-      <div className="absolute inset-0 flex flex-col items-start justify-center text-left text-white">
+      <div className="absolute inset-0 flex flex-col items-start justify-center text-left text-white max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ filter: "blur(10px)", opacity: 0 }}
           animate={{
