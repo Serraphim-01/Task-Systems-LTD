@@ -8,17 +8,17 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 
 const heroSlides = [
   {
-    title: "POWER YOUR BUSINESS WITH OUR:",
+    title: "POWER YOUR BUSINESS WITH OUR",
     subtitle: "ENTERPRISE SOLUTIONS",
     image: "/slider/Slider-1.png",
   },
   {
-    title: "YOUR TRUSTED PARTNER IN:",
+    title: "YOUR TRUSTED PARTNER IN",
     subtitle: "DIGITAL TRANSFORMATION",
     image: "/slider/Slider-2.png",
   },
   {
-    title: "DELIVERING EXCELLENCE IN:",
+    title: "DELIVERING EXCELLENCE IN",
     subtitle: "EVERY SOLUTION",
     image: "/slider/Slider-3.png",
   },
@@ -65,7 +65,7 @@ export function HeroSection() {
           </AnimatePresence>
 
           <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-left max-w-xs">
+            <div className="text-left max-w-s">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
@@ -75,10 +75,10 @@ export function HeroSection() {
                   transition={{ duration: 0.6, delay: 0.2 }}
                   className="space-y-6"
                 >
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                  <h1 className="text-2xl md:text-3xl lg:text-3xl font-bold text-[#fff] leading-tight">
                     {heroSlides[currentSlide].title}
                   </h1>
-                  <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white/90">
+                  <h2 className="text-5xl md:text-6xl lg:text-6xl font-bold text-[#ffbb00]">
                     {heroSlides[currentSlide].subtitle}
                   </h2>
                 </motion.div>
