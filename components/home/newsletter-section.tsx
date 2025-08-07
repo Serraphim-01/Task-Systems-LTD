@@ -14,17 +14,34 @@ export function NewsletterSection() {
     privacyAccepted: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.privacyAccepted) {
-      alert('Please accept the Privacy Policy to continue.');
-      return;
-    }
-    // Handle newsletter subscription
-    console.log('Newsletter subscription:', formData);
-    alert('Thank you for subscribing to our newsletter!');
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!formData.privacyAccepted) {
+    alert('Please accept the Privacy Policy to continue.');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/newsletter', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Subscription failed');
+
+    alert('🎉 You’ve been subscribed!');
     setFormData({ name: '', email: '', privacyAccepted: false });
-  };
+  } catch (err: any) {
+    alert(err.message || 'Something went wrong. Try again later.');
+  }
+};
 
   return (
     <section className="py-16 bg-[#ffbb00]/10">

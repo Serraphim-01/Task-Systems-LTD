@@ -7,18 +7,25 @@ import Image from "next/image";
 const contactInfo = [
   {
     city: "Lagos",
-    address: "Yudala Heights Building, 13 Idowu Martins Street, Victoria Island, Lagos.",
+    address:
+      "Yudala Heights Building, 13 Idowu Martins Street, Victoria Island, Lagos.",
     icon: MapPin,
+    mapsQuery:
+      "Yudala Heights Building, 13 Idowu Martins Street, Victoria Island, Lagos",
   },
   {
     city: "Port Harcourt",
     address: "146 Trans Amadi Industrial Layout, Port Harcourt, Rivers State.",
     icon: MapPin,
+    mapsQuery: "146 Trans Amadi Industrial Layout, Port Harcourt, Rivers State",
   },
   {
     city: "Abuja",
-    address: "20 Port Harcourt Crescent, off Gimbiya Street, Area 11 Garki District, Abuja.",
+    address:
+      "20 Port Harcourt Crescent, off Gimbiya Street, Area 11 Garki District, Abuja.",
     icon: MapPin,
+    mapsQuery:
+      "20 Port Harcourt Crescent, off Gimbiya Street, Area 11 Garki District, Abuja",
   },
   {
     city: "Email",
@@ -77,8 +84,9 @@ export default function ReachUsPage() {
           >
             {contactInfo.map((item, index) => {
               const Icon = item.icon;
+
               const content = (
-                <div key={index} className="flex items-start gap-4">
+                <div className="flex items-start gap-4">
                   <div className="bg-primary/10 p-3 rounded-full">
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
@@ -91,17 +99,40 @@ export default function ReachUsPage() {
                 </div>
               );
 
-              return item.href ? (
-                <a
-                  key={item.city}
-                  href={item.href}
-                  className="hover:scale-105 transition-transform duration-200 block"
-                >
-                  {content}
-                </a>
-              ) : (
-                <div key={item.city}>{content}</div>
-              );
+              // If it's email/phone
+              if (item.href) {
+                return (
+                  <a
+                    key={index}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:scale-105 transition-transform duration-200 block"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              // If it's a physical address with a mapsQuery
+              if (item.mapsQuery) {
+                const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                  item.mapsQuery
+                )}`;
+                return (
+                  <a
+                    key={index}
+                    href={mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:scale-105 transition-transform duration-200 block"
+                  >
+                    {content}
+                  </a>
+                );
+              }
+
+              return <div key={index}>{content}</div>;
             })}
           </motion.div>
         </div>

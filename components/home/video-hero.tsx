@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { TypeAnimation } from 'react-type-animation';
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { TypeAnimation } from "react-type-animation";
 
 export function VideoHero() {
   const [startTyping, setStartTyping] = useState(false);
@@ -11,8 +11,8 @@ export function VideoHero() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const text1 = "We build Innovative Technology";
-  const text2 = "for a better future";
+  const text1 = "Where Innovation Knows No Bounds";
+  const text2 = "...driving the future, today...";
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -54,32 +54,40 @@ export function VideoHero() {
     <div
       ref={containerRef}
       className="relative w-full transition-all duration-500 ease-in-out overflow-hidden"
-      style={{ height: videoHeight ?? 'auto' }}
+      style={{ height: videoHeight ?? "auto" }}
     >
       <video
+        preload="auto"
         ref={videoRef}
         autoPlay
         loop
         muted
         playsInline
+        poster="/video-placeholder.png" 
         className="w-full h-auto object-cover"
       >
         <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-black/60" />
 
       <div className="absolute inset-0 flex flex-col items-start justify-center text-left text-white">
         <motion.div
-          initial={{ filter: 'blur(10px)', opacity: 0 }}
-          animate={{ filter: startTyping ? 'blur(0px)' : 'blur(10px)', opacity: startTyping ? 1 : 0 }}
+          initial={{ filter: "blur(10px)", opacity: 0 }}
+          animate={{
+            filter: startTyping ? "blur(0px)" : "blur(10px)",
+            opacity: startTyping ? 1 : 0,
+          }}
           transition={{ duration: 2, ease: "easeOut" }}
-          className="max-w-[600px] ml-8 space-y-4"
+          className="max-w-[700px] ml-8 space-y-4"
         >
           {startTyping && (
             <>
-              <h1 className="text-5xl md:text-7xl font-bold" style={{ color: '#ffbb00' }}>
+              <h1
+                className="text-5xl md:text-7xl pr-6 font-bold"
+                style={{ color: "#ffbb00" }}
+              >
                 <TypeAnimation
                   sequence={[text1]}
                   wrapper="span"
@@ -88,13 +96,15 @@ export function VideoHero() {
                 />
               </h1>
               {showSecondText && (
-                <h2 className="text-3xl md:text-5xl font-semibold">
-                  <TypeAnimation
-                    sequence={[text2]}
-                    wrapper="span"
-                    speed={50}
-                    cursor={false}
-                  />
+                <h2 className="text-xl md:text-3xl font-semibold">
+                  <em>
+                    <TypeAnimation
+                      sequence={[text2]}
+                      wrapper="span"
+                      speed={50}
+                      cursor={false}
+                    />
+                  </em>
                 </h2>
               )}
             </>

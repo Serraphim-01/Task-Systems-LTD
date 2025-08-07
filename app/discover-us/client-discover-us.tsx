@@ -56,25 +56,25 @@ const strategyItems = [
     title: "World-Class Partnerships",
     description:
       "We collaborate with globally recognized ICT leaders to deliver best-in-class technology solutions that drive innovation, operational excellence, and digital transformation for our clients across multiple industries.",
-    image: "/illustration/global-team.svg",
+    image: "/illustration/global.svg",
   },
   {
     title: "Local Expertise, Global Standards",
     description:
       "We proudly deliver over 80% of our solutions and services through skilledlocal talent, reinforcing our commitment to capacity development and local empowerment. Our international partners complement our delivery model by serving as knowledge resources, enabling us to stay ahead of global technology trends while nurturing African expertise.",
-    image: "/illustration/certification.svg",
+    image: "/illustration/global-talent-1.jpg",
   },
   {
     title: "Customer-Centric Risk Sharing",
     description:
       "We go beyond conventional vendor relationships by sharing in the risks of our clients’ digital journeys. This uncommon dedication to our customers’ success reflects our belief that our growth is inseparable from theirs.",
-    image: "/illustration/shared-goals.svg",
+    image: "/illustration/risk-sharing.jpg",
   },
   {
     title: "Long-Term Partnership Philosophy",
     description:
       "We adopt a long-term view of our clients’ businesses, guiding every engagement with empathy, foresight, and integrity. This relationship-first approach has consistently elevated us from the role of solution provider to that of a trusted strategic partner, a distinction we proudly uphold.",
-    image: "/illustration/agreement.svg",
+    image: "/illustration/long-term-partnership.jpg",
   },
 ];
 
@@ -155,6 +155,9 @@ export default function DiscoverUsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Mission & Vision */}
             <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-foreground mb-6">
+                Mission & <span className="text-[#ffbb00]">Vision</span>
+              </h2>
               <motion.div
                 initial={{ opacity: 0, x: -50 }}
                 whileInView={{ opacity: 1, x: 0 }}

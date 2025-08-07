@@ -2,15 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import {
-  Facebook,
-  Instagram,
-  Linkedin,
-  Twitter,
-  Mail,
-  Phone,
-  MapPin,
-} from "lucide-react";
+import { Facebook, Instagram, Mail, Phone, MapPin } from "lucide-react";
+import { PiTiktokLogoBold } from "react-icons/pi";
+import { FaXTwitter } from "react-icons/fa6";
+import { LuLinkedin } from "react-icons/lu";
 
 const quickLinks = [
   { name: "Solutions", href: "/solutions" },
@@ -21,10 +16,27 @@ const quickLinks = [
 ];
 
 const socialLinks = [
-  { name: "Facebook", icon: Facebook, href: "#" },
-  { name: "Instagram", icon: Instagram, href: "#" },
-  { name: "LinkedIn", icon: Linkedin, href: "#" },
-  { name: "Twitter", icon: Twitter, href: "#" },
+  {
+    name: "Facebook",
+    icon: Facebook,
+    href: "https://www.facebook.com/TASKSystemsLimited",
+  },
+  {
+    name: "Instagram",
+    icon: Instagram,
+    href: "https://www.instagram.com/officialtasksystems",
+  },
+  {
+    name: "LinkedIn",
+    icon: LuLinkedin,
+    href: "https://www.linkedin.com/company/tasksystemslimited",
+  },
+  { name: "Twitter", icon: FaXTwitter, href: "https://x.com/tasksystems1" },
+  {
+    name: "Tik Tok",
+    icon: PiTiktokLogoBold,
+    href: "https://www.tiktok.com/@tasksystemslimited",
+  },
 ];
 
 export function Footer() {
@@ -80,6 +92,8 @@ export function Footer() {
                 <Mail className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <a
                   href="mailto:engage@tasksystems.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-muted-foreground transition-colors duration-200 hover-underline-animation"
                 >
                   engage@tasksystems.com
@@ -88,8 +102,22 @@ export function Footer() {
               <div className="flex items-start space-x-3 group-hover:animate-shake">
                 <Phone className="h-5 w-5 text-[#ffbb00] mt-0.5 flex-shrink-0 animate-move-up-down shake-icon" />
                 <div className="space-y-1">
-                  <div className="text-muted-foreground">+234 123 783 3843</div>
-                  <div className="text-muted-foreground">+234 911 080 8619</div>
+                  <a
+                    href="tel:+2341237833843"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground"
+                  >
+                    +234 123 783 3843
+                  </a><br />
+                  <a
+                    href="tel:+2349110808619"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-muted-foreground"
+                  >
+                    +234 911 080 8619
+                  </a>
                 </div>
               </div>
               <div className="flex items-start space-x-3 group-hover:animate-shake">
@@ -117,6 +145,8 @@ export function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-muted-foreground hover:text-[#ffbb00] transition-colors duration-200 group-hover:animate-shake"
                     aria-label={social.name}
                   >
