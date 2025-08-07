@@ -4,14 +4,30 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 const partners = [
-  { name: "Microsoft", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Cisco", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "IBM", logo: "https://images.pexels.com/photos/4439444/pexels-photo-4439444.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Oracle", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Dell", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "HP", logo: "https://images.pexels.com/photos/4439444/pexels-photo-4439444.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "VMware", logo: "https://images.pexels.com/photos/4439901/pexels-photo-4439901.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
-  { name: "Amazon", logo: "https://images.pexels.com/photos/4439425/pexels-photo-4439425.jpeg?auto=compress&cs=tinysrgb&w=200&h=100" },
+  { name: "APC", logo: "/partners/apc.png" },
+  { name: "Apple", logo: "/partners/apple.png" },
+  { name: "ASUS", logo: "/partners/asus.png" },
+  { name: "AWS", logo: "/partners/aws.png" },
+  { name: "Cisco", logo: "/partners/cisco.svg" },
+  { name: "Check Point", logo: "/partners/CP.png" },
+  { name: "D-Link", logo: "/partners/d-link.jpeg" },
+  { name: "Dell", logo: "/partners/dell.png" },
+  { name: "EMC", logo: "/partners/emc.png" },
+  { name: "HP", logo: "/partners/hp.png" },
+  { name: "Hewlett Packard", logo: "/partners/hpe.png" },
+  { name: "Huawei", logo: "/partners/huawei.png" },
+  { name: "IBM", logo: "/partners/ibm.png" },
+  { name: "Kaspersky", logo: "/partners/kaspersky.png" },
+  { name: "Lenovo", logo: "/partners/lenovo.png" },
+  { name: "Logitech", logo: "/partners/logitech.png" },
+  { name: "Microsoft", logo: "/partners/microsoft.png" },
+  { name: "Netapp", logo: "/partners/netapp.webp" },
+  { name: "Neverfail", logo: "/partners/Nf.jpg" },
+  { name: "Nokia", logo: "/partners/nokia_new.png" },
+  { name: "Oracle", logo: "/partners/oracle.png" },
+  { name: "Schneider Electric", logo: "/partners/Sch-ele.png" },
+  { name: "Starlink", logo: "/partners/starlink.png" },
+  { name: "Zebra", logo: "/partners/zebra.png" },
 ];
 
 export function PartnersSection() {
@@ -33,33 +49,34 @@ export function PartnersSection() {
           </p>
         </motion.div>
 
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden group">
           <motion.div
             className="flex space-x-12"
             animate={{
-              x: [-1200, 0],
+              x: [0, -1660],
             }}
             transition={{
               x: {
                 repeat: Infinity,
                 repeatType: "loop",
-                duration: 20,
+                duration: 40,
                 ease: "linear",
               },
             }}
-            whileHover={{ animationPlayState: 'paused' }}
+
           >
             {[...partners, ...partners].map((partner, index) => (
               <div
                 key={`${partner.name}-${index}`}
-                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background border border-border rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="group relative flex-shrink-0 w-32 h-32 flex items-center justify-center bg-background rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
               >
-                <div className="relative w-24 h-24 rounded-full overflow-hidden">
+                <div className="relative w-24 h-24 rounded-full overflow-hidden p-2">
                   <Image
                     src={partner.logo}
                     alt={partner.name}
                     fill
-                    className="object-cover filter grayscale group-hover:grayscale-0 transition-all duration-300"
+                    sizes="(max-width: 768px) 80px, 96px"
+                    className="object-contain filter grayscale group-hover:grayscale-0 transition-all duration-300"
                   />
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center text-xs py-1 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">

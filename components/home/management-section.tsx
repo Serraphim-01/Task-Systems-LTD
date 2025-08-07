@@ -7,32 +7,32 @@ const management = [
   {
     name: "Gozy Ijogun",
     position: "CEO",
-    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/CEO-GOZY IJOGUN.jpg"
   },
   {
     name: "Eky Ovie-Fidelis",
     position: "General Manager",
-    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/GM_EKY-OVIE-FIDELIS.png"
   },
   {
     name: "Charles Adigwe",
     position: "Executive Director",
-    image: "https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/ED-Head of Operations.png"
   },
   {
     name: "Henrietta Onyebuchi-Akobi",
     position: "CFO",
-    image: "https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/CFO- Henrietta Onyebuchi-Akobi.png"
   },
   {
     name: "Ifeoma Chigbo-Ndukwe",
     position: "HR Manager",
-    image: "https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/Head-HR_Ifeoma-Chigbo-Ndukwe.jpg"
   },
   {
     name: "Ugonna Onyido-Okoro",
     position: "Compliance Manager",
-    image: "https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/COMPLIANCE- Ugonna Onyido-Okoro.png"
   }
 ];
 
@@ -71,6 +71,7 @@ export function ManagementSection() {
                     src={member.image}
                     alt={member.name}
                     fill
+                    
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>

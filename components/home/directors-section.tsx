@@ -7,17 +7,17 @@ const directors = [
   {
     name: "Leo-stan Ekeh",
     position: "Group Chairman",
-    image: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/LEO-STAN EKEH_CHAIRMAN.png"
   },
   {
     name: "Chioma Ekeh",
     position: "Director",
-    image: "https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/cE-DIRECTOR.jpg"
   },
   {
     name: "Ukoha Agatha Adaku",
     position: "Director",
-    image: "https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg?auto=compress&cs=tinysrgb&w=300&h=400"
+    image: "/directors_management/UKOHA-DIRECTOR.jpg"
   }
 ];
 

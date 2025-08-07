@@ -1,46 +1,46 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useTheme } from 'next-themes';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Menu, X, Sun, Moon, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Menu, X, Sun, Moon, ChevronDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 const navigationItems = [
-  { name: 'Home', href: '/' },
+  { name: "Home", href: "/" },
   {
-    name: 'Solutions',
-    href: '/solutions',
+    name: "Solutions",
+    href: "/solutions",
     dropdown: [
-      { name: 'Network Solutions', href: '/solutions?tab=network' },
-      { name: 'Enterprise Mobility', href: '/solutions?tab=mobility' },
-      { name: 'Convergence Solutions', href: '/solutions?tab=convergence' },
-      { name: 'Collaboration Solutions', href: '/solutions?tab=collaboration' },
-      { name: 'Security Solutions', href: '/solutions?tab=security' },
-      { name: 'Enterprise Applications', href: '/solutions?tab=applications' },
-      { name: 'Managed Support', href: '/solutions?tab=support' },
-      { name: 'Cloud Solutions', href: '/solutions?tab=cloud' },
-    ]
+      { name: "Network Solutions", href: "/solutions?tab=network" },
+      { name: "Enterprise Mobility", href: "/solutions?tab=mobility" },
+      { name: "Convergence Solutions", href: "/solutions?tab=convergence" },
+      { name: "Collaboration Solutions", href: "/solutions?tab=collaboration" },
+      { name: "Security Solutions", href: "/solutions?tab=security" },
+      { name: "Enterprise Applications", href: "/solutions?tab=applications" },
+      { name: "Managed Support", href: "/solutions?tab=support" },
+      { name: "Cloud Solutions", href: "/solutions?tab=cloud" },
+    ],
   },
-  { name: 'Portfolio', href: '/portfolio' },
+  { name: "Portfolio", href: "/portfolio" },
   {
-    name: 'About',
-    href: '/discover-us',
+    name: "About",
+    href: "/discover-us",
     dropdown: [
-      { name: 'Discover Us', href: '/discover-us' },
-      { name: 'Media', href: '/media' },
-      { name: 'Careers', href: '/careers' },
-    ]
+      { name: "Discover Us", href: "/discover-us" },
+      { name: "Media", href: "/media" },
+      { name: "Careers", href: "/careers" },
+    ],
   },
-  { name: 'Reach Us', href: '/reach-us' },
+  { name: "Reach Us", href: "/reach-us" },
 ];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
@@ -53,7 +53,7 @@ export function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // Implement search functionality
-    console.log('Search query:', searchQuery);
+    console.log("Search query:", searchQuery);
   };
 
   const handleDropdownToggle = (name: string) => {
@@ -66,7 +66,14 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center lg:hidden">
-              <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
+              <Image
+                src="/task-logo.png"
+                alt="Task Systems"
+                width={100}
+                height={40}
+                style={{ height: "auto" }}
+                priority
+              />
             </Link>
           </div>
 
@@ -75,7 +82,9 @@ export function Navbar() {
               <div
                 key={item.name}
                 className="relative"
-                onMouseEnter={() => item.dropdown && setActiveDropdown(item.name)}
+                onMouseEnter={() =>
+                  item.dropdown && setActiveDropdown(item.name)
+                }
                 onMouseLeave={() => setActiveDropdown(null)}
               >
                 <Link
@@ -85,7 +94,7 @@ export function Navbar() {
                   {item.name}
                   {item.dropdown && <ChevronDown className="h-4 w-4" />}
                 </Link>
-                
+
                 {item.dropdown && (
                   <AnimatePresence>
                     {activeDropdown === item.name && (
@@ -132,10 +141,10 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                   className="h-9 w-9"
                 >
-                  {theme === 'dark' ? (
+                  {theme === "dark" ? (
                     <Sun className="h-4 w-4" />
                   ) : (
                     <Moon className="h-4 w-4" />
@@ -145,7 +154,14 @@ export function Navbar() {
             </div>
             <div className="hidden lg:flex items-center">
               <Link href="/" className="flex items-center ml-6">
-                <Image src="/task-logo.png" alt="Task Systems" width={100} height={40} />
+                <Image
+                  src="/task-logo.png"
+                  alt="Task Systems"
+                  width={100}
+                  height={40}
+                  style={{ height: "auto" }}
+                  priority
+                />
               </Link>
             </div>
             {/* Mobile header */}
@@ -154,10 +170,10 @@ export function Navbar() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                   className="h-9 w-9"
                 >
-                  {theme === 'dark' ? (
+                  {theme === "dark" ? (
                     <Sun className="h-4 w-4" />
                   ) : (
                     <Moon className="h-4 w-4" />
@@ -170,7 +186,11 @@ export function Navbar() {
                 onClick={() => setIsOpen(!isOpen)}
                 className=""
               >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </Button>
             </div>
           </div>
@@ -181,7 +201,7 @@ export function Navbar() {
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="absolute w-[90%] right-0 bg-background lg:hidden"
@@ -222,7 +242,11 @@ export function Navbar() {
                           onClick={() => handleDropdownToggle(item.name)}
                           className="h-9 w-9"
                         >
-                          <ChevronDown className={`h-4 w-4 transition-transform ${openDropdown === item.name ? 'rotate-180' : ''}`} />
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${
+                              openDropdown === item.name ? "rotate-180" : ""
+                            }`}
+                          />
                         </Button>
                       )}
                     </div>
@@ -230,7 +254,7 @@ export function Navbar() {
                       {item.dropdown && openDropdown === item.name && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
+                          animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
                           transition={{ duration: 0.3 }}
                           className="pl-4 space-y-1"

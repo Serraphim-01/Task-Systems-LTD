@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 export function VideoAboutSection() {
   return (
@@ -20,9 +20,9 @@ export function VideoAboutSection() {
               muted
               loop
               playsInline
-              poster="https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg"
+              poster=""
             >
-              <source src="/video-placeholder.mp4" type="video/mp4" />
+              <source src="/videos/Task systems  Logo Reveal.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-black/20"></div>
@@ -36,14 +36,15 @@ export function VideoAboutSection() {
             className="space-y-6"
           >
             <p className="text-lg text-muted-foreground leading-relaxed">
-              Founded in 1987, Task Systems has grown to become a leading indigenous system integration company, 
-              providing cutting-edge ICT solutions to a diverse clientele across Nigeria and the broader 
-              Sub-Saharan market.
+              Founded in 1987, Task Systems Ltd has evolved from a pioneering IT
+              firm into one of Africa’s foremost System Integrators, driving
+              digital transformation, intelligent automation, and AI-powered
+              innovation across the continent.
             </p>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              With over three decades of industry experience, we pride ourselves on our unwavering commitment 
-              to excellence, making us the preferred partner for businesses seeking robust and innovative 
-              technology solutions.
+              With nearly four decades of unwavering excellence, Task has become
+              a trusted name in delivering impactful, scalable, and future-ready
+              technology solutions to businesses in multiple sectors.
             </p>
           </motion.div>
         </div>

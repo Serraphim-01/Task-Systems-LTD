@@ -1,63 +1,55 @@
-"use client";
+// app/layout.tsx
+import "./globals.css";
+import { Inter } from "next/font/google";
+import ClientLayout from "@/app/client-layout";
 
-import './globals.css';
-import { useState, useEffect } from 'react';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-import { Navbar } from '@/components/navbar';
-import { Footer } from '@/components/footer';
-import { LoadingScreen } from '@/components/loading-screen';
-import { AnimatePresence } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+const inter = Inter({ subsets: ["latin"] });
 
-const inter = Inter({ subsets: ['latin'] });
+export const metadata = {
+  title: {
+    default: "Task Systems — Enterprise ICT Solutions",
+    template: "%s | Task Systems",
+  },
+  description: "Empowering African businesses with ICT solutions since 1987.",
+  keywords: [
+    "ICT Nigeria",
+    "system integration",
+    "enterprise solutions",
+    "digital transformation",
+  ],
+  authors: [{ name: "Task Systems Limited" }],
+  creator: "Task Systems Limited",
+  publisher: "Task Systems Limited",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_NG",
+    url: "https://tasksystems.com",
+    siteName: "Task Systems LTD",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Task Systems",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@tasksystems",
+    creator: "@tasksystems",
+  },
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [loading, setLoading] = useState(true);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 2000); // Simulate loading time
-
-    return () => clearTimeout(timer);
-  }, [pathname]);
-
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        <title>Task Systems Limited - Leading ICT Solutions Provider</title>
-        <meta name="description" content="Task Systems Limited is an indigenous system integration company founded in 1987, providing cutting-edge ICT solutions across Nigeria and Sub-Saharan Africa." />
-        <meta name="keywords" content="ICT solutions, system integration, enterprise solutions, digital transformation, Nigeria, Africa" />
-        <meta name="author" content="Task Systems Limited" />
-      </head>
       <body className={inter.className}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange={false}
-        >
-          <AnimatePresence mode="wait">
-            {loading ? (
-              <LoadingScreen />
-            ) : (
-              <>
-                <Navbar />
-                <main className="min-h-screen">
-                  {children}
-                </main>
-                <Footer />
-              </>
-            )}
-          </AnimatePresence>
-        </ThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
