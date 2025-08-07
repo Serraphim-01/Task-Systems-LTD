@@ -14,8 +14,18 @@ export function VideoHero() {
     return () => clearTimeout(timer);
   }, []);
 
+  const [showSecondText, setShowSecondText] = useState(false);
   const text1 = "We build Innovative Technology";
   const text2 = "for a better future";
+
+  useEffect(() => {
+    if (startTyping) {
+      const timer = setTimeout(() => {
+        setShowSecondText(true);
+      }, text1.length * 50 + 500); // Wait for text1 to finish typing + 500ms delay
+      return () => clearTimeout(timer);
+    }
+  }, [startTyping]);
 
   return (
     <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
@@ -37,7 +47,7 @@ export function VideoHero() {
           initial={{ filter: 'blur(10px)', opacity: 0 }}
           animate={{ filter: startTyping ? 'blur(0px)' : 'blur(10px)', opacity: startTyping ? 1 : 0 }}
           transition={{ duration: 2, ease: "easeOut" }}
-          className="max-w-[300px] ml-8 space-y-4"
+          className="max-w-[500px] ml-8 space-y-4"
         >
           {startTyping && (
             <>
@@ -46,17 +56,19 @@ export function VideoHero() {
                   sequence={[text1]}
                   wrapper="span"
                   speed={50}
-                  cursor={false}
+                  cursor={!showSecondText}
                 />
               </h1>
-              <h2 className="text-3xl md:text-5xl font-semibold">
-                <TypeAnimation
-                  sequence={[text2]}
-                  wrapper="span"
-                  speed={50}
-                  cursor={true}
-                />
-              </h2>
+              {showSecondText && (
+                <h2 className="text-3xl md:text-5xl font-semibold">
+                  <TypeAnimation
+                    sequence={[text2]}
+                    wrapper="span"
+                    speed={50}
+                    cursor={true}
+                  />
+                </h2>
+              )}
             </>
           )}
         </motion.div>
