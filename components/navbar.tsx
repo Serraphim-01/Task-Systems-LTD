@@ -284,7 +284,7 @@ export function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <AnatePresence>
+        <AnimatePresence>
           {isOpen && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
