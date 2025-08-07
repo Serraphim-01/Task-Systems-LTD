@@ -56,7 +56,7 @@ const strategyItems = [
     title: "World-Class Partnerships",
     description:
       "We collaborate with globally recognized ICT leaders to deliver best-in-class technology solutions that drive innovation, operational excellence, and digital transformation for our clients across multiple industries.",
-    image: "/illustration/global.svg",
+    image: "/illustration/global.jpg",
   },
   {
     title: "Local Expertise, Global Standards",

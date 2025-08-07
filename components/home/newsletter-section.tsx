@@ -1,47 +1,57 @@
 "use client";
 
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import Link from 'next/link';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 
 export function NewsletterSection() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    privacyAccepted: false
+    name: "",
+    email: "",
+    company: "",
+    role: "", // 👈 Add this
+    privacyAccepted: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formData.privacyAccepted) {
-    alert('Please accept the Privacy Policy to continue.');
-    return;
-  }
+    if (!formData.privacyAccepted) {
+      alert("Please accept the Privacy Policy to continue.");
+      return;
+    }
 
-  try {
-    const res = await fetch('/api/newsletter', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: formData.name,
-        email: formData.email,
-      }),
-    });
+    try {
+      const res = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          company: formData.company,
+          role: formData.role,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error || 'Subscription failed');
+      if (!res.ok) throw new Error(data.error || "Subscription failed");
 
-    alert('🎉 You’ve been subscribed!');
-    setFormData({ name: '', email: '', privacyAccepted: false });
-  } catch (err: any) {
-    alert(err.message || 'Something went wrong. Try again later.');
-  }
-};
+      alert("🎉 You’ve been subscribed!");
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        role: "",
+        privacyAccepted: false,
+      });
+    } catch (err: any) {
+      alert(err.message || "Something went wrong. Try again later.");
+    }
+  };
 
   return (
     <section className="py-16 bg-[#ffbb00]/10">
@@ -58,7 +68,8 @@ export function NewsletterSection() {
               Stay Updated
             </h2>
             <p className="text-lg text-muted-foreground">
-              Subscribe to our newsletter for the latest technology insights and company updates
+              Subscribe to our newsletter for the latest technology insights and
+              company updates
             </p>
           </motion.div>
 
@@ -75,15 +86,35 @@ export function NewsletterSection() {
                 type="text"
                 placeholder="Your Name"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
                 className="h-12"
+              />
+              <Input
+                type="text"
+                placeholder="Company"
+                value={formData.company}
+                onChange={(e) =>
+                  setFormData({ ...formData, company: e.target.value })
+                }
+              />
+              <Input
+                type="text"
+                placeholder="Your Role"
+                value={formData.role}
+                onChange={(e) =>
+                  setFormData({ ...formData, role: e.target.value })
+                }
               />
               <Input
                 type="email"
                 placeholder="Your Email"
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
                 className="h-12"
               />
@@ -93,14 +124,20 @@ export function NewsletterSection() {
               <Checkbox
                 id="privacy"
                 checked={formData.privacyAccepted}
-                onCheckedChange={(checked) => 
-                  setFormData({ ...formData, privacyAccepted: checked as boolean })
+                onCheckedChange={(checked) =>
+                  setFormData({
+                    ...formData,
+                    privacyAccepted: checked as boolean,
+                  })
                 }
               />
-              <label htmlFor="privacy" className="text-sm text-muted-foreground">
-                I accept the{' '}
-                <Link 
-                  href="/privacy-policy" 
+              <label
+                htmlFor="privacy"
+                className="text-sm text-muted-foreground"
+              >
+                I accept the{" "}
+                <Link
+                  href="/privacy-policy"
                   className="text-[#ffbb00] hover:underline"
                 >
                   Privacy Policy
