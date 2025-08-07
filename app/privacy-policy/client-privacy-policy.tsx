@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <motion.section
-        className="py-24 md:py-32"
+        className="py-12 sm:py-16 md:py-20 lg:py-24"
         initial="hidden"
         animate="visible"
         variants={policySection}

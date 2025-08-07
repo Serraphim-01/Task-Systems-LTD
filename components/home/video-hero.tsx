@@ -14,30 +14,40 @@ export function VideoHero() {
     return () => clearTimeout(timer);
   }, []);
 
+  const [showSecondText, setShowSecondText] = useState(false);
   const text1 = "We build Innovative Technology";
   const text2 = "for a better future";
 
+  useEffect(() => {
+    if (startTyping) {
+      const timer = setTimeout(() => {
+        setShowSecondText(true);
+      }, text1.length * 50 + 500); // Wait for text1 to finish typing + 500ms delay
+      return () => clearTimeout(timer);
+    }
+  }, [startTyping]);
+
   return (
-    <div className="relative h-[85vh] max-h-[800px] w-full overflow-hidden">
+    <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
       <video
         autoPlay
         loop
         muted
         playsInline
-        className="absolute z-0 w-auto min-w-full min-h-full max-w-none object-cover object-center"
+        className="absolute top-0 left-0 w-full h-full object-cover"
       >
         <source src="/videos/Innovative Disruption.mp4" type="video/mp4" />
         Your browser does not support the video tag.
       </video>
 
-      <div className="absolute inset-0 bg-black/60 z-10" />
+      <div className="absolute inset-0 bg-black/40" />
 
-      <div className="relative z-20 flex flex-col items-center justify-center h-full text-center text-white">
+      <div className="absolute inset-0 flex flex-col items-start justify-center text-left text-white">
         <motion.div
           initial={{ filter: 'blur(10px)', opacity: 0 }}
           animate={{ filter: startTyping ? 'blur(0px)' : 'blur(10px)', opacity: startTyping ? 1 : 0 }}
           transition={{ duration: 2, ease: "easeOut" }}
-          className="space-y-4"
+          className="max-w-[600px] ml-8 space-y-4"
         >
           {startTyping && (
             <>
@@ -46,17 +56,19 @@ export function VideoHero() {
                   sequence={[text1]}
                   wrapper="span"
                   speed={50}
-                  cursor={false}
+                  cursor={!showSecondText}
                 />
               </h1>
-              <h2 className="text-3xl md:text-5xl font-semibold">
-                <TypeAnimation
-                  sequence={[text2]}
-                  wrapper="span"
-                  speed={50}
-                  cursor={true}
-                />
-              </h2>
+              {showSecondText && (
+                <h2 className="text-3xl md:text-5xl font-semibold">
+                  <TypeAnimation
+                    sequence={[text2]}
+                    wrapper="span"
+                    speed={50}
+                    cursor={true}
+                  />
+                </h2>
+              )}
             </>
           )}
         </motion.div>
