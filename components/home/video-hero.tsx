@@ -47,7 +47,7 @@ export function VideoHero() {
           initial={{ filter: 'blur(10px)', opacity: 0 }}
           animate={{ filter: startTyping ? 'blur(0px)' : 'blur(10px)', opacity: startTyping ? 1 : 0 }}
           transition={{ duration: 2, ease: "easeOut" }}
-          className="max-w-[500px] ml-8 space-y-4"
+          className="max-w-[600px] ml-8 space-y-4"
         >
           {startTyping && (
             <>
