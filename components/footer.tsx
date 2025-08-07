@@ -34,13 +34,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & About */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center lg:hidden">
+            <Link href="/" className="flex items-center">
               <Image
                 src="/task-logo.png"
                 alt="Task Systems"
-                width={100}
-                height={40}
-                style={{ height: "auto" }}
+                width={120}
+                height={48}
+                className="h-auto"
                 priority
               />
             </Link>

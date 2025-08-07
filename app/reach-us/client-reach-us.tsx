@@ -52,14 +52,14 @@ export default function ReachUsPage() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-stretch">
+        <div className="grid md:grid-cols-2 gap-12">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
             className="rounded-lg overflow-hidden shadow-xl"
           >
-            <div className="relative w-full h-full">
+            <div className="relative w-full h-96 md:h-full">
               <Image
                 src="/reach-us/location.png"
                 alt="Task Systems Office Location"
