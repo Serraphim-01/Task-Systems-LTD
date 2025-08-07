@@ -15,6 +15,7 @@ export function VideoHero() {
   }, []);
 
   const [showSecondText, setShowSecondText] = useState(false);
+  const [isTyping, setIsTyping] = useState(true);
   const text1 = "We build Innovative Technology";
   const text2 = "for a better future";
 
@@ -62,10 +63,10 @@ export function VideoHero() {
               {showSecondText && (
                 <h2 className="text-3xl md:text-5xl font-semibold">
                   <TypeAnimation
-                    sequence={[text2]}
+                    sequence={[text2, () => setIsTyping(false)]}
                     wrapper="span"
                     speed={50}
-                    cursor={true}
+                    cursor={isTyping}
                   />
                 </h2>
               )}
