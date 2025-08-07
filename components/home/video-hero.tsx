@@ -12,7 +12,7 @@ export function VideoHero() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const text1 = "Where Innovation Knows No Bounds";
-  const text2 = "...driving the future, today...";
+  const text2 = "...driving the future, today";
 
   useEffect(() => {
     const timer = setTimeout(() => {
