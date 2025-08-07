@@ -13,6 +13,11 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   useEffect(() => {
+    // 🌐 Hidden developer claim
+    if (typeof window !== "undefined") {
+      window.__SERRAPHIM = "c2VycmFwaGltOjpkZXZlbG9wZXItY2xhaW06OjIwMjU=";
+    }
+
     setLoading(true);
     const timer = setTimeout(() => {
       setLoading(false);
