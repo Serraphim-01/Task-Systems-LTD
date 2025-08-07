@@ -15,7 +15,6 @@ export function VideoHero() {
   }, []);
 
   const [showSecondText, setShowSecondText] = useState(false);
-  const [isTyping, setIsTyping] = useState(true);
   const text1 = "We build Innovative Technology";
   const text2 = "for a better future";
 
@@ -23,7 +22,7 @@ export function VideoHero() {
     if (startTyping) {
       const timer = setTimeout(() => {
         setShowSecondText(true);
-      }, text1.length * 50 + 500); // Wait for text1 to finish typing + 500ms delay
+      }, text1.length * 50 + 500); 
       return () => clearTimeout(timer);
     }
   }, [startTyping]);
@@ -57,16 +56,16 @@ export function VideoHero() {
                   sequence={[text1]}
                   wrapper="span"
                   speed={50}
-                  cursor={!showSecondText}
+                  cursor={false}
                 />
               </h1>
               {showSecondText && (
                 <h2 className="text-3xl md:text-5xl font-semibold">
                   <TypeAnimation
-                    sequence={[text2, () => setIsTyping(false)]}
+                    sequence={[text2]}
                     wrapper="span"
                     speed={50}
-                    cursor={isTyping}
+                    cursor={false} 
                   />
                 </h2>
               )}
