@@ -171,59 +171,73 @@ export function Navbar() {
                 priority
               />
             </Link>
+            <div className="hidden lg:flex items-center">
+              <Link href="/" className="flex items-center mr-6">
+                <Image
+                  src="/task-logo.png"
+                  alt="Task Systems"
+                  width={100}
+                  height={40}
+                  style={{ height: "auto" }}
+                  priority
+                />
+              </Link>
+            </div>
           </div>
 
-          <div className="hidden lg:flex items-center space-x-8">
-            {navigationItems.map((item) => (
-              <div
-                key={item.name}
-                className="relative"
-                onMouseEnter={() =>
-                  item.dropdown && setActiveDropdown(item.name)
-                }
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                <Link
-                  href={item.href}
-                  className="text-foreground hover:text-[#ffbb00] transition-colors duration-200 flex items-center gap-1"
+          <div className="hidden md:flex flex-1 justify-center px-4">
+            <div className="max-w-xs w-full">
+              <SearchComponent />
+            </div>
+          </div>
+
+          <div className="flex items-center">
+            <div className="hidden lg:flex items-center space-x-8">
+              {navigationItems.map((item) => (
+                <div
+                  key={item.name}
+                  className="relative"
+                  onMouseEnter={() =>
+                    item.dropdown && setActiveDropdown(item.name)
+                  }
+                  onMouseLeave={() => setActiveDropdown(null)}
                 >
-                  {item.name}
-                  {item.dropdown && <ChevronDown className="h-4 w-4" />}
-                </Link>
+                  <Link
+                    href={item.href}
+                    className="text-foreground hover:text-[#ffbb00] transition-colors duration-200 flex items-center gap-1"
+                  >
+                    {item.name}
+                    {item.dropdown && <ChevronDown className="h-4 w-4" />}
+                  </Link>
 
-                {item.dropdown && (
-                  <AnimatePresence>
-                    {activeDropdown === item.name && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute top-full left-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg overflow-hidden"
-                      >
-                        {item.dropdown.map((subItem) => (
-                          <Link
-                            key={subItem.name}
-                            href={subItem.href}
-                            className="block px-4 py-2 text-sm text-foreground hover:bg-[#ffbb00]/10 hover:text-[#ffbb00] transition-colors duration-200"
-                          >
-                            {subItem.name}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                )}
-              </div>
-            ))}
-          </div>
+                  {item.dropdown && (
+                    <AnimatePresence>
+                      {activeDropdown === item.name && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                          className="absolute top-full right-0 mt-2 w-64 bg-background border border-border rounded-lg shadow-lg overflow-hidden"
+                        >
+                          {item.dropdown.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              href={subItem.href}
+                              className="block px-4 py-2 text-sm text-foreground hover:bg-[#ffbb00]/10 hover:text-[#ffbb00] transition-colors duration-200"
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  )}
+                </div>
+              ))}
+            </div>
 
-          <div className="hidden md:flex flex-1 max-w-lg mx-8">
-            <SearchComponent />
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="hidden lg:flex">
+            <div className="hidden lg:flex items-center ml-8">
               {mounted && (
                 <Button
                   variant="ghost"
@@ -238,18 +252,6 @@ export function Navbar() {
                   )}
                 </Button>
               )}
-            </div>
-            <div className="hidden lg:flex items-center">
-              <Link href="/" className="flex items-center ml-6">
-                <Image
-                  src="/task-logo.png"
-                  alt="Task Systems"
-                  width={100}
-                  height={40}
-                  style={{ height: "auto" }}
-                  priority
-                />
-              </Link>
             </div>
             {/* Mobile header */}
             <div className="flex items-center lg:hidden">
