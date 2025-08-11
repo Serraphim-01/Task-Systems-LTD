@@ -1,4 +1,4 @@
-import { partners } from "@/components/home/partners-section";
+import { partners } from "@/lib/data/partners";
 import PartnerClient from "./partner-client";
 
 export async function generateStaticParams() {

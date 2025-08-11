@@ -4,8 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Partner } from "@/lib/data/partners";
 
-const PartnerClient = ({ partner }) => {
+
+const PartnerClient = ({ partner }: { partner: Partner }) => {
   return (
     <div className="bg-background text-foreground">
       <motion.div
