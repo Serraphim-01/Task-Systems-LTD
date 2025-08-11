@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { LoadingScreen } from "@/components/loading-screen";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
@@ -35,6 +36,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             <Navbar />
             <main>{children}</main>
             <Footer />
+            <Toaster />
           </>
         )}
       </AnimatePresence>
