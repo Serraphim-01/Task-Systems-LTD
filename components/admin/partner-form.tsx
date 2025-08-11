@@ -9,9 +9,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addPartner } from './actions';
 import { useToast } from '@/hooks/use-toast';
 
+// Zod schema for validation
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Partner name is required.' }),
-  logo: z.string().url({ message: 'Please enter a valid URL.' }),
+  logo: z.any().optional(), // Using z.any() for file uploads
   status: z.string().min(1, { message: 'Status is required.' }),
   link: z.string().url({ message: 'Please enter a valid URL.' }),
   services: z.string().min(1, { message: 'Services are required.' }),
@@ -23,20 +24,26 @@ const PartnerForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      logo: '',
       status: '',
       link: '',
       services: '',
     },
   });
 
+  // react-hook-form's `register` is needed for file inputs
+  const logoRef = form.register('logo');
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     const formData = new FormData();
     formData.append('name', values.name);
-    formData.append('logo', values.logo);
     formData.append('status', values.status);
     formData.append('link', values.link);
     formData.append('services', values.services);
+
+    // Append the file if it exists
+    if (values.logo && values.logo[0]) {
+      formData.append('logo', values.logo[0]);
+    }
 
     const result = await addPartner(formData);
 
@@ -76,9 +83,9 @@ const PartnerForm = () => {
           name="logo"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Logo URL</FormLabel>
+              <FormLabel>Logo</FormLabel>
               <FormControl>
-                <Input placeholder="Enter logo URL" {...field} />
+                <Input type="file" accept="image/*" {...logoRef} />
               </FormControl>
               <FormMessage />
             </FormItem>
