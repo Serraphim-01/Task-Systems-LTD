@@ -3,11 +3,11 @@
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
-export type State = {
-  message?: string | null;
+export type LoginState = {
+  error?: string;
 };
 
-export async function login(prevState: State, formData: FormData): Promise<State> {
+export async function login(formData: FormData): Promise<LoginState | void> {
   const key = formData.get('key');
 
   if (key === process.env.ADMIN_KEY || key === '12345678') {
@@ -20,7 +20,7 @@ export async function login(prevState: State, formData: FormData): Promise<State
     });
     redirect('/admin');
   } else {
-    return { message: 'Invalid admin key.' };
+    return { error: 'Invalid admin key.' };
   }
 }
 
