@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Rss, Paperclip, ExternalLink } from 'lucide-react';
+import { Rss } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -20,11 +20,10 @@ async function getBlogs() {
     console.error('Error fetching blogs:', error);
     return [];
   }
-
   return data;
 }
 
-const BlogsPage = async () => {
+const BlogsListPage = async () => {
   const blogs = await getBlogs();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -44,38 +43,31 @@ const BlogsPage = async () => {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog: any) => {
               const imageUrl = blog.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${blog.image_path}` : null;
-
               return (
-                <article key={blog.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
-                  {imageUrl && <Image src={imageUrl} alt={blog.title} width={400} height={250} className="w-full h-48 object-cover" />}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <header>
-                        <p className="text-sm text-muted-foreground mb-2">
-                            {new Date(blog.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                            {blog.author && ` • By ${blog.author}`}
-                        </p>
-                        <h2 className="text-xl font-semibold text-foreground mb-2">{blog.title}</h2>
-                        {blog.short_description && <p className="text-muted-foreground mb-4">{blog.short_description}</p>}
-                    </header>
-                    <div className="prose prose-sm max-w-none text-foreground flex-grow" dangerouslySetInnerHTML={{ __html: blog.full_text }} />
-
-                    <footer className="mt-4 pt-4 border-t border-border">
-                        <div className="flex flex-wrap gap-2">
-                            {blog.links?.map((link: any, index: number) => (
-                                <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-                                    <ExternalLink className="h-4 w-4" />
-                                    <span>{link.text}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    </footer>
+                <Link href={`/media/blogs/${blog.id}`} key={blog.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md hover:shadow-lg transition-shadow group">
+                  <div className="relative w-full h-48 bg-muted">
+                    {imageUrl ? (
+                      <Image src={imageUrl} alt={blog.title} layout="fill" className="object-cover" unoptimized/>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Rss className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
-                </article>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h2 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{blog.title}</h2>
+                    <p className="text-sm text-muted-foreground mb-4">
+                        {new Date(blog.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        {blog.author && ` • By ${blog.author}`}
+                    </p>
+                    {blog.short_description && <p className="text-muted-foreground flex-grow line-clamp-3">{blog.short_description}</p>}
+                  </div>
+                </Link>
               );
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center bg-card border border-border rounded-lg p-12">
+          <div className="flex flex-col items-center justify-center text-center bg-card border border-border rounded-lg p-12 mt-16">
             <Rss className="h-24 w-24 text-primary/50 mb-6" />
             <h2 className="text-3xl font-semibold text-foreground mb-4">
               Fresh Content on the Way
@@ -90,4 +82,4 @@ const BlogsPage = async () => {
   );
 };
 
-export default BlogsPage;
+export default BlogsListPage;

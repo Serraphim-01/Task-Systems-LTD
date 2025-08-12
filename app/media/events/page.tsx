@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase';
-import { Calendar, Clock, MapPin, Paperclip, ExternalLink } from 'lucide-react';
+import { Calendar, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -20,11 +20,10 @@ async function getEvents() {
     console.error('Error fetching events:', error);
     return [];
   }
-
   return data;
 }
 
-const EventsPage = async () => {
+const EventsListPage = async () => {
   const events = await getEvents();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
@@ -44,40 +43,31 @@ const EventsPage = async () => {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event: any) => {
               const imageUrl = event.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${event.image_path}` : null;
-
               return (
-                <article key={event.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md">
-                  {imageUrl && <Image src={imageUrl} alt={event.title} width={400} height={250} className="w-full h-48 object-cover" />}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <header>
-                        <h2 className="text-xl font-semibold text-foreground mb-3">{event.title}</h2>
-                        {event.short_description && <p className="text-muted-foreground mb-4">{event.short_description}</p>}
-                        <div className="space-y-2 text-muted-foreground text-sm">
-                            {event.date && <p className="flex items-center gap-2"><Calendar className="h-4 w-4" /><span>{new Date(event.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span></p>}
-                            {event.time && <p className="flex items-center gap-2"><Clock className="h-4 w-4" /><span>{event.time}</span></p>}
-                            {event.location && <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /><span>{event.location}</span></p>}
-                        </div>
-                    </header>
-
-                    {event.full_text && <div className="prose prose-sm max-w-none text-foreground flex-grow my-4" dangerouslySetInnerHTML={{ __html: event.full_text }} />}
-
-                    <footer className="mt-auto pt-4 border-t border-border">
-                        <div className="flex flex-wrap gap-2">
-                            {event.links?.map((link: any, index: number) => (
-                                <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1 text-sm bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
-                                    <ExternalLink className="h-4 w-4" />
-                                    <span>{link.text}</span>
-                                </Link>
-                            ))}
-                        </div>
-                    </footer>
+                <Link href={`/media/events/${event.id}`} key={event.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md hover:shadow-lg transition-shadow group">
+                  <div className="relative w-full h-48 bg-muted">
+                    {imageUrl ? (
+                      <Image src={imageUrl} alt={event.title} layout="fill" className="object-cover" unoptimized/>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Calendar className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
-                </article>
+                  <div className="p-6 flex flex-col flex-grow">
+                    <h2 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">{event.title}</h2>
+                    <div className="space-y-2 text-muted-foreground text-sm flex-grow">
+                        {event.date && <p className="flex items-center gap-2"><Calendar className="h-4 w-4" /><span>{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span></p>}
+                        {event.time && <p className="flex items-center gap-2"><Clock className="h-4 w-4" /><span>{event.time}</span></p>}
+                        {event.location && <p className="flex items-center gap-2"><MapPin className="h-4 w-4" /><span>{event.location}</span></p>}
+                    </div>
+                  </div>
+                </Link>
               );
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center bg-card border border-border rounded-lg p-12">
+          <div className="flex flex-col items-center justify-center text-center bg-card border border-border rounded-lg p-12 mt-16">
             <Calendar className="h-24 w-24 text-primary/50 mb-6" />
             <h2 className="text-3xl font-semibold text-foreground mb-4">
               Stay Tuned for Upcoming Events
@@ -92,4 +82,4 @@ const EventsPage = async () => {
   );
 };
 
-export default EventsPage;
+export default EventsListPage;
