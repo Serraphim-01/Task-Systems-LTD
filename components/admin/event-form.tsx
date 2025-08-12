@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addEvent } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, X } from 'lucide-react';
+import RichTextEditor from '../ui/rich-text-editor';
 
 const linkSchema = z.object({
   text: z.string().min(1, 'Link text is required.'),
@@ -111,9 +112,19 @@ const EventForm = () => {
         <FormField control={form.control} name="short_description" render={({ field }) => (
           <FormItem><FormLabel>Short Description (Optional)</FormLabel><FormControl><Textarea placeholder="A brief summary of the event" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
-        <FormField control={form.control} name="full_text" render={({ field }) => (
-          <FormItem><FormLabel>Full Details (Optional)</FormLabel><FormControl><Textarea placeholder="The main content for the event page" rows={10} {...field} /></FormControl><FormMessage /></FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="full_text"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Details (Optional)</FormLabel>
+              <FormControl>
+                <RichTextEditor {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField control={form.control} name="image" render={({ field }) => (
             <FormItem><FormLabel>Image (Optional)</FormLabel><FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl><FormMessage /></FormItem>
         )} />

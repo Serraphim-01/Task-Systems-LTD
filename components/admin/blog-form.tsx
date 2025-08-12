@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addBlog } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, X } from 'lucide-react';
+import RichTextEditor from '../ui/rich-text-editor';
 
 const linkSchema = z.object({
   text: z.string().min(1, 'Link text is required.'),
@@ -107,13 +108,19 @@ const BlogForm = () => {
             <FormMessage />
           </FormItem>
         )} />
-        <FormField control={form.control} name="full_text" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Full Text</FormLabel>
-            <FormControl><Textarea placeholder="The main content of the blog post" rows={10} {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
+        <FormField
+          control={form.control}
+          name="full_text"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Full Text</FormLabel>
+              <FormControl>
+                <RichTextEditor {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField control={form.control} name="image" render={({ field }) => (
             <FormItem>
                 <FormLabel>Image (Optional)</FormLabel>
