@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 async function getBlog(id: string) {
   const { data, error } = await supabase
     .from('blogs')

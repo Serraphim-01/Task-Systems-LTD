@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata = {
   title: "Events",
   description: "Join us at our upcoming events and connect with our team.",

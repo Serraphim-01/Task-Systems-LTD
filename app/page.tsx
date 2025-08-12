@@ -1,3 +1,5 @@
+export const revalidate = 60; // Revalidate every 60 seconds
+
 import { HeroSection } from '@/components/home/hero-section';
 import { AboutIntro } from '@/components/home/about-intro';
 import { VideoAboutSection } from '@/components/home/video-about-section';

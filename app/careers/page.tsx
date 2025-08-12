@@ -2,6 +2,8 @@ import { supabase } from '@/lib/supabase';
 import { Wind } from 'lucide-react';
 import React from 'react';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata = {
   title: "Careers",
   description: "Join our team of innovators and help shape the future of technology in Africa.",

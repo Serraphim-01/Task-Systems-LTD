@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata = {
   title: "Announcements",
   description: "Stay updated with the latest company news, product launches, and important announcements from Task Systems.",

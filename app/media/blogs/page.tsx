@@ -4,6 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+export const revalidate = 60; // Revalidate every 60 seconds
+
 export const metadata = {
   title: "Blogs",
   description: "Explore insights, trends, and stories from the world of technology.",
