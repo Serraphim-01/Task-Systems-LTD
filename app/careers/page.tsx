@@ -10,7 +10,11 @@ export const metadata = {
 };
 
 async function getJobs() {
-  const { data, error } = await supabase.from('jobs').select('*').order('title', { ascending: true });
+  const { data, error } = await supabase
+    .from('jobs')
+    .select('*')
+    .or('expires_at.is.null,expires_at.gt.now()')
+    .order('title', { ascending: true });
 
   if (error) {
     console.error('Error fetching jobs:', error);
@@ -45,11 +49,11 @@ const CareersPage = async () => {
                     <p className="text-muted-foreground text-sm mb-1">{job.department}</p>
                     <p className="text-muted-foreground text-sm mb-4">{job.location} • {job.type}</p>
                   </div>
-                  <a href="#" className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium">
+                  <a href={job.apply_link || '#'} target="_blank" rel="noopener noreferrer" className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md text-sm font-medium self-start">
                     Apply Now
                   </a>
                 </div>
-                <div className="prose prose-sm max-w-none text-foreground" dangerouslySetInnerHTML={{ __html: job.description }}>
+                <div className="prose prose-sm max-w-none text-foreground mt-4" dangerouslySetInnerHTML={{ __html: job.description }}>
                 </div>
               </div>
             ))}

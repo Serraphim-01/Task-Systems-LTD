@@ -1,5 +1,3 @@
-const { hostname } = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL);
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -9,16 +7,19 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [
-      hostname,                // your Supabase domain
-      'images.pexels.com',     // any other domains you need
-      'picsum.photos'          // picsum can be here instead of remotePatterns
-    ],
     remotePatterns: [
       {
         protocol: 'https',
-        hostname,              // for Supabase URLs
+        hostname: 'yfdqcfnwrwzdmcpisbxc.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      }
     ],
   },
 };

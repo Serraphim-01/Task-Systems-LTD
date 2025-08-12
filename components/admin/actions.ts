@@ -36,6 +36,34 @@ export async function addAnnouncement(formData: FormData) {
     }
 }
 
+export async function deleteJob(id: number) {
+    try {
+        const { error } = await supabase.from('jobs').delete().eq('id', id);
+        if (error) throw error;
+
+        revalidatePath('/careers');
+        revalidatePath('/admin');
+        return { success: 'Job deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function deletePartner(id: number, logoPath?: string) {
+    try {
+        await deleteFiles('images', [logoPath]);
+
+        const { error } = await supabase.from('partners').delete().eq('id', id);
+        if (error) throw error;
+
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: 'Partner deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 export async function addBlog(formData: FormData) {
     try {
         const image_path = await handleFileUpload(formData, 'image', 'images');
@@ -110,17 +138,25 @@ export async function addPartner(formData: FormData) {
 }
 
 export async function addJob(formData: FormData) {
-  const { title, description, location, type, department } = Object.fromEntries(formData.entries());
+  try {
+    const { error } = await supabase.from('jobs').insert([{
+      title: formData.get('title'),
+      description: formData.get('description'),
+      location: formData.get('location'),
+      type: formData.get('type'),
+      department: formData.get('department'),
+      apply_link: formData.get('apply_link'),
+      expires_at: formData.get('expires_at') || null,
+    }]);
 
-  const { error } = await supabase.from('jobs').insert([{ title, description, location, type, department }]);
+    if (error) throw error;
 
-  if (error) {
-    return { error: 'Failed to add job.' };
+    revalidatePath('/careers');
+    revalidatePath('/admin');
+    return { success: 'Job added successfully.' };
+  } catch (e: any) {
+    return { error: e.message };
   }
-
-  revalidatePath('/careers');
-
-  return { success: 'Job added successfully.' };
 }
 
 // Helper function to delete files from storage, ignoring errors if files don't exist

@@ -147,10 +147,29 @@ export function Navbar() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target as Node) &&
+        mobileMenuButtonRef.current &&
+        !mobileMenuButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleDropdownToggle = (name: string) => {
     setOpenDropdown(openDropdown === name ? null : name);
@@ -274,6 +293,7 @@ export function Navbar() {
                 size="icon"
                 onClick={() => setIsOpen(!isOpen)}
                 className=""
+                ref={mobileMenuButtonRef}
               >
                 {isOpen ? (
                   <X className="h-6 w-6" />
@@ -294,6 +314,7 @@ export function Navbar() {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="absolute w-[90%] right-0 bg-background lg:hidden"
+              ref={mobileMenuRef}
             >
               <div className="pb-4 space-y-2 max-h-screen overflow-y-auto">
                 {/* Mobile Search */}

@@ -51,13 +51,16 @@ CREATE TABLE events (
 );
 
 -- Create the jobs table (schema remains unchanged for now)
+-- Create the jobs table with new fields
 CREATE TABLE jobs (
     id BIGSERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
     location TEXT,
     type TEXT,
-    department TEXT
+    department TEXT,
+    apply_link TEXT,
+    expires_at TIMESTAMPTZ
 );
 
 -- Create the partners table with logo_path for uploaded images

@@ -11,6 +11,8 @@ import PartnerForm from '@/components/admin/partner-form';
 import { AnnouncementList } from '@/components/admin/AnnouncementList';
 import { BlogList } from '@/components/admin/BlogList';
 import { EventList } from '@/components/admin/EventList';
+import { JobList } from '@/components/admin/JobList';
+import { PartnerList } from '@/components/admin/PartnerList';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ListSkeleton = () => (
@@ -94,13 +96,27 @@ const AdminPage = () => {
         </TabsContent>
 
         <TabsContent value="jobs" className="mt-6">
-            <h2 className="text-2xl font-semibold mb-6">Add New Job</h2>
-            <JobForm />
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">Add New Job</h2>
+              <JobForm />
+            </div>
+            <Suspense fallback={<ListSkeleton />}>
+              <JobList />
+            </Suspense>
+          </div>
         </TabsContent>
 
         <TabsContent value="partners" className="mt-6">
-            <h2 className="text-2xl font-semibold mb-6">Add New Partner</h2>
-            <PartnerForm />
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <h2 className="text-2xl font-semibold mb-6">Add New Partner</h2>
+              <PartnerForm />
+            </div>
+            <Suspense fallback={<ListSkeleton />}>
+              <PartnerList />
+            </Suspense>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
