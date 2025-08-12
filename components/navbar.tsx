@@ -18,8 +18,7 @@ import {
 } from "@/components/ui/command";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SEARCH_DATA } from "@/lib/search";
-
-const navigationItems = [
+import { supabase } from "@/lib/supabase";
   { name: "Home", href: "/" },
   {
     name: "Solutions",
@@ -54,12 +53,31 @@ const SearchComponent = ({
   onResultClick?: () => void;
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [allSearchData, setAllSearchData] = useState(SEARCH_DATA);
   const [searchResults, setSearchResults] = useState<
     { name: string; href: string }[]
   >([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
   const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchPartners = async () => {
+      const { data: partners, error } = await supabase
+        .from('partners')
+        .select('name');
+
+      if (partners) {
+        const partnerSearchData = partners.map(partner => ({
+          name: partner.name,
+          href: `/partner/${encodeURIComponent(partner.name)}`
+        }));
+        setAllSearchData([...SEARCH_DATA, ...partnerSearchData]);
+      }
+    };
+
+    fetchPartners();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,14 +96,14 @@ const SearchComponent = ({
 
   useEffect(() => {
     if (searchQuery) {
-      const results = SEARCH_DATA.filter((item) =>
+      const results = allSearchData.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       ).slice(0, isMobile ? 5 : 10);
       setSearchResults(results);
     } else {
       setSearchResults([]);
     }
-  }, [searchQuery, isMobile]);
+  }, [searchQuery, isMobile, allSearchData]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

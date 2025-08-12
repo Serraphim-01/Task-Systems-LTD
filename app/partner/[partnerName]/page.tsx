@@ -5,11 +5,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
 
-async function getPartner(id: string) {
+async function getPartner(name: string) {
+  const partnerName = decodeURIComponent(name);
   const { data, error } = await supabase
     .from('partners')
     .select('*')
-    .eq('id', id)
+    .eq('name', partnerName)
     .single();
 
   if (error || !data) {
@@ -18,9 +19,9 @@ async function getPartner(id: string) {
   return data;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: { params: { partnerName: string } }) {
     try {
-        const partner = await getPartner(params.id);
+        const partner = await getPartner(params.partnerName);
         return {
             title: `${partner.name} - Our Partner`,
             description: `Learn more about our partnership with ${partner.name}.`,
@@ -32,8 +33,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     }
 }
 
-const PartnerDetailPage = async ({ params }: { params: { id: string } }) => {
-  const partner = await getPartner(params.id);
+const PartnerDetailPage = async ({ params }: { params: { partnerName: string } }) => {
+  const partner = await getPartner(params.partnerName);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const logoUrl = partner.logo_path ? `${supabaseUrl}/storage/v1/object/public/images/${partner.logo_path}` : null;
 
