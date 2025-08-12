@@ -19,6 +19,8 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SEARCH_DATA } from "@/lib/search";
 import { supabase } from "@/lib/supabase";
+
+const navigationItems = [
   { name: "Home", href: "/" },
   {
     name: "Solutions",
