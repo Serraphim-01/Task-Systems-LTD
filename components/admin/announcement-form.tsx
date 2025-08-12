@@ -36,6 +36,7 @@ const AnnouncementForm = () => {
       title: '',
       short_description: '',
       full_text: '',
+      expires_at: '',
       links: [],
     },
   });

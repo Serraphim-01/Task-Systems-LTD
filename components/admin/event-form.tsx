@@ -42,6 +42,7 @@ const EventForm = () => {
       time: '',
       date: '',
       location: '',
+      expires_at: '',
       links: [],
     },
   });

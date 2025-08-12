@@ -38,6 +38,7 @@ const BlogForm = () => {
       short_description: '',
       full_text: '',
       author: '',
+      expires_at: '',
       links: [],
     },
   });
