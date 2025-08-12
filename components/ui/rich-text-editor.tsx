@@ -1,32 +1,25 @@
 "use client";
 
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import {
-  Bold,
-  Italic,
-} from 'lucide-react';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
-const RichTextEditor = ({
-  value,
-  onChange,
-}: {
-  value: string;
+interface RichTextEditorProps {
+  value?: string; // allow undefined
   onChange: (richText: string) => void;
-}) => {
+}
+
+const RichTextEditor = ({ value = "", onChange }: RichTextEditorProps) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3],
-        },
+        heading: { levels: [1, 2, 3] },
       }),
     ],
     content: value,
     editorProps: {
       attributes: {
         class:
-          'prose dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-[150px]',
+          "prose dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none min-h-[150px]",
       },
     },
     onUpdate({ editor }) {
@@ -35,9 +28,7 @@ const RichTextEditor = ({
     immediatelyRender: false,
   });
 
-  if (!editor) {
-    return null;
-  }
+  if (!editor) return null;
 
   return (
     <div className="border border-input rounded-md min-h-[150px]">
