@@ -3,14 +3,14 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useLayoutEffect } from "react";
 
 // Define the type for a single partner
 interface Partner {
   id: number;
   name: string;
+  link: string;
   logo_path: string | null;
-  // Add other properties from your partners table if needed
 }
 
 // Define the props for the PartnersSection component
@@ -21,42 +21,56 @@ interface PartnersSectionProps {
 export function PartnersSection({ partners: initialPartners }: PartnersSectionProps) {
   const [partners, setPartners] = useState<Partner[]>([]);
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const marqueeRef = useRef<HTMLDivElement>(null);
+  const [animationDuration, setAnimationDuration] = useState(30);
 
-  useEffect(() => {
-    // Duplicate partners to create a seamless loop effect
-    // We need at least ~12-15 partners for a good visual loop on larger screens.
-    let extendedPartners = [...initialPartners];
-    while (extendedPartners.length > 0 && extendedPartners.length < 15) {
-      extendedPartners = [...extendedPartners, ...initialPartners];
+  useLayoutEffect(() => {
+    if (initialPartners.length > 0) {
+      let extendedPartners = [...initialPartners];
+      if (marqueeRef.current) {
+        // Calculate how many partners fit on screen
+        const containerWidth = marqueeRef.current.offsetWidth;
+        const partnerWidth = 160; // Approx width of one partner item (w-24 + mx-8*2)
+        const partnersNeeded = Math.ceil(containerWidth / partnerWidth) + 2;
+
+        while (extendedPartners.length < partnersNeeded) {
+          extendedPartners = [...extendedPartners, ...initialPartners];
+        }
+      }
+      // For a seamless loop, we need at least one full set of duplicates
+      setPartners([...extendedPartners, ...extendedPartners]);
+
+      // Adjust animation speed based on number of items
+      const newDuration = extendedPartners.length * 2.5;
+      setAnimationDuration(Math.max(30, newDuration));
     }
-    setPartners(extendedPartners);
   }, [initialPartners]);
 
   const marqueeVariants = {
     animate: {
-      x: [0, -1035],
+      x: [0, - (partners.length / 2) * 160], // Animate by half the total width
       transition: {
         x: {
           repeat: Infinity,
           repeatType: "loop",
-          duration: 30,
+          duration: animationDuration,
           ease: "linear",
         },
       },
     },
   };
 
-  if (!partners || partners.length === 0) {
-    return null; // Don't render the section if there are no partners
+  if (!initialPartners || initialPartners.length === 0) {
+    return null;
   }
 
   return (
-    <section className="py-16 bg-muted overflow-hidden">
-      <div className="container mx-auto">
+    <section className="py-16 bg-muted">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold text-center mb-12">Our Partners</h2>
-        <div className="relative h-24">
+        <div className="w-full overflow-hidden" ref={marqueeRef}>
           <motion.div
-            className="absolute flex"
+            className="flex"
             variants={marqueeVariants}
             animate="animate"
           >
@@ -69,6 +83,7 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
                   href={`/partner/${encodeURIComponent(partner.name)}`}
                   key={`${partner.id}-${index}`}
                   className="flex-shrink-0 mx-8 flex items-center justify-center w-24 h-24"
+                  title={partner.name}
                 >
                   <div className="w-24 h-24 rounded-full bg-background p-3 shadow-md flex items-center justify-center transition-transform hover:scale-110">
                     <Image
