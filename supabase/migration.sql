@@ -69,3 +69,29 @@ CREATE TABLE partners (
     link TEXT,
     services TEXT[]
 );
+
+-- Enable Row Level Security (RLS) for all tables
+ALTER TABLE public.announcements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.blogs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.partners ENABLE ROW LEVEL SECURITY;
+
+-- Create policies to allow public access (since security is handled by the Next.js admin check)
+-- NOTE: This makes your tables publicly readable and writable by anyone with your anon key.
+-- For production, you should use the `service_role` key on your server and have stricter policies.
+CREATE POLICY "Enable public access" ON public.announcements FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Enable public access" ON public.blogs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Enable public access" ON public.events FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Enable public access" ON public.jobs FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Enable public access" ON public.partners FOR ALL USING (true) WITH CHECK (true);
+
+
+-- Storage Policies
+-- These policies allow public access to the 'images' and 'documents' buckets.
+-- Again, for production, you might want more restrictive policies.
+CREATE POLICY "Enable public access on images" ON storage.objects FOR ALL
+USING ( bucket_id = 'images' );
+
+CREATE POLICY "Enable public access on documents" ON storage.objects FOR ALL
+USING ( bucket_id = 'documents' );

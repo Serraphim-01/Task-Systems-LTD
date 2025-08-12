@@ -122,3 +122,63 @@ export async function addJob(formData: FormData) {
 
   return { success: 'Job added successfully.' };
 }
+
+// Helper function to delete files from storage, ignoring errors if files don't exist
+async function deleteFiles(bucket: string, paths: (string | null | undefined)[]) {
+    const validPaths = paths.filter(p => typeof p === 'string' && p) as string[];
+    if (validPaths.length > 0) {
+        const { error } = await supabase.storage.from(bucket).remove(validPaths);
+        if (error && error.message !== 'The resource was not found') {
+            // Log error if it's not a "not found" error
+            console.error(`Storage delete error in bucket ${bucket}:`, error);
+        }
+    }
+}
+
+export async function deleteAnnouncement(id: number, imagePath?: string, docPath?: string) {
+    try {
+        await deleteFiles('images', [imagePath]);
+        await deleteFiles('documents', [docPath]);
+
+        const { error } = await supabase.from('announcements').delete().eq('id', id);
+        if (error) throw error;
+
+        revalidatePath('/media/announcements');
+        revalidatePath('/admin');
+        return { success: 'Announcement deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function deleteBlog(id: number, imagePath?: string, docPath?: string) {
+    try {
+        await deleteFiles('images', [imagePath]);
+        await deleteFiles('documents', [docPath]);
+
+        const { error } = await supabase.from('blogs').delete().eq('id', id);
+        if (error) throw error;
+
+        revalidatePath('/media/blogs');
+        revalidatePath('/admin');
+        return { success: 'Blog post deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function deleteEvent(id: number, imagePath?: string, docPath?: string) {
+    try {
+        await deleteFiles('images', [imagePath]);
+        await deleteFiles('documents', [docPath]);
+
+        const { error } = await supabase.from('events').delete().eq('id', id);
+        if (error) throw error;
+
+        revalidatePath('/media/events');
+        revalidatePath('/admin');
+        return { success: 'Event deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
