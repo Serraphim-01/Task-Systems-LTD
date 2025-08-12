@@ -9,8 +9,20 @@ import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
 import { PartnersSection } from '@/components/home/partners-section';
 import { NewsletterSection } from '@/components/home/newsletter-section';
+import { supabase } from '@/lib/supabase';
 
-export default function Home() {
+async function getPartners() {
+  const { data, error } = await supabase.from('partners').select('*');
+  if (error) {
+    console.error('Error fetching partners:', error);
+    return [];
+  }
+  return data;
+}
+
+export default async function Home() {
+  const partners = await getPartners();
+
   return (
     <div>
       <HeroSection />
@@ -20,7 +32,7 @@ export default function Home() {
       <SolutionsGrid />
       <DirectorsSection />
       <ManagementSection />
-      <PartnersSection />
+      <PartnersSection partners={partners} />
       <NewsletterSection />
     </div>
   );
