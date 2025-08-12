@@ -3,6 +3,7 @@ import { Megaphone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { MediaNav } from '@/components/media-nav';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -75,6 +76,11 @@ const AnnouncementsListPage = async () => {
             </p>
           </div>
         )}
+
+        <MediaNav
+          prev={{ name: 'Blogs', href: '/media/blogs' }}
+          next={{ name: 'Events', href: '/media/events' }}
+        />
       </div>
     </div>
   );

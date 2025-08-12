@@ -3,6 +3,7 @@ import { Calendar, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import { MediaNav } from '@/components/media-nav';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
@@ -79,6 +80,10 @@ const EventsListPage = async () => {
             </p>
           </div>
         )}
+
+        <MediaNav
+          prev={{ name: 'Announcements', href: '/media/announcements' }}
+        />
       </div>
     </div>
   );
