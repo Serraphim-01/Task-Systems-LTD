@@ -128,7 +128,7 @@ const sustainabilityItems = [
 
 export default function DiscoverUsPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       {/* Hero Section */}
       <section className="py-16 bg-gradient-to-r from-[#ffbb00]/10 to-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

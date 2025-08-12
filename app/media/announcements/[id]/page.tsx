@@ -42,7 +42,7 @@ const AnnouncementDetailPage = async ({ params }: { params: { id: string } }) =>
   const docUrl = announcement.document_path ? `${supabaseUrl}/storage/v1/object/public/documents/${announcement.document_path}` : null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="bg-background text-foreground">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <Link href="/media/announcements" className="inline-flex items-center gap-2 text-primary hover:underline mb-8 font-semibold">
             <ArrowLeft className="h-4 w-4" />
