@@ -83,6 +83,7 @@ const EventsListPage = async () => {
 
         <MediaNav
           prev={{ name: 'Announcements', href: '/media/announcements' }}
+          next={{ name: 'Blogs', href: '/media/blogs' }}
         />
       </div>
     </div>
