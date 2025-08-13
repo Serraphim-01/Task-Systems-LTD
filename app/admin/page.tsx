@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import React, { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AdminTabs } from '@/components/admin/admin-tabs';
 import AnnouncementForm from '@/components/admin/announcement-form';
 import BlogForm from '@/components/admin/blog-form';
 import EventForm from '@/components/admin/event-form';
@@ -37,6 +37,84 @@ const AdminPage = () => {
     redirect('/admin/login');
   }
 
+  const adminTabs = [
+    {
+      value: "announcements",
+      label: "Announcements",
+      content: (
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Add New Announcement</h2>
+            <AnnouncementForm />
+          </div>
+          <Suspense fallback={<ListSkeleton />}>
+            <AnnouncementList />
+          </Suspense>
+        </div>
+      ),
+    },
+    {
+      value: "blogs",
+      label: "Blogs",
+      content: (
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Add New Blog Post</h2>
+            <BlogForm />
+          </div>
+          <Suspense fallback={<ListSkeleton />}>
+            <BlogList />
+          </Suspense>
+        </div>
+      ),
+    },
+    {
+      value: "events",
+      label: "Events",
+      content: (
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Add New Event</h2>
+            <EventForm />
+          </div>
+          <Suspense fallback={<ListSkeleton />}>
+            <EventList />
+          </Suspense>
+        </div>
+      ),
+    },
+    {
+      value: "jobs",
+      label: "Jobs",
+      content: (
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Add New Job</h2>
+            <JobForm />
+          </div>
+          <Suspense fallback={<ListSkeleton />}>
+            <JobList />
+          </Suspense>
+        </div>
+      ),
+    },
+    {
+      value: "partners",
+      label: "Partners",
+      content: (
+        <div className="grid md:grid-cols-2 gap-12">
+          <div>
+            <h2 className="text-2xl font-semibold mb-6">Add New Partner</h2>
+            <PartnerForm />
+          </div>
+          <Suspense fallback={<ListSkeleton />}>
+            <PartnerList />
+          </Suspense>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-8">
@@ -50,75 +128,7 @@ const AdminPage = () => {
           <Button type="submit">Logout</Button>
         </form>
       </div>
-      <Tabs defaultValue="announcements" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="announcements">Announcements</TabsTrigger>
-          <TabsTrigger value="blogs">Blogs</TabsTrigger>
-          <TabsTrigger value="events">Events</TabsTrigger>
-          <TabsTrigger value="jobs">Jobs</TabsTrigger>
-          <TabsTrigger value="partners">Partners</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="announcements" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Add New Announcement</h2>
-              <AnnouncementForm />
-            </div>
-            <Suspense fallback={<ListSkeleton />}>
-              <AnnouncementList />
-            </Suspense>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="blogs" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Add New Blog Post</h2>
-              <BlogForm />
-            </div>
-            <Suspense fallback={<ListSkeleton />}>
-              <BlogList />
-            </Suspense>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="events" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Add New Event</h2>
-              <EventForm />
-            </div>
-            <Suspense fallback={<ListSkeleton />}>
-              <EventList />
-            </Suspense>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="jobs" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Add New Job</h2>
-              <JobForm />
-            </div>
-            <Suspense fallback={<ListSkeleton />}>
-              <JobList />
-            </Suspense>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="partners" className="mt-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-6">Add New Partner</h2>
-              <PartnerForm />
-            </div>
-            <Suspense fallback={<ListSkeleton />}>
-              <PartnerList />
-            </Suspense>
-          </div>
-        </TabsContent>
-      </Tabs>
+      <AdminTabs tabs={adminTabs} defaultValue="announcements" />
     </div>
   );
 };

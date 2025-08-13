@@ -71,17 +71,8 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
         <div className="w-full overflow-hidden" ref={marqueeRef}>
           <motion.div
             className="flex"
-            animate={{
-              x: [0, -(partners.length / 2) * 160],
-              transition: {
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: animationDuration,
-                  ease: "linear",
-                },
-              },
-            }}
+            variants={marqueeVariants}
+            animate="animate"
           >
             {partners.map((partner, index) => {
               if (!partner.logo_path) return null;
@@ -110,9 +101,9 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
           </motion.div>
         </div>
         <div className="text-center mt-12">
-          <Link href="/partner/all" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90">
-            View All Partners
-          </Link>
+            <Link href="/partner/all" className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90">
+                View All Partners
+            </Link>
         </div>
       </div>
     </section>
