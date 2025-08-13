@@ -100,15 +100,15 @@ const EventForm = () => {
         )} />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <FormField control={form.control} name="date" render={({ field }) => (
-                <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="time" render={({ field }) => (
-                <FormItem><FormLabel>Time</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="location" render={({ field }) => (
-                <FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="Event Location" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
+          <FormField control={form.control} name="date" render={({ field }) => (
+            <FormItem><FormLabel>Date</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="time" render={({ field }) => (
+            <FormItem><FormLabel>Time</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
+          <FormField control={form.control} name="location" render={({ field }) => (
+            <FormItem><FormLabel>Location</FormLabel><FormControl><Input placeholder="Event Location" {...field} /></FormControl><FormMessage /></FormItem>
+          )} />
         </div>
 
         <FormField control={form.control} name="short_description" render={({ field }) => (
@@ -121,20 +121,24 @@ const EventForm = () => {
             <FormItem>
               <FormLabel>Full Details (Optional)</FormLabel>
               <FormControl>
-                <RichTextEditor {...field} />
+                <RichTextEditor
+                  {...field}
+                  value={field.value ?? ""} // ensure always string
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
         <FormField control={form.control} name="image" render={({ field }) => (
-            <FormItem><FormLabel>Image (Optional)</FormLabel><FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>Image (Optional)</FormLabel><FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl><FormMessage /></FormItem>
         )} />
         <FormField control={form.control} name="document" render={({ field }) => (
-            <FormItem><FormLabel>Document (Optional)</FormLabel><FormControl><Input type="file" accept=".pdf,.doc,.docx" {...documentRef} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>Document (Optional)</FormLabel><FormControl><Input type="file" accept=".pdf,.doc,.docx" {...documentRef} /></FormControl><FormMessage /></FormItem>
         )} />
         <FormField control={form.control} name="expires_at" render={({ field }) => (
-            <FormItem><FormLabel>Expiration Date (Optional)</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+          <FormItem><FormLabel>Expiration Date (Optional)</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
 
         <div>
@@ -156,7 +160,7 @@ const EventForm = () => {
         </div>
 
         <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Adding Event..." : "Add Event"}
+          {form.formState.isSubmitting ? "Adding Event..." : "Add Event"}
         </Button>
       </form>
     </Form>
