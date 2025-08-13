@@ -10,7 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addEvent } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, X } from 'lucide-react';
-import RichTextEditor from '../ui/rich-text-editor';
+import dynamic from 'next/dynamic';
+
+const RichTextEditor = dynamic(() => import('../ui/rich-text-editor'), { ssr: false });
 
 const linkSchema = z.object({
   text: z.string().min(1, 'Link text is required.'),
