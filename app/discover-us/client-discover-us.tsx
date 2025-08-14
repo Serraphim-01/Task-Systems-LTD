@@ -152,48 +152,46 @@ export default function DiscoverUsPage() {
       {/* Mission & Vision and Core Values */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:grid-auto-rows-fr">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Mission & Vision */}
-            <div className="flex flex-col gap-8 h-full">
-              <h2 className="text-3xl font-bold text-foreground">
+            <div className="space-y-8">
+              <h2 className="text-3xl font-bold text-foreground mb-6">
                 Mission & <span className="text-[#ffbb00]">Vision</span>
               </h2>
-              <div className="flex flex-col gap-8 flex-grow">
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6 }}
-                  viewport={{ once: true }}
-                  className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow flex-1"
-                >
-                  <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3">
-                    <Target className="h-7 w-7" /> Mission
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed">
-                    &quot;To sustain a best-in-class technology solutions
-                    company that anticipates the future and delivers value to
-                    our customers, through a highly motivated and professional
-                    team.&quot;
-                  </p>
-                </motion.div>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow"
+              >
+                <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3">
+                  <Target className="h-7 w-7" /> Mission
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  &quot;To sustain a best-in-class technology solutions company
+                  that anticipates the future and delivers value to our
+                  customers, through a highly motivated and professional
+                  team.&quot;
+                </p>
+              </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, x: -50 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow flex-1"
-                >
-                  <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3">
-                    <Eye className="h-7 w-7" /> Vision
-                  </h2>
-                  <p className="text-muted-foreground leading-relaxed">
-                    &quot;To be the leading and preferred technology solution
-                    provider in Africa, as adjudged by our customers and
-                    stakeholders, by the year 2030.&quot;
-                  </p>
-                </motion.div>
-              </div>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="bg-card rounded-lg p-8 shadow-lg dark:shadow-[0_0_15px_rgba(255,187,0,0.1)] dark:hover:shadow-[0_0_25px_rgba(255,187,0,0.2)] transition-shadow"
+              >
+                <h2 className="text-2xl font-bold text-[#ffbb00] mb-4 flex items-center gap-3">
+                  <Eye className="h-7 w-7" /> Vision
+                </h2>
+                <p className="text-muted-foreground leading-relaxed">
+                  &quot;To be the leading and preferred technology solution
+                  provider in Africa, as adjudged by our customers and
+                  stakeholders, by the year 2030.&quot;
+                </p>
+              </motion.div>
             </div>
 
             {/* Core Values */}
