@@ -70,6 +70,7 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
         <h2 className="text-3xl font-bold text-center mb-12">Our Partners</h2>
         <div className="w-full overflow-hidden" ref={marqueeRef}>
           <motion.div
+            className="flex"
             animate={{
               x: [0, -(partners.length / 2) * 160],
             }}
