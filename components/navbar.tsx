@@ -38,14 +38,14 @@ const navigationItems = [
   },
   { name: "Portfolio", href: "/portfolio" },
   {
-    name: "About",
+    name: "Discover Us",
     href: "/discover-us",
     dropdown: [
       { name: "Discover Us", href: "/discover-us" },
-      { name: "Media", href: "/media" },
       { name: "Careers", href: "/careers" },
     ],
   },
+  { name: "Blog", href: "/media" },
   { name: "Reach Us", href: "/reach-us" },
 ];
 
