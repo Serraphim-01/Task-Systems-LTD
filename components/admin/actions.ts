@@ -12,22 +12,64 @@ async function handleFileUpload(formData: FormData, fieldName: string, bucket: s
     return null;
 }
 
+async function handleSectionUploads(
+    entityId: number,
+    entityType: 'announcement' | 'blog' | 'event',
+    formData: FormData
+) {
+    const sections = formData.get('sections') ? JSON.parse(formData.get('sections') as string) : [];
+
+    for (const [sectionIndex, section] of sections.entries()) {
+        const { data: sectionData, error: sectionError } = await supabase.from(`${entityType}_sections`).insert([{
+            [`${entityType}_id`]: entityId,
+            section_order: sectionIndex,
+            layout: section.layout,
+        }]).select();
+
+        if (sectionError) throw sectionError;
+
+        const newSection = sectionData[0];
+
+        for (const [contentIndex, contentBlock] of section.content.entries()) {
+            let contentToInsert = contentBlock.content;
+            if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
+                const imageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
+                if (imageFile) {
+                    const imagePath = await uploadFile('images', imageFile);
+                    contentToInsert = { ...contentToInsert, image: imagePath };
+                }
+            }
+
+            const { error: contentError } = await supabase.from(`${entityType}_section_content`).insert([{
+                section_id: newSection.id,
+                content_order: contentIndex,
+                content_type: contentBlock.content_type,
+                content: contentToInsert,
+            }]);
+
+            if (contentError) throw contentError;
+        }
+    }
+}
+
 export async function addAnnouncement(formData: FormData) {
     try {
         const image_path = await handleFileUpload(formData, 'image', 'images');
         const document_path = await handleFileUpload(formData, 'document', 'documents');
 
-        const { error } = await supabase.from('announcements').insert([{
+        const { data, error } = await supabase.from('announcements').insert([{
             title: formData.get('title'),
             short_description: formData.get('short_description'),
-            full_text: formData.get('full_text'),
             expires_at: formData.get('expires_at') || null,
             links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
             image_path,
             document_path,
-        }]);
+        }]).select();
 
         if (error) throw error;
+
+        const newAnnouncement = data[0];
+        await handleSectionUploads(newAnnouncement.id, 'announcement', formData);
 
         revalidatePath('/media/announcements');
         return { success: 'Announcement added successfully.' };
@@ -69,18 +111,20 @@ export async function addBlog(formData: FormData) {
         const image_path = await handleFileUpload(formData, 'image', 'images');
         const document_path = await handleFileUpload(formData, 'document', 'documents');
 
-        const { error } = await supabase.from('blogs').insert([{
+        const { data, error } = await supabase.from('blogs').insert([{
             title: formData.get('title'),
             short_description: formData.get('short_description'),
-            full_text: formData.get('full_text'),
             author: formData.get('author'),
             expires_at: formData.get('expires_at') || null,
             links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
             image_path,
             document_path,
-        }]);
+        }]).select();
 
         if (error) throw error;
+
+        const newBlog = data[0];
+        await handleSectionUploads(newBlog.id, 'blog', formData);
 
         revalidatePath('/media/blogs');
         return { success: 'Blog post added successfully.' };
@@ -94,10 +138,9 @@ export async function addEvent(formData: FormData) {
         const image_path = await handleFileUpload(formData, 'image', 'images');
         const document_path = await handleFileUpload(formData, 'document', 'documents');
 
-        const { error } = await supabase.from('events').insert([{
+        const { data, error } = await supabase.from('events').insert([{
             title: formData.get('title'),
             short_description: formData.get('short_description'),
-            full_text: formData.get('full_text'),
             "time": formData.get('time'),
             "date": formData.get('date'),
             location: formData.get('location'),
@@ -105,9 +148,12 @@ export async function addEvent(formData: FormData) {
             links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
             image_path,
             document_path,
-        }]);
+        }]).select();
 
         if (error) throw error;
+
+        const newEvent = data[0];
+        await handleSectionUploads(newEvent.id, 'event', formData);
 
         revalidatePath('/media/events');
         return { success: 'Event added successfully.' };

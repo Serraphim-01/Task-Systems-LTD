@@ -10,19 +10,26 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addEvent } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, X } from 'lucide-react';
-import dynamic from 'next/dynamic';
-
-const RichTextEditor = dynamic(() => import('../ui/rich-text-editor'), { ssr: false });
+import { SectionEditor } from './section-editor';
 
 const linkSchema = z.object({
   text: z.string().min(1, 'Link text is required.'),
   url: z.string().url('Invalid URL format.'),
 });
 
+const contentSchema = z.object({
+    content_type: z.enum(['text', 'image_with_description']),
+    content: z.any(),
+});
+
+const sectionSchema = z.object({
+    layout: z.enum(['one_column', 'two_column']),
+    content: z.array(contentSchema),
+});
+
 const formSchema = z.object({
   title: z.string().min(1, { message: 'Title is required.' }),
   short_description: z.string().optional(),
-  full_text: z.string().optional(),
   "time": z.string().optional(),
   "date": z.string().optional(),
   location: z.string().optional(),
@@ -30,6 +37,7 @@ const formSchema = z.object({
   document: z.any().optional(),
   expires_at: z.string().optional(),
   links: z.array(linkSchema).optional(),
+  sections: z.array(sectionSchema).optional(),
 });
 
 type EventFormValues = z.infer<typeof formSchema>;
@@ -41,12 +49,12 @@ const EventForm = () => {
     defaultValues: {
       title: '',
       short_description: '',
-      full_text: '',
       time: '',
       date: '',
       location: '',
       expires_at: '',
       links: [],
+      sections: [],
     },
   });
 
@@ -62,7 +70,6 @@ const EventForm = () => {
     const formData = new FormData();
     formData.append('title', values.title);
     formData.append('short_description', values.short_description || '');
-    formData.append('full_text', values.full_text || '');
     formData.append('time', values.time || '');
     formData.append('date', values.date || '');
     formData.append('location', values.location || '');
@@ -79,6 +86,27 @@ const EventForm = () => {
     }
     if (values.links && values.links.length > 0) {
       formData.append('links', JSON.stringify(values.links));
+    }
+    if (values.sections && values.sections.length > 0) {
+        // Handle file uploads in sections
+        const sectionsWithFilePaths = await Promise.all(values.sections.map(async (section, sectionIndex) => {
+            const contentWithFilePaths = await Promise.all(section.content.map(async (contentBlock, contentIndex) => {
+                if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image?.[0]) {
+                    const imageFile = contentBlock.content.image[0];
+                    formData.append(`section_image_${sectionIndex}_${contentIndex}`, imageFile);
+                    return {
+                        ...contentBlock,
+                        content: {
+                            ...contentBlock.content,
+                            image: imageFile.name, // or a placeholder to be replaced by the server
+                        }
+                    };
+                }
+                return contentBlock;
+            }));
+            return { ...section, content: contentWithFilePaths };
+        }));
+        formData.append('sections', JSON.stringify(sectionsWithFilePaths));
     }
 
     const result = await addEvent(formData);
@@ -114,22 +142,8 @@ const EventForm = () => {
         <FormField control={form.control} name="short_description" render={({ field }) => (
           <FormItem><FormLabel>Short Description (Optional)</FormLabel><FormControl><Textarea placeholder="A brief summary of the event" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
-        <FormField
-          control={form.control}
-          name="full_text"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Details (Optional)</FormLabel>
-              <FormControl>
-                <RichTextEditor
-                  {...field}
-                  value={field.value ?? ""} // ensure always string
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        <SectionEditor />
 
         <FormField control={form.control} name="image" render={({ field }) => (
           <FormItem><FormLabel>Image (Optional)</FormLabel><FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl><FormMessage /></FormItem>
