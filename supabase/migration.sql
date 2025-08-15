@@ -165,3 +165,6 @@ USING ( bucket_id = 'images' );
 
 CREATE POLICY "Enable public access on documents" ON storage.objects FOR ALL
 USING ( bucket_id = 'documents' );
+
+-- Run the new migration for directors and management
+\ir migrations/new_migration.sql

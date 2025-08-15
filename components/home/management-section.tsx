@@ -2,41 +2,22 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-
-const management = [
-  {
-    name: "Gozy Ijogun",
-    position: "CEO",
-    image: "/directors_management/CEO-GOZY IJOGUN.jpg",
-  },
-  {
-    name: "Eky Ovie-Fidelis",
-    position: "General Manager",
-    image: "/directors_management/GM_EKY-OVIE-FIDELIS.png",
-  },
-  {
-    name: "Charles Adigwe",
-    position: "Executive Director",
-    image: "/directors_management/ED-Head of Operations.png",
-  },
-  {
-    name: "Henrietta Onyebuchi-Akobi",
-    position: "CFO",
-    image: "/directors_management/CFO- Henrietta Onyebuchi-Akobi.png",
-  },
-  {
-    name: "Ifeoma Chigbo-Ndukwe",
-    position: "HR Manager",
-    image: "/directors_management/Head-HR_Ifeoma-Chigbo-Ndukwe.jpg",
-  },
-  {
-    name: "Ugonna Onyido-Okoro",
-    position: "Compliance Manager",
-    image: "/directors_management/COMPLIANCE- Ugonna Onyido-Okoro.png",
-  },
-];
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export function ManagementSection() {
+    const [management, setManagement] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchManagement = async () => {
+            const { data, error } = await supabase.from('management').select('*').order('created_at', { ascending: true });
+            if (data) {
+                setManagement(data);
+            }
+        };
+        fetchManagement();
+    }, []);
+
   return (
     <section className="py-16 bg-muted/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -57,7 +38,7 @@ export function ManagementSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:max-w-[70%] max-w-[100%] mx-auto">
           {management.map((member, index) => (
-            <div key={member.name} className="flex justify-center">
+            <div key={member.id} className="flex justify-center">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -68,7 +49,7 @@ export function ManagementSection() {
                 <div className="relative">
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300">
                     <Image
-                      src={member.image}
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${member.image_path}`}
                       alt={member.name}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"

@@ -4,20 +4,27 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
+import SectionRenderer from '@/components/media/SectionRenderer';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getBlog(id: string) {
-  const { data, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .eq('id', id)
-    .single();
+    const { data, error } = await supabase
+        .from('blogs')
+        .select(`
+            *,
+            blog_sections (
+                *,
+                blog_section_content (*)
+            )
+        `)
+        .eq('id', id)
+        .single();
 
-  if (error || !data) {
-    notFound();
-  }
-  return data;
+    if (error || !data) {
+        notFound();
+    }
+    return data;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -64,7 +71,7 @@ const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
             </div>
           )}
 
-          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: blog.full_text }} />
+          <SectionRenderer sections={blog.blog_sections} />
 
           <footer className="mt-6 pt-6 border-t border-border">
             {docUrl && (

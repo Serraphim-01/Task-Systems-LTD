@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { FormProvider } from 'react-hook-form';
 import { addBlog } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlusCircle, X } from 'lucide-react';
@@ -115,77 +116,79 @@ const BlogForm = () => {
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField control={form.control} name="title" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Title</FormLabel>
-            <FormControl><Input placeholder="Blog Post Title" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="author" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Author (Optional)</FormLabel>
-            <FormControl><Input placeholder="Author's Name" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-        <FormField control={form.control} name="short_description" render={({ field }) => (
-          <FormItem>
-            <FormLabel>Short Description (Optional)</FormLabel>
-            <FormControl><Textarea placeholder="A brief summary of the blog post" {...field} /></FormControl>
-            <FormMessage />
-          </FormItem>
-        )} />
-
-        <SectionEditor />
-
-        <FormField control={form.control} name="image" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Image (Optional)</FormLabel>
-                <FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl>
+    <FormProvider {...form}>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField control={form.control} name="title" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl><Input placeholder="Blog Post Title" {...field} /></FormControl>
                 <FormMessage />
-            </FormItem>
-        )} />
-        <FormField control={form.control} name="document" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Document (Optional)</FormLabel>
-                <FormControl><Input type="file" accept=".pdf,.doc,.docx" {...documentRef} /></FormControl>
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="author" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Author (Optional)</FormLabel>
+                <FormControl><Input placeholder="Author's Name" {...field} /></FormControl>
                 <FormMessage />
-            </FormItem>
-        )} />
-        <FormField control={form.control} name="expires_at" render={({ field }) => (
-            <FormItem>
-                <FormLabel>Expiration Date (Optional)</FormLabel>
-                <FormControl><Input type="date" {...field} /></FormControl>
+              </FormItem>
+            )} />
+            <FormField control={form.control} name="short_description" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Short Description (Optional)</FormLabel>
+                <FormControl><Textarea placeholder="A brief summary of the blog post" {...field} /></FormControl>
                 <FormMessage />
-            </FormItem>
-        )} />
+              </FormItem>
+            )} />
 
-        <div>
-          <FormLabel>Links (Optional)</FormLabel>
-          <div className="space-y-4 mt-2">
-            {fields.map((field, index) => (
-              <div key={field.id} className="flex items-center gap-4 p-4 border rounded-md">
-                <FormField control={form.control} name={`links.${index}.text`} render={({ field }) => (
-                  <FormItem className="flex-1"><FormLabel>Link Text</FormLabel><FormControl><Input placeholder="e.g., Read More" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <FormField control={form.control} name={`links.${index}.url`} render={({ field }) => (
-                  <FormItem className="flex-1"><FormLabel>Link URL</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormItem>
-                )} />
-                <Button type="button" variant="ghost" onClick={() => remove(index)} className="mt-8"><X className="h-4 w-4 text-destructive" /></Button>
+            <SectionEditor />
+
+            <FormField control={form.control} name="image" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Image (Optional)</FormLabel>
+                    <FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+            <FormField control={form.control} name="document" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Document (Optional)</FormLabel>
+                    <FormControl><Input type="file" accept=".pdf,.doc,.docx" {...documentRef} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+            <FormField control={form.control} name="expires_at" render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Expiration Date (Optional)</FormLabel>
+                    <FormControl><Input type="date" {...field} /></FormControl>
+                    <FormMessage />
+                </FormItem>
+            )} />
+
+            <div>
+              <FormLabel>Links (Optional)</FormLabel>
+              <div className="space-y-4 mt-2">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-4 p-4 border rounded-md">
+                    <FormField control={form.control} name={`links.${index}.text`} render={({ field }) => (
+                      <FormItem className="flex-1"><FormLabel>Link Text</FormLabel><FormControl><Input placeholder="e.g., Read More" {...field} /></FormControl><FormMessage /></FormItem>
+                    )} />
+                    <FormField control={form.control} name={`links.${index}.url`} render={({ field }) => (
+                      <FormItem className="flex-1"><FormLabel>Link URL</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormMessage>
+                    )} />
+                    <Button type="button" variant="ghost" onClick={() => remove(index)} className="mt-8"><X className="h-4 w-4 text-destructive" /></Button>
+                  </div>
+                ))}
+                <Button type="button" variant="outline" onClick={() => append({ text: '', url: '' })}><PlusCircle className="h-4 w-4 mr-2" />Add Link</Button>
               </div>
-            ))}
-            <Button type="button" variant="outline" onClick={() => append({ text: '', url: '' })}><PlusCircle className="h-4 w-4 mr-2" />Add Link</Button>
-          </div>
-        </div>
+            </div>
 
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? "Adding Post..." : "Add Blog Post"}
-        </Button>
-      </form>
-    </Form>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Adding Post..." : "Add Blog Post"}
+            </Button>
+          </form>
+        </Form>
+    </FormProvider>
   );
 };
 

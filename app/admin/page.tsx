@@ -13,6 +13,7 @@ import { BlogList } from '@/components/admin/BlogList';
 import { EventList } from '@/components/admin/EventList';
 import { JobList } from '@/components/admin/JobList';
 import { PartnerList } from '@/components/admin/PartnerList';
+import PeopleManager from '@/components/admin/PeopleManager';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ListSkeleton = () => (
@@ -112,6 +113,16 @@ const AdminPage = () => {
           </Suspense>
         </div>
       ),
+    },
+    {
+        value: "people",
+        label: "People",
+        content: (
+            <div>
+            <h2 className="text-2xl font-semibold mb-6">Manage People</h2>
+            <PeopleManager />
+            </div>
+        ),
     },
   ];
 

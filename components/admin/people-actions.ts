@@ -1,0 +1,108 @@
+'use server';
+
+import { supabase } from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
+
+// Helper function to upload image and get path
+async function uploadImage(file: File, bucket: string) {
+    const fileName = `${Date.now()}-${file.name}`;
+    const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
+    if (error) {
+        console.error('Error uploading image:', error);
+        return null;
+    }
+    return data.path;
+}
+
+// Director Actions
+export async function addDirector(formData: FormData) {
+    const name = formData.get('name') as string;
+    const position = formData.get('position') as string;
+    const image = formData.get('image') as File;
+
+    if (!name || !position || !image) {
+        return { error: 'Missing required fields.' };
+    }
+
+    const image_path = await uploadImage(image, 'images');
+    if (!image_path) {
+        return { error: 'Failed to upload image.' };
+    }
+
+    const { error } = await supabase.from('directors').insert({ name, position, image_path });
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: 'Director added successfully.' };
+}
+
+export async function deleteDirector(id: number, image_path: string) {
+    // First, delete the image from storage
+    if (image_path) {
+        const { error: imageError } = await supabase.storage.from('images').remove([image_path]);
+        if (imageError) {
+            console.error('Error deleting image:', imageError);
+            // Don't block deletion of DB record if image deletion fails
+        }
+    }
+
+    // Then, delete the record from the database
+    const { error } = await supabase.from('directors').delete().eq('id', id);
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: 'Director deleted successfully.' };
+}
+
+// Management Actions
+export async function addManagement(formData: FormData) {
+    const name = formData.get('name') as string;
+    const position = formData.get('position') as string;
+    const image = formData.get('image') as File;
+
+    if (!name || !position || !image) {
+        return { error: 'Missing required fields.' };
+    }
+
+    const image_path = await uploadImage(image, 'images');
+    if (!image_path) {
+        return { error: 'Failed to upload image.' };
+    }
+
+    const { error } = await supabase.from('management').insert({ name, position, image_path });
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: 'Management person added successfully.' };
+}
+
+export async function deleteManagement(id: number, image_path: string) {
+    if (image_path) {
+        const { error: imageError } = await supabase.storage.from('images').remove([image_path]);
+        if (imageError) {
+            console.error('Error deleting image:', imageError);
+        }
+    }
+
+    const { error } = await supabase.from('management').delete().eq('id', id);
+
+    if (error) {
+        return { error: error.message };
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: 'Management person deleted successfully.' };
+}

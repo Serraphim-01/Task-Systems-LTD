@@ -2,26 +2,22 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-
-const directors = [
-  {
-    name: "Leo-stan Ekeh",
-    position: "Group Chairman",
-    image: "/directors_management/LEO-STAN EKEH_CHAIRMAN.png",
-  },
-  {
-    name: "Chioma Ekeh",
-    position: "Director",
-    image: "/directors_management/cE-DIRECTOR.jpg",
-  },
-  {
-    name: "Ukoha Agatha Adaku",
-    position: "Director",
-    image: "/directors_management/UKOHA-DIRECTOR.jpg",
-  },
-];
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 export function DirectorsSection() {
+    const [directors, setDirectors] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchDirectors = async () => {
+            const { data, error } = await supabase.from('directors').select('*').order('created_at', { ascending: true });
+            if (data) {
+                setDirectors(data);
+            }
+        };
+        fetchDirectors();
+    }, []);
+
   return (
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -43,7 +39,7 @@ export function DirectorsSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-[100%] md:max-w-[70%] mx-auto">
           {directors.map((director, index) => (
-            <div key={director.name} className="flex justify-center">
+            <div key={director.id} className="flex justify-center">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -54,7 +50,7 @@ export function DirectorsSection() {
                 <div className="relative">
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300">
                     <Image
-                      src={director.image}
+                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${director.image_path}`}
                       alt={director.name}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
