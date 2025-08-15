@@ -200,6 +200,7 @@ export async function addJob(formData: FormData) {
 
     if (error) throw error;
 
+
     revalidatePath('/careers');
     revalidatePath('/admin');
     return { success: 'Job added successfully.' };
@@ -251,6 +252,7 @@ export async function deleteBlog(id: number, imagePath?: string, docPath?: strin
         return { error: e.message };
     }
 }
+
 
 export async function deleteEvent(id: number, imagePath?: string, docPath?: string) {
     try {
