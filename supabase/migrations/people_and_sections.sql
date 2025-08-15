@@ -30,8 +30,9 @@ CREATE TABLE management_sections (
     management_id BIGINT NOT NULL REFERENCES management(id) ON DELETE CASCADE,
     section_order INT NOT NULL,
     layout TEXT NOT NULL CHECK (layout IN ('one_column', 'two_column')),
-    created_at TIMESTAMTz NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
 
 -- Create management_section_content table
 CREATE TABLE management_section_content (

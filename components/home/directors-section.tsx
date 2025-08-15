@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import Link from "next/link";
 
 export function DirectorsSection() {
     const [directors, setDirectors] = useState<any[]>([]);

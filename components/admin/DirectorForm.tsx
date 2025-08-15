@@ -10,7 +10,7 @@ import { FormProvider } from 'react-hook-form';
 import { addDirector } from './people-actions';
 import { useToast } from '@/hooks/use-toast';
 import { SectionEditor } from './section-editor';
-import * as z from 'zod';
+// import * as z from 'zod';
 
 const contentSchema = z.object({
   content_type: z.enum(['text', 'image_with_description']),
