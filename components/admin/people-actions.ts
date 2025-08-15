@@ -18,7 +18,10 @@ async function uploadImage(file: File, bucket: string) {
 export async function addDirector(formData: FormData) {
     const name = formData.get('name') as string;
     const position = formData.get('position') as string;
+    const company = formData.get('company') as string;
+    const person_group = formData.get('person_group') as string;
     const image = formData.get('image') as File;
+    const sections = formData.get('sections') as string;
 
     if (!name || !position || !image) {
         return { error: 'Missing required fields.' };
@@ -29,10 +32,50 @@ export async function addDirector(formData: FormData) {
         return { error: 'Failed to upload image.' };
     }
 
-    const { error } = await supabase.from('directors').insert({ name, position, image_path });
+    const { data: directorData, error: directorError } = await supabase
+        .from('directors')
+        .insert({ name, position, image_path, company, person_group })
+        .select()
+        .single();
 
-    if (error) {
-        return { error: error.message };
+    if (directorError) {
+        return { error: directorError.message };
+    }
+
+    if (sections) {
+        const parsedSections = JSON.parse(sections);
+        for (const [sectionIndex, section] of parsedSections.entries()) {
+            const { data: sectionData, error: sectionError } = await supabase
+                .from('director_sections')
+                .insert({ director_id: directorData.id, section_order: sectionIndex, layout: section.layout })
+                .select()
+                .single();
+
+            if (sectionError) return { error: `Failed to create section: ${sectionError.message}` };
+
+            for (const [contentIndex, contentBlock] of section.content.entries()) {
+                let finalContent = contentBlock.content;
+                if (contentBlock.content_type === 'image_with_description') {
+                    const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
+                    if (sectionImageFile) {
+                        const sectionImagePath = await uploadImage(sectionImageFile, 'images');
+                        if (!sectionImagePath) return { error: 'Failed to upload section image.' };
+                        finalContent = { ...finalContent, image: sectionImagePath };
+                    }
+                }
+
+                const { error: contentError } = await supabase
+                    .from('director_section_content')
+                    .insert({
+                        section_id: sectionData.id,
+                        content_order: contentIndex,
+                        content_type: contentBlock.content_type,
+                        content: finalContent,
+                    });
+
+                if (contentError) return { error: `Failed to create content: ${contentError.message}` };
+            }
+        }
     }
 
     revalidatePath('/admin');
@@ -66,7 +109,10 @@ export async function deleteDirector(id: number, image_path: string) {
 export async function addManagement(formData: FormData) {
     const name = formData.get('name') as string;
     const position = formData.get('position') as string;
+    const company = formData.get('company') as string;
+    const person_group = formData.get('person_group') as string;
     const image = formData.get('image') as File;
+    const sections = formData.get('sections') as string;
 
     if (!name || !position || !image) {
         return { error: 'Missing required fields.' };
@@ -77,10 +123,50 @@ export async function addManagement(formData: FormData) {
         return { error: 'Failed to upload image.' };
     }
 
-    const { error } = await supabase.from('management').insert({ name, position, image_path });
+    const { data: managementData, error: managementError } = await supabase
+        .from('management')
+        .insert({ name, position, image_path, company, person_group })
+        .select()
+        .single();
 
-    if (error) {
-        return { error: error.message };
+    if (managementError) {
+        return { error: managementError.message };
+    }
+
+    if (sections) {
+        const parsedSections = JSON.parse(sections);
+        for (const [sectionIndex, section] of parsedSections.entries()) {
+            const { data: sectionData, error: sectionError } = await supabase
+                .from('management_sections')
+                .insert({ management_id: managementData.id, section_order: sectionIndex, layout: section.layout })
+                .select()
+                .single();
+
+            if (sectionError) return { error: `Failed to create section: ${sectionError.message}` };
+
+            for (const [contentIndex, contentBlock] of section.content.entries()) {
+                let finalContent = contentBlock.content;
+                if (contentBlock.content_type === 'image_with_description') {
+                    const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
+                    if (sectionImageFile) {
+                        const sectionImagePath = await uploadImage(sectionImageFile, 'images');
+                        if (!sectionImagePath) return { error: 'Failed to upload section image.' };
+                        finalContent = { ...finalContent, image: sectionImagePath };
+                    }
+                }
+
+                const { error: contentError } = await supabase
+                    .from('management_section_content')
+                    .insert({
+                        section_id: sectionData.id,
+                        content_order: contentIndex,
+                        content_type: contentBlock.content_type,
+                        content: finalContent,
+                    });
+
+                if (contentError) return { error: `Failed to create content: ${contentError.message}` };
+            }
+        }
     }
 
     revalidatePath('/admin');

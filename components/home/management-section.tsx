@@ -38,7 +38,7 @@ export function ManagementSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:max-w-[70%] max-w-[100%] mx-auto">
           {management.map((member, index) => (
-            <div key={member.id} className="flex justify-center">
+            <Link key={member.id} href={`/management/${member.id}`} className="flex justify-center">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -72,7 +72,7 @@ export function ManagementSection() {
                   </div>
                 </div>
               </motion.div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>

@@ -168,3 +168,6 @@ USING ( bucket_id = 'documents' );
 
 -- Run the new migration for directors and management
 \ir migrations/new_migration.sql
+
+-- Run the migration for people sections and new columns
+\ir migrations/people_and_sections.sql

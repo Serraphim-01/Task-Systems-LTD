@@ -174,7 +174,7 @@ const BlogForm = () => {
                       <FormItem className="flex-1"><FormLabel>Link Text</FormLabel><FormControl><Input placeholder="e.g., Read More" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <FormField control={form.control} name={`links.${index}.url`} render={({ field }) => (
-                      <FormItem className="flex-1"><FormLabel>Link URL</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormMessage>
+                  <FormItem className="flex-1"><FormLabel>Link URL</FormLabel><FormControl><Input placeholder="https://example.com" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
                     <Button type="button" variant="ghost" onClick={() => remove(index)} className="mt-8"><X className="h-4 w-4 text-destructive" /></Button>
                   </div>

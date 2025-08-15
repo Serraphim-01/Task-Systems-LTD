@@ -39,7 +39,7 @@ export function DirectorsSection() {
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-[100%] md:max-w-[70%] mx-auto">
           {directors.map((director, index) => (
-            <div key={director.id} className="flex justify-center">
+            <Link key={director.id} href={`/directors/${director.id}`} className="flex justify-center">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -73,7 +73,7 @@ export function DirectorsSection() {
                   </div>
                 </div>
               </motion.div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
