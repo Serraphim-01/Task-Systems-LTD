@@ -51,7 +51,7 @@ const ManagementDetailPage = async ({ params }: { params: { id: string } }) => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
                 <Link href="/discover-us" className="inline-flex items-center gap-2 text-primary hover:underline mb-8 font-semibold">
                     <ArrowLeft className="h-4 w-4" />
-                    Back to Discover Us
+                    Back to home
                 </Link>
                 <article className="bg-card border border-border rounded-lg p-6 md:p-8 shadow-sm">
                     <header className="flex flex-col md:flex-row gap-8 items-center">

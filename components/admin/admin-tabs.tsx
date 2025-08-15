@@ -33,7 +33,7 @@ export function AdminTabs({ tabs, defaultValue }: AdminTabsProps) {
   if (isDesktop) {
     return (
       <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="flex overflow-x-auto">
           {tabs.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
