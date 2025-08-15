@@ -1,7 +1,8 @@
 import Image from 'next/image';
+import { parseRichText } from '@/lib/content-parser';
 
 const TextContent = ({ content }: { content: any }) => (
-    <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: content.text }} />
+    <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: parseRichText(content.text) }} />
 );
 
 const ImageWithDescriptionContent = ({ content }: { content: any }) => {

@@ -72,6 +72,7 @@ export async function addAnnouncement(formData: FormData) {
         await handleSectionUploads(newAnnouncement.id, 'announcement', formData);
 
         revalidatePath('/media/announcements');
+        revalidatePath(`/media/announcements/${newAnnouncement.id}`);
         return { success: 'Announcement added successfully.' };
     } catch (e: any) {
         return { error: e.message };
@@ -127,6 +128,7 @@ export async function addBlog(formData: FormData) {
         await handleSectionUploads(newBlog.id, 'blog', formData);
 
         revalidatePath('/media/blogs');
+        revalidatePath(`/media/blogs/${newBlog.id}`);
         return { success: 'Blog post added successfully.' };
     } catch (e: any) {
         return { error: e.message };
@@ -156,6 +158,7 @@ export async function addEvent(formData: FormData) {
         await handleSectionUploads(newEvent.id, 'event', formData);
 
         revalidatePath('/media/events');
+        revalidatePath(`/media/events/${newEvent.id}`);
         return { success: 'Event added successfully.' };
     } catch (e: any) {
         return { error: e.message };
