@@ -16,6 +16,8 @@ DROP TABLE IF EXISTS event_section_content;
 DROP TABLE IF EXISTS event_sections;
 DROP TABLE IF EXISTS events;
 
+DROP TABLE IF EXISTS jobs;
+
 
 -- Create the announcements table
 CREATE TABLE announcements (
@@ -120,4 +122,17 @@ CREATE TABLE event_section_content (
     content NVARCHAR(MAX) NOT NULL,
     created_at DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET(),
     CONSTRAINT CHK_event_section_content_content_IsJson CHECK (ISJSON(content) > 0)
+);
+
+
+-- Create the jobs table
+CREATE TABLE jobs (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(MAX) NOT NULL,
+    description NVARCHAR(MAX),
+    location NVARCHAR(MAX),
+    type NVARCHAR(MAX),
+    department NVARCHAR(MAX),
+    apply_link NVARCHAR(MAX),
+    expires_at DATETIMEOFFSET
 );
