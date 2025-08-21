@@ -1,6 +1,7 @@
 'use server';
 
-import { getDb, uploadFile } from '@/lib/azure';
+import { getDb } from '@/lib/azure';
+import { uploadFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
 
 export async function getDirectors() {
@@ -73,14 +74,19 @@ export async function addDirector(formData: FormData) {
     return { success: 'Director added successfully.' };
 }
 
-export async function deleteDirector(id: number) {
+export async function deleteDirector(id: number): Promise<{ success?: string; error?: string }> {
+  try {
     const db = await getDb();
     await db.request().input('id', id).query('DELETE FROM directors WHERE id = @id');
 
     revalidatePath('/admin');
     revalidatePath('/');
     return { success: 'Director deleted successfully.' };
+  } catch (e: any) {
+    return { error: e.message ?? 'Failed to delete director.' };
+  }
 }
+
 
 // Management Actions
 export async function addManagement(formData: FormData) {
@@ -146,14 +152,22 @@ export async function addManagement(formData: FormData) {
     return { success: 'Management person added successfully.' };
 }
 
-export async function deleteManagement(id: number) {
-    const db = await getDb();
-    await db.request().input('id', id).query('DELETE FROM management WHERE id = @id');
+type DeleteResult = { success: string } | { error: string };
 
-    revalidatePath('/admin');
-    revalidatePath('/');
-    return { success: 'Management person deleted successfully.' };
+export async function deleteManagement(id: number): Promise<DeleteResult> {
+  try {
+    const db = await getDb();
+    await db.request().input("id", id).query("DELETE FROM management WHERE id = @id");
+
+    revalidatePath("/admin");
+    revalidatePath("/");
+
+    return { success: "Management person deleted successfully." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
+
 
 export async function getManagement() {
     const db = await getDb();

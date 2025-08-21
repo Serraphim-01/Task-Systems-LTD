@@ -14,8 +14,8 @@ const ManagementList = () => {
 
   useEffect(() => {
     const fetchManagement = async () => {
-        const result = await getManagement();
-        setManagement(result);
+      const result = await getManagement();
+      setManagement(result);
     };
     fetchManagement();
   }, []);
@@ -23,18 +23,18 @@ const ManagementList = () => {
   const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this management person?')) {
       const result = await deleteManagement(id);
-      if (result?.error) {
-        toast({ title: 'Error', description: result.error, variant: 'destructive' });
+      if ("error" in result) {
+        toast({ title: "Error", description: result.error, variant: "destructive" });
       } else {
-        toast({ title: 'Success', description: result.success });
-        setManagement(management.filter(p => p.id !== id));
+        toast({ title: "Success", description: result.success });
+        setManagement(management.filter((p) => p.id !== id));
       }
     }
   };
 
   return (
     <div className="space-y-4">
-        <h3 className="text-lg font-semibold mb-4">Current Management</h3>
+      <h3 className="text-lg font-semibold mb-4">Current Management</h3>
       {management.length === 0 && <p>No management people found.</p>}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {management.map((person) => (

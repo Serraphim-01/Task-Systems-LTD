@@ -1,6 +1,7 @@
 'use server';
 
-import { getDb, uploadFile } from '@/lib/azure';
+import { getDb } from '@/lib/azure';
+import { uploadFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
 
 // Generic function to handle file uploads and return the path
@@ -87,18 +88,24 @@ export async function deleteJob(id: number) {
     }
 }
 
-export async function deletePartner(id: number) {
-    try {
-        const db = await getDb();
-        await db.request().input('id', id).query('DELETE FROM partners WHERE id = @id');
+export async function deletePartner(id: number, logoPath?: string) {
+  try {
+    const db = await getDb();
+    await db.request().input("id", id).query("DELETE FROM partners WHERE id = @id");
 
-        revalidatePath('/');
-        revalidatePath('/admin');
-        return { success: 'Partner deleted.' };
-    } catch (e: any) {
-        return { error: e.message };
+    // Optional: clean up logo from Blob storage later
+    if (logoPath) {
+      // await deleteBlob(logoPath);
     }
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: "Partner deleted." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
+
 
 export async function addBlog(formData: FormData) {
     try {
@@ -197,42 +204,84 @@ export async function addJob(formData: FormData) {
   }
 }
 
-export async function deleteAnnouncement(id: number) {
-    try {
-        const db = await getDb();
-        await db.request().input('id', id).query('DELETE FROM announcements WHERE id = @id');
+export async function deleteAnnouncement(
+  id: number,
+  imagePath?: string,
+  documentPath?: string
+) {
+  try {
+    const db = await getDb();
+    await db.request().input("id", id).query("DELETE FROM announcements WHERE id = @id");
 
-        revalidatePath('/media/announcements');
-        revalidatePath('/admin');
-        return { success: 'Announcement deleted.' };
-    } catch (e: any) {
-        return { error: e.message };
+    // optionally remove files from Blob Storage
+    if (imagePath) {
+      // await deleteBlob(imagePath);
     }
+    if (documentPath) {
+      // await deleteBlob(documentPath);
+    }
+
+    revalidatePath("/media/announcements");
+    revalidatePath("/admin");
+    return { success: "Announcement deleted." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
 
-export async function deleteBlog(id: number) {
-    try {
-        const db = await getDb();
-        await db.request().input('id', id).query('DELETE FROM blogs WHERE id = @id');
 
-        revalidatePath('/media/blogs');
-        revalidatePath('/admin');
-        return { success: 'Blog post deleted.' };
-    } catch (e: any) {
-        return { error: e.message };
+export async function deleteBlog(
+  id: number,
+  imagePath?: string,
+  documentPath?: string
+) {
+  try {
+    const db = await getDb();
+    await db.request()
+      .input("id", id)
+      .query("DELETE FROM blogs WHERE id = @id");
+
+    // TODO: delete from Azure Blob if needed
+    if (imagePath) {
+      // await deleteBlob(imagePath);
     }
+    if (documentPath) {
+      // await deleteBlob(documentPath);
+    }
+
+    revalidatePath("/media/blogs");
+    revalidatePath("/admin");
+    return { success: "Blog post deleted." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
 
 
-export async function deleteEvent(id: number) {
-    try {
-        const db = await getDb();
-        await db.request().input('id', id).query('DELETE FROM events WHERE id = @id');
 
-        revalidatePath('/media/events');
-        revalidatePath('/admin');
-        return { success: 'Event deleted.' };
-    } catch (e: any) {
-        return { error: e.message };
+export async function deleteEvent(
+  id: number,
+  imagePath?: string,
+  documentPath?: string
+) {
+  try {
+    const db = await getDb();
+    await db.request().input("id", id).query("DELETE FROM events WHERE id = @id");
+
+    // If you want to also delete files from Blob storage:
+    if (imagePath) {
+      // await deleteBlob(imagePath);
     }
+    if (documentPath) {
+      // await deleteBlob(documentPath);
+    }
+
+    revalidatePath("/media/events");
+    revalidatePath("/admin");
+
+    return { success: "Event deleted." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
 }
+
