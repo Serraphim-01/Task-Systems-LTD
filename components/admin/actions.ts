@@ -168,15 +168,19 @@ export async function addPartner(formData: FormData) {
         const logo_path = await handleFileUpload(formData, 'logo');
         const db = await getDb();
 
+        const services = formData.get('services') as string;
+        const servicesArray = services ? services.split(',').map(s => s.trim()) : [];
+
         await db.request()
             .input('name', formData.get('name'))
             .input('status', formData.get('status'))
             .input('link', formData.get('link'))
-            .input('services', (formData.get('services') as string).split(',').map(s => s.trim()))
+            .input('services', JSON.stringify(servicesArray))
             .input('logo_path', logo_path)
             .query('INSERT INTO partners (name, status, link, services, logo_path) VALUES (@name, @status, @link, @services, @logo_path)');
 
         revalidatePath('/');
+        revalidatePath('/admin');
         return { success: 'Partner added successfully.' };
     } catch (e: any) {
         return { error: e.message };

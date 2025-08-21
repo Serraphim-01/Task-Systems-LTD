@@ -35,6 +35,15 @@ const PartnerDetailPage = async ({ params }: { params: { partnerName: string } }
   const partner = await getPartner(params.partnerName);
   const logoUrl = partner.logo_path;
 
+  let services = [];
+  if (partner.services) {
+    try {
+      services = JSON.parse(partner.services);
+    } catch (error) {
+      console.error("Failed to parse partner services:", error);
+    }
+  }
+
   return (
     <div className="bg-background text-foreground">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -61,11 +70,11 @@ const PartnerDetailPage = async ({ params }: { params: { partnerName: string } }
                 )}
             </header>
 
-            {partner.services && partner.services.length > 0 && (
+            {services && services.length > 0 && (
                 <section>
                     <h2 className="text-2xl font-semibold border-b pb-2 mb-4">Provided Services</h2>
                     <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
-                        {partner.services.map((service: string, index: number) => (
+                        {services.map((service: string, index: number) => (
                             <li key={index} className="flex items-center gap-3">
                                 <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                                 <span>{service}</span>

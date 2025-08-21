@@ -12,6 +12,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'jules.blob.core.windows.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+      },
     ],
   },
 };

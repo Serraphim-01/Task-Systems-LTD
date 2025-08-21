@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { getPartners } from "@/lib/partners";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
@@ -65,18 +66,15 @@ const SearchComponent = ({
 
   useEffect(() => {
     const fetchPartners = async () => {
-        const db = await getDb();
-        const result = await db.request().query('SELECT name FROM partners');
-        const partners = result.recordset;
-
-      if (partners) {
-        const partnerSearchData = partners.map(partner => ({
-          name: partner.name,
-          href: `/partner/${encodeURIComponent(partner.name)}`
-        }));
-        setAllSearchData([...SEARCH_DATA, ...partnerSearchData]);
-      }
-    };
+    const partners = await getPartners(); // ✅ safe call
+    if (partners) {
+      const partnerSearchData = partners.map((partner: any) => ({
+        name: partner.name,
+        href: `/partner/${encodeURIComponent(partner.name)}`,
+      }));
+      setAllSearchData([...SEARCH_DATA, ...partnerSearchData]);
+    }
+  };
 
     fetchPartners();
   }, []);

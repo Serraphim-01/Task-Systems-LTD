@@ -20,7 +20,6 @@ interface PartnersSectionProps {
 
 export function PartnersSection({ partners: initialPartners }: PartnersSectionProps) {
   const [partners, setPartners] = useState<Partner[]>([]);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const marqueeRef = useRef<HTMLDivElement>(null);
   const [animationDuration, setAnimationDuration] = useState(30);
 
@@ -85,7 +84,7 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
           >
             {partners.map((partner, index) => {
               if (!partner.logo_path) return null;
-              const logoUrl = `${supabaseUrl}/storage/v1/object/public/images/${partner.logo_path}`;
+              const logoUrl = partner.logo_path;
 
               return (
                 <Link
