@@ -1,19 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Trash2 } from 'lucide-react';
 import { deletePartner } from './actions';
 import { Button } from '@/components/ui/button';
 
 async function getPartners() {
-    const { data, error } = await supabase
-        .from('partners')
-        .select('id, name, logo_path')
-        .order('name', { ascending: true });
-
-    if (error) {
-        console.error('Error fetching partners for admin:', error);
-        return [];
-    }
-    return data;
+    const db = await getDb();
+    const result = await db.request().query('SELECT id, name, logo_path FROM partners ORDER BY name ASC');
+    return result.recordset;
 }
 
 export async function PartnerList() {

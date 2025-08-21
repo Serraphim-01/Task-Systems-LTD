@@ -1,19 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Trash2 } from 'lucide-react';
 import { deleteJob } from './actions';
 import { Button } from '@/components/ui/button';
 
 async function getJobs() {
-    const { data, error } = await supabase
-        .from('jobs')
-        .select('id, title')
-        .order('title', { ascending: true });
-
-    if (error) {
-        console.error('Error fetching jobs for admin:', error);
-        return [];
-    }
-    return data;
+    const db = await getDb();
+    const result = await db.request().query('SELECT id, title FROM jobs ORDER BY title ASC');
+    return result.recordset;
 }
 
 export async function JobList() {

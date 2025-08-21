@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft, Calendar, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,16 +8,14 @@ import React from 'react';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getEvent(id: string) {
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const db = await getDb();
+  const result = await db.request().input('id', id).query('SELECT * FROM events WHERE id = @id');
+  const event = result.recordset[0];
 
-  if (error || !data) {
+  if (!event) {
     notFound();
   }
-  return data;
+  return event;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -37,9 +35,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 const EventDetailPage = async ({ params }: { params: { id:string } }) => {
   const event = await getEvent(params.id);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const imageUrl = event.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${event.image_path}` : null;
-  const docUrl = event.document_path ? `${supabaseUrl}/storage/v1/object/public/documents/${event.document_path}` : null;
+  const imageUrl = event.image_path;
+  const docUrl = event.document_path;
 
   return (
     <div className="bg-background text-foreground">

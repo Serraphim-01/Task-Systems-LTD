@@ -1,12 +1,12 @@
 'use client';
 
-import { supabase } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
 import { deleteDirector } from './people-actions';
 import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { getDirectors } from './people-actions';
 
 const DirectorList = () => {
   const [directors, setDirectors] = useState<any[]>([]);
@@ -14,29 +14,20 @@ const DirectorList = () => {
 
   useEffect(() => {
     const fetchDirectors = async () => {
-      const { data, error } = await supabase.from('directors').select('*').order('created_at', { ascending: false });
-      if (data) setDirectors(data);
+        const result = await getDirectors();
+        setDirectors(result);
     };
     fetchDirectors();
-
-    const channel = supabase.channel('directors-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'directors' }, (payload) => {
-        fetchDirectors();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
   }, []);
 
-  const handleDelete = async (id: number, image_path: string) => {
+  const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this director?')) {
-      const result = await deleteDirector(id, image_path);
+      const result = await deleteDirector(id);
       if (result?.error) {
         toast({ title: 'Error', description: result.error, variant: 'destructive' });
       } else {
         toast({ title: 'Success', description: result.success });
+        setDirectors(directors.filter(d => d.id !== id));
       }
     }
   };
@@ -49,14 +40,14 @@ const DirectorList = () => {
         {directors.map((director) => (
           <div key={director.id} className="relative group">
             <Image
-              src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${director.image_path}`}
+              src={director.image_path}
               alt={director.name}
               width={200}
               height={300}
               className="rounded-md object-cover"
             />
             <div className="absolute top-1 right-1">
-              <Button variant="destructive" size="icon" onClick={() => handleDelete(director.id, director.image_path)}>
+              <Button variant="destructive" size="icon" onClick={() => handleDelete(director.id)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>

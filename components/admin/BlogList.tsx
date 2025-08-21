@@ -1,19 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Trash2 } from 'lucide-react';
 import { deleteBlog } from './actions';
 import { Button } from '@/components/ui/button';
 
 async function getBlogs() {
-    const { data, error } = await supabase
-        .from('blogs')
-        .select('id, title, image_path, document_path')
-        .order('published_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching blogs for admin:', error);
-        return [];
-    }
-    return data;
+    const db = await getDb();
+    const result = await db.request().query('SELECT id, title, image_path, document_path FROM blogs ORDER BY published_at DESC');
+    return result.recordset;
 }
 
 export async function BlogList() {

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Rss } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,22 +13,18 @@ export const metadata = {
 };
 
 async function getBlogs() {
-  const { data, error } = await supabase
-    .from('blogs')
-    .select('*')
-    .or('expires_at.is.null,expires_at.gt.now()')
-    .order('published_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching blogs:', error);
-    return [];
-  }
-  return data;
+  const db = await getDb();
+  const result = await db.request().query`
+    SELECT *
+    FROM blogs
+    WHERE expires_at IS NULL OR expires_at > GETDATE()
+    ORDER BY published_at DESC
+  `;
+  return result.recordset;
 }
 
 const BlogsListPage = async () => {
   const blogs = await getBlogs();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
     <div className="bg-background text-foreground">
@@ -45,7 +41,7 @@ const BlogsListPage = async () => {
         {blogs.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {blogs.map((blog: any) => {
-              const imageUrl = blog.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${blog.image_path}` : null;
+              const imageUrl = blog.image_path;
               return (
                 <Link href={`/media/blogs/${blog.id}`} key={blog.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md hover:shadow-lg transition-shadow group">
                   <div className="relative w-full h-48 bg-muted">

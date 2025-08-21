@@ -1,13 +1,13 @@
 'use server';
 
-import { supabase, uploadFile } from '@/lib/supabase';
+import { getDb, uploadFile } from '@/lib/azure';
 import { revalidatePath } from 'next/cache';
 
 // Generic function to handle file uploads and return the path
-async function handleFileUpload(formData: FormData, fieldName: string, bucket: string): Promise<string | null> {
+async function handleFileUpload(formData: FormData, fieldName: string): Promise<string | null> {
     const file = formData.get(fieldName) as File;
     if (file && file.size > 0) {
-        return await uploadFile(bucket, file);
+        return await uploadFile(file);
     }
     return null;
 }
@@ -18,61 +18,56 @@ async function handleSectionUploads(
     formData: FormData
 ) {
     const sections = formData.get('sections') ? JSON.parse(formData.get('sections') as string) : [];
+    const db = await getDb();
 
     for (const [sectionIndex, section] of sections.entries()) {
-        const { data: sectionData, error: sectionError } = await supabase.from(`${entityType}_sections`).insert([{
-            [`${entityType}_id`]: entityId,
-            section_order: sectionIndex,
-            layout: section.layout,
-        }]).select();
-
-        if (sectionError) throw sectionError;
-
-        const newSection = sectionData[0];
+        const sectionResult = await db.request()
+            .input(`${entityType}_id`, entityId)
+            .input('section_order', sectionIndex)
+            .input('layout', section.layout)
+            .query(`INSERT INTO ${entityType}_sections (${entityType}_id, section_order, layout) OUTPUT INSERTED.id VALUES (@${entityType}_id, @section_order, @layout)`);
+        const sectionId = sectionResult.recordset[0].id;
 
         for (const [contentIndex, contentBlock] of section.content.entries()) {
             let contentToInsert = contentBlock.content;
             if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                 const imageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                 if (imageFile) {
-                    const imagePath = await uploadFile('images', imageFile);
+                    const imagePath = await uploadFile(imageFile);
                     contentToInsert = { ...contentToInsert, image: imagePath };
                 }
             }
 
-            const { error: contentError } = await supabase.from(`${entityType}_section_content`).insert([{
-                section_id: newSection.id,
-                content_order: contentIndex,
-                content_type: contentBlock.content_type,
-                content: contentToInsert,
-            }]);
-
-            if (contentError) throw contentError;
+            await db.request()
+                .input('section_id', sectionId)
+                .input('content_order', contentIndex)
+                .input('content_type', contentBlock.content_type)
+                .input('content', JSON.stringify(contentToInsert))
+                .query(`INSERT INTO ${entityType}_section_content (section_id, content_order, content_type, content) VALUES (@section_id, @content_order, @content_type, @content)`);
         }
     }
 }
 
 export async function addAnnouncement(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image', 'images');
-        const document_path = await handleFileUpload(formData, 'document', 'documents');
+        const image_path = await handleFileUpload(formData, 'image');
+        const document_path = await handleFileUpload(formData, 'document');
+        const db = await getDb();
 
-        const { data, error } = await supabase.from('announcements').insert([{
-            title: formData.get('title'),
-            short_description: formData.get('short_description'),
-            expires_at: formData.get('expires_at') || null,
-            links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
-            image_path,
-            document_path,
-        }]).select();
+        const result = await db.request()
+            .input('title', formData.get('title'))
+            .input('short_description', formData.get('short_description'))
+            .input('expires_at', formData.get('expires_at') || null)
+            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('image_path', image_path)
+            .input('document_path', document_path)
+            .query('INSERT INTO announcements (title, short_description, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @expires_at, @links, @image_path, @document_path)');
+        const newAnnouncementId = result.recordset[0].id;
 
-        if (error) throw error;
-
-        const newAnnouncement = data[0];
-        await handleSectionUploads(newAnnouncement.id, 'announcement', formData);
+        await handleSectionUploads(newAnnouncementId, 'announcement', formData);
 
         revalidatePath('/media/announcements');
-        revalidatePath(`/media/announcements/${newAnnouncement.id}`);
+        revalidatePath(`/media/announcements/${newAnnouncementId}`);
         return { success: 'Announcement added successfully.' };
     } catch (e: any) {
         return { error: e.message };
@@ -81,8 +76,8 @@ export async function addAnnouncement(formData: FormData) {
 
 export async function deleteJob(id: number) {
     try {
-        const { error } = await supabase.from('jobs').delete().eq('id', id);
-        if (error) throw error;
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM jobs WHERE id = @id');
 
         revalidatePath('/careers');
         revalidatePath('/admin');
@@ -92,12 +87,10 @@ export async function deleteJob(id: number) {
     }
 }
 
-export async function deletePartner(id: number, logoPath?: string) {
+export async function deletePartner(id: number) {
     try {
-        await deleteFiles('images', [logoPath]);
-
-        const { error } = await supabase.from('partners').delete().eq('id', id);
-        if (error) throw error;
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM partners WHERE id = @id');
 
         revalidatePath('/');
         revalidatePath('/admin');
@@ -109,26 +102,25 @@ export async function deletePartner(id: number, logoPath?: string) {
 
 export async function addBlog(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image', 'images');
-        const document_path = await handleFileUpload(formData, 'document', 'documents');
+        const image_path = await handleFileUpload(formData, 'image');
+        const document_path = await handleFileUpload(formData, 'document');
+        const db = await getDb();
 
-        const { data, error } = await supabase.from('blogs').insert([{
-            title: formData.get('title'),
-            short_description: formData.get('short_description'),
-            author: formData.get('author'),
-            expires_at: formData.get('expires_at') || null,
-            links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
-            image_path,
-            document_path,
-        }]).select();
+        const result = await db.request()
+            .input('title', formData.get('title'))
+            .input('short_description', formData.get('short_description'))
+            .input('author', formData.get('author'))
+            .input('expires_at', formData.get('expires_at') || null)
+            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('image_path', image_path)
+            .input('document_path', document_path)
+            .query('INSERT INTO blogs (title, short_description, author, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @author, @expires_at, @links, @image_path, @document_path)');
+        const newBlogId = result.recordset[0].id;
 
-        if (error) throw error;
-
-        const newBlog = data[0];
-        await handleSectionUploads(newBlog.id, 'blog', formData);
+        await handleSectionUploads(newBlogId, 'blog', formData);
 
         revalidatePath('/media/blogs');
-        revalidatePath(`/media/blogs/${newBlog.id}`);
+        revalidatePath(`/media/blogs/${newBlogId}`);
         return { success: 'Blog post added successfully.' };
     } catch (e: any) {
         return { error: e.message };
@@ -137,28 +129,27 @@ export async function addBlog(formData: FormData) {
 
 export async function addEvent(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image', 'images');
-        const document_path = await handleFileUpload(formData, 'document', 'documents');
+        const image_path = await handleFileUpload(formData, 'image');
+        const document_path = await handleFileUpload(formData, 'document');
+        const db = await getDb();
 
-        const { data, error } = await supabase.from('events').insert([{
-            title: formData.get('title'),
-            short_description: formData.get('short_description'),
-            "time": formData.get('time'),
-            "date": formData.get('date'),
-            location: formData.get('location'),
-            expires_at: formData.get('expires_at') || null,
-            links: formData.get('links') ? JSON.parse(formData.get('links') as string) : null,
-            image_path,
-            document_path,
-        }]).select();
+        const result = await db.request()
+            .input('title', formData.get('title'))
+            .input('short_description', formData.get('short_description'))
+            .input('time', formData.get('time'))
+            .input('date', formData.get('date'))
+            .input('location', formData.get('location'))
+            .input('expires_at', formData.get('expires_at') || null)
+            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('image_path', image_path)
+            .input('document_path', document_path)
+            .query('INSERT INTO events (title, short_description, time, date, location, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @time, @date, @location, @expires_at, @links, @image_path, @document_path)');
+        const newEventId = result.recordset[0].id;
 
-        if (error) throw error;
-
-        const newEvent = data[0];
-        await handleSectionUploads(newEvent.id, 'event', formData);
+        await handleSectionUploads(newEventId, 'event', formData);
 
         revalidatePath('/media/events');
-        revalidatePath(`/media/events/${newEvent.id}`);
+        revalidatePath(`/media/events/${newEventId}`);
         return { success: 'Event added successfully.' };
     } catch (e: any) {
         return { error: e.message };
@@ -167,17 +158,16 @@ export async function addEvent(formData: FormData) {
 
 export async function addPartner(formData: FormData) {
     try {
-        const logo_path = await handleFileUpload(formData, 'logo', 'images');
+        const logo_path = await handleFileUpload(formData, 'logo');
+        const db = await getDb();
 
-        const { error } = await supabase.from('partners').insert([{
-            name: formData.get('name'),
-            status: formData.get('status'),
-            link: formData.get('link'),
-            services: (formData.get('services') as string).split(',').map(s => s.trim()),
-            logo_path,
-        }]);
-
-        if (error) throw error;
+        await db.request()
+            .input('name', formData.get('name'))
+            .input('status', formData.get('status'))
+            .input('link', formData.get('link'))
+            .input('services', (formData.get('services') as string).split(',').map(s => s.trim()))
+            .input('logo_path', logo_path)
+            .query('INSERT INTO partners (name, status, link, services, logo_path) VALUES (@name, @status, @link, @services, @logo_path)');
 
         revalidatePath('/');
         return { success: 'Partner added successfully.' };
@@ -188,18 +178,16 @@ export async function addPartner(formData: FormData) {
 
 export async function addJob(formData: FormData) {
   try {
-    const { error } = await supabase.from('jobs').insert([{
-      title: formData.get('title'),
-      description: formData.get('description'),
-      location: formData.get('location'),
-      type: formData.get('type'),
-      department: formData.get('department'),
-      apply_link: formData.get('apply_link'),
-      expires_at: formData.get('expires_at') || null,
-    }]);
-
-    if (error) throw error;
-
+    const db = await getDb();
+    await db.request()
+        .input('title', formData.get('title'))
+        .input('description', formData.get('description'))
+        .input('location', formData.get('location'))
+        .input('type', formData.get('type'))
+        .input('department', formData.get('department'))
+        .input('apply_link', formData.get('apply_link'))
+        .input('expires_at', formData.get('expires_at') || null)
+        .query('INSERT INTO jobs (title, description, location, type, department, apply_link, expires_at) VALUES (@title, @description, @location, @type, @department, @apply_link, @expires_at)');
 
     revalidatePath('/careers');
     revalidatePath('/admin');
@@ -209,25 +197,10 @@ export async function addJob(formData: FormData) {
   }
 }
 
-// Helper function to delete files from storage, ignoring errors if files don't exist
-async function deleteFiles(bucket: string, paths: (string | null | undefined)[]) {
-    const validPaths = paths.filter(p => typeof p === 'string' && p) as string[];
-    if (validPaths.length > 0) {
-        const { error } = await supabase.storage.from(bucket).remove(validPaths);
-        if (error && error.message !== 'The resource was not found') {
-            // Log error if it's not a "not found" error
-            console.error(`Storage delete error in bucket ${bucket}:`, error);
-        }
-    }
-}
-
-export async function deleteAnnouncement(id: number, imagePath?: string, docPath?: string) {
+export async function deleteAnnouncement(id: number) {
     try {
-        await deleteFiles('images', [imagePath]);
-        await deleteFiles('documents', [docPath]);
-
-        const { error } = await supabase.from('announcements').delete().eq('id', id);
-        if (error) throw error;
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM announcements WHERE id = @id');
 
         revalidatePath('/media/announcements');
         revalidatePath('/admin');
@@ -237,13 +210,10 @@ export async function deleteAnnouncement(id: number, imagePath?: string, docPath
     }
 }
 
-export async function deleteBlog(id: number, imagePath?: string, docPath?: string) {
+export async function deleteBlog(id: number) {
     try {
-        await deleteFiles('images', [imagePath]);
-        await deleteFiles('documents', [docPath]);
-
-        const { error } = await supabase.from('blogs').delete().eq('id', id);
-        if (error) throw error;
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM blogs WHERE id = @id');
 
         revalidatePath('/media/blogs');
         revalidatePath('/admin');
@@ -254,13 +224,10 @@ export async function deleteBlog(id: number, imagePath?: string, docPath?: strin
 }
 
 
-export async function deleteEvent(id: number, imagePath?: string, docPath?: string) {
+export async function deleteEvent(id: number) {
     try {
-        await deleteFiles('images', [imagePath]);
-        await deleteFiles('documents', [docPath]);
-
-        const { error } = await supabase.from('events').delete().eq('id', id);
-        if (error) throw error;
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM events WHERE id = @id');
 
         revalidatePath('/media/events');
         revalidatePath('/admin');

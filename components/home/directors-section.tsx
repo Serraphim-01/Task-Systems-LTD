@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { getDirectorsForHome } from "@/app/actions";
 import Link from "next/link";
 
 export function DirectorsSection() {
@@ -11,10 +11,8 @@ export function DirectorsSection() {
 
     useEffect(() => {
         const fetchDirectors = async () => {
-            const { data, error } = await supabase.from('directors').select('*').order('created_at', { ascending: true });
-            if (data) {
-                setDirectors(data);
-            }
+            const result = await getDirectorsForHome();
+            setDirectors(result);
         };
         fetchDirectors();
     }, []);
@@ -51,7 +49,7 @@ export function DirectorsSection() {
                 <div className="relative">
                   <div className="relative aspect-[2/3] rounded-lg overflow-hidden shadow-lg group-hover:shadow-2xl transition-all duration-300">
                     <Image
-                      src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/images/${director.image_path}`}
+                      src={director.image_path}
                       alt={director.name}
                       fill
                       className="object-cover transition-transform duration-300 group-hover:scale-105"

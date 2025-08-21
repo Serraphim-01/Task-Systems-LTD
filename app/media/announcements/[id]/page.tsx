@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,16 +9,14 @@ import { parseRichText } from '@/lib/content-parser';
 export const revalidate = 0;
 
 async function getAnnouncement(id: string) {
-  const { data, error } = await supabase
-    .from('announcements')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const db = await getDb();
+  const result = await db.request().input('id', id).query('SELECT * FROM announcements WHERE id = @id');
+  const announcement = result.recordset[0];
 
-  if (error || !data) {
+  if (!announcement) {
     notFound();
   }
-  return data;
+  return announcement;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -36,11 +34,10 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
     }
 }
 
-const AnnouncementDetailPage = async ({ params }: { params: { id: string } }) => {
+const AnnouncementDetailPage = async ({ params }: { params: { id:string } }) => {
   const announcement = await getAnnouncement(params.id);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const imageUrl = announcement.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${announcement.image_path}` : null;
-  const docUrl = announcement.document_path ? `${supabaseUrl}/storage/v1/object/public/documents/${announcement.document_path}` : null;
+  const imageUrl = announcement.image_path;
+  const docUrl = announcement.document_path;
 
   return (
     <div className="bg-background text-foreground">

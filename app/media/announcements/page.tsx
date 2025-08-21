@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Megaphone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,22 +13,18 @@ export const metadata = {
 };
 
 async function getAnnouncements() {
-  const { data, error } = await supabase
-    .from('announcements')
-    .select('*')
-    .or('expires_at.is.null,expires_at.gt.now()')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    console.error('Error fetching announcements:', error);
-    return [];
-  }
-  return data;
+  const db = await getDb();
+  const result = await db.request().query`
+    SELECT *
+    FROM announcements
+    WHERE expires_at IS NULL OR expires_at > GETDATE()
+    ORDER BY created_at DESC
+  `;
+  return result.recordset;
 }
 
 const AnnouncementsListPage = async () => {
   const announcements = await getAnnouncements();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
     <div className="bg-background text-foreground">
@@ -45,7 +41,7 @@ const AnnouncementsListPage = async () => {
         {announcements.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {announcements.map((announcement: any) => {
-              const imageUrl = announcement.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${announcement.image_path}` : null;
+              const imageUrl = announcement.image_path;
               return (
                 <Link href={`/media/announcements/${announcement.id}`} key={announcement.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md hover:shadow-lg transition-shadow group">
                   <div className="relative w-full h-48 bg-muted">

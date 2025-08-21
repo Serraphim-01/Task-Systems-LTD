@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,21 +12,13 @@ export const metadata = {
 };
 
 async function getAllPartners() {
-  const { data, error } = await supabase
-    .from('partners')
-    .select('*')
-    .order('name', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching all partners:', error);
-    return [];
-  }
-  return data;
+  const db = await getDb();
+  const result = await db.request().query('SELECT * FROM partners ORDER BY name ASC');
+  return result.recordset;
 }
 
 const AllPartnersPage = async () => {
   const partners = await getAllPartners();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
     <div className="bg-background text-foreground">
@@ -43,7 +35,7 @@ const AllPartnersPage = async () => {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-8 items-center">
             {partners.map((partner: any) => {
                 if (!partner.logo_path) return null;
-                const logoUrl = `${supabaseUrl}/storage/v1/object/public/images/${partner.logo_path}`;
+                const logoUrl = partner.logo_path;
                 return (
                     <Link
                         key={partner.id}

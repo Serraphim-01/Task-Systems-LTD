@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Wind } from 'lucide-react';
 import React from 'react';
 
@@ -10,18 +10,14 @@ export const metadata = {
 };
 
 async function getJobs() {
-  const { data, error } = await supabase
-    .from('jobs')
-    .select('*')
-    .or('expires_at.is.null,expires_at.gt.now()')
-    .order('title', { ascending: true });
-
-  if (error) {
-    console.error('Error fetching jobs:', error);
-    return [];
-  }
-
-  return data;
+  const db = await getDb();
+  const result = await db.request().query`
+    SELECT *
+    FROM jobs
+    WHERE expires_at IS NULL OR expires_at > GETDATE()
+    ORDER BY title ASC
+  `;
+  return result.recordset;
 }
 
 const CareersPage = async () => {

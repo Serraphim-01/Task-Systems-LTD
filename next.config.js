@@ -10,16 +10,8 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'yfdqcfnwrwzdmcpisbxc.supabase.co',
+        hostname: 'jules.blob.core.windows.net',
       },
-      {
-        protocol: 'https',
-        hostname: 'picsum.photos',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.pexels.com',
-      }
     ],
   },
 };

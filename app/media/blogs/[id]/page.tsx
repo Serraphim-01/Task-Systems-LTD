@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,22 +9,25 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getBlog(id: string) {
-    const { data, error } = await supabase
-        .from('blogs')
-        .select(`
-            *,
-            blog_sections (
-                *,
-                blog_section_content (*)
-            )
-        `)
-        .eq('id', id)
-        .single();
+    const db = await getDb();
+    const blogResult = await db.request().input('id', id).query('SELECT * FROM blogs WHERE id = @id');
+    const blog = blogResult.recordset[0];
 
-    if (error || !data) {
+    if (!blog) {
         notFound();
     }
-    return data;
+
+    const sectionsResult = await db.request().input('blog_id', id).query('SELECT * FROM blog_sections WHERE blog_id = @blog_id');
+    const sections = sectionsResult.recordset;
+
+    for (const section of sections) {
+        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM blog_section_content WHERE section_id = @section_id');
+        section.blog_section_content = contentResult.recordset;
+    }
+
+    blog.blog_sections = sections;
+
+    return blog;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -44,9 +47,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
   const blog = await getBlog(params.id);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const imageUrl = blog.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${blog.image_path}` : null;
-  const docUrl = blog.document_path ? `${supabaseUrl}/storage/v1/object/public/documents/${blog.document_path}` : null;
+  const imageUrl = blog.image_path;
+  const docUrl = blog.document_path;
 
   return (
     <div className="bg-background text-foreground">

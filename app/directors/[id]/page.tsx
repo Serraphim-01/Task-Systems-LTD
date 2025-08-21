@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,22 +8,25 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60;
 
 async function getDirector(id: string) {
-    const { data, error } = await supabase
-        .from('directors')
-        .select(`
-            *,
-            director_sections (
-                *,
-                director_section_content (*)
-            )
-        `)
-        .eq('id', id)
-        .single();
+    const db = await getDb();
+    const directorResult = await db.request().input('id', id).query('SELECT * FROM directors WHERE id = @id');
+    const director = directorResult.recordset[0];
 
-    if (error || !data) {
+    if (!director) {
         notFound();
     }
-    return data;
+
+    const sectionsResult = await db.request().input('director_id', id).query('SELECT * FROM director_sections WHERE director_id = @director_id');
+    const sections = sectionsResult.recordset;
+
+    for (const section of sections) {
+        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM director_section_content WHERE section_id = @section_id');
+        section.director_section_content = contentResult.recordset;
+    }
+
+    director.director_sections = sections;
+
+    return director;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -43,8 +46,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 const DirectorDetailPage = async ({ params }: { params: { id: string } }) => {
     const director = await getDirector(params.id);
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const imageUrl = director.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${director.image_path}` : null;
+    const imageUrl = director.image_path;
 
     return (
         <div className="bg-background text-foreground">

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,22 +8,25 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60;
 
 async function getManagement(id: string) {
-    const { data, error } = await supabase
-        .from('management')
-        .select(`
-            *,
-            management_sections (
-                *,
-                management_section_content (*)
-            )
-        `)
-        .eq('id', id)
-        .single();
+    const db = await getDb();
+    const managementResult = await db.request().input('id', id).query('SELECT * FROM management WHERE id = @id');
+    const management = managementResult.recordset[0];
 
-    if (error || !data) {
+    if (!management) {
         notFound();
     }
-    return data;
+
+    const sectionsResult = await db.request().input('management_id', id).query('SELECT * FROM management_sections WHERE management_id = @management_id');
+    const sections = sectionsResult.recordset;
+
+    for (const section of sections) {
+        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM management_section_content WHERE section_id = @section_id');
+        section.management_section_content = contentResult.recordset;
+    }
+
+    management.management_sections = sections;
+
+    return management;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -43,8 +46,7 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 
 const ManagementDetailPage = async ({ params }: { params: { id: string } }) => {
     const management = await getManagement(params.id);
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const imageUrl = management.image_path ? `${supabaseUrl}/storage/v1/object/public/images/${management.image_path}` : null;
+    const imageUrl = management.image_path;
 
     return (
         <div className="bg-background text-foreground">

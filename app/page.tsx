@@ -9,15 +9,12 @@ import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
 import { PartnersSection } from '@/components/home/partners-section';
 import { NewsletterSection } from '@/components/home/newsletter-section';
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 
 async function getPartners() {
-  const { data, error } = await supabase.from('partners').select('*');
-  if (error) {
-    console.error('Error fetching partners:', error);
-    return [];
-  }
-  return data;
+  const db = await getDb();
+  const result = await db.request().query('SELECT * FROM partners');
+  return result.recordset;
 }
 
 export default async function Home() {

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/command";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SEARCH_DATA } from "@/lib/search";
-import { supabase } from "@/lib/supabase";
+import { getDb } from "@/lib/azure";
 
 const navigationItems = [
   { name: "Home", href: "/" },
@@ -65,9 +65,9 @@ const SearchComponent = ({
 
   useEffect(() => {
     const fetchPartners = async () => {
-      const { data: partners, error } = await supabase
-        .from('partners')
-        .select('name');
+        const db = await getDb();
+        const result = await db.request().query('SELECT name FROM partners');
+        const partners = result.recordset;
 
       if (partners) {
         const partnerSearchData = partners.map(partner => ({

@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { ArrowLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,16 +7,14 @@ import React from 'react';
 
 async function getPartner(name: string) {
   const partnerName = decodeURIComponent(name);
-  const { data, error } = await supabase
-    .from('partners')
-    .select('*')
-    .eq('name', partnerName)
-    .single();
+  const db = await getDb();
+  const result = await db.request().input('name', partnerName).query('SELECT * FROM partners WHERE name = @name');
+  const partner = result.recordset[0];
 
-  if (error || !data) {
+  if (!partner) {
     notFound();
   }
-  return data;
+  return partner;
 }
 
 export async function generateMetadata({ params }: { params: { partnerName: string } }) {
@@ -35,8 +33,7 @@ export async function generateMetadata({ params }: { params: { partnerName: stri
 
 const PartnerDetailPage = async ({ params }: { params: { partnerName: string } }) => {
   const partner = await getPartner(params.partnerName);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const logoUrl = partner.logo_path ? `${supabaseUrl}/storage/v1/object/public/images/${partner.logo_path}` : null;
+  const logoUrl = partner.logo_path;
 
   return (
     <div className="bg-background text-foreground">

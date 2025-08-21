@@ -1,19 +1,12 @@
-import { supabase } from '@/lib/supabase';
+import { getDb } from '@/lib/azure';
 import { Trash2 } from 'lucide-react';
 import { deleteAnnouncement } from './actions';
 import { Button } from '@/components/ui/button';
 
 async function getAnnouncements() {
-    const { data, error } = await supabase
-        .from('announcements')
-        .select('id, title, image_path, document_path')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error fetching announcements for admin:', error);
-        return [];
-    }
-    return data;
+    const db = await getDb();
+    const result = await db.request().query('SELECT id, title, image_path, document_path FROM announcements ORDER BY created_at DESC');
+    return result.recordset;
 }
 
 export async function AnnouncementList() {

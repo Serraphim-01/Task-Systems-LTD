@@ -1,17 +1,12 @@
 'use server';
 
-import { supabase } from '@/lib/supabase';
+import { getDb, uploadFile } from '@/lib/azure';
 import { revalidatePath } from 'next/cache';
 
-// Helper function to upload image and get path
-async function uploadImage(file: File, bucket: string) {
-    const fileName = `${Date.now()}-${file.name}`;
-    const { data, error } = await supabase.storage.from(bucket).upload(fileName, file);
-    if (error) {
-        console.error('Error uploading image:', error);
-        return null;
-    }
-    return data.path;
+export async function getDirectors() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM directors ORDER BY created_at DESC');
+    return result.recordset;
 }
 
 // Director Actions
@@ -27,53 +22,48 @@ export async function addDirector(formData: FormData) {
         return { error: 'Missing required fields.' };
     }
 
-    const image_path = await uploadImage(image, 'images');
+    const image_path = await uploadFile(image);
     if (!image_path) {
         return { error: 'Failed to upload image.' };
     }
 
-    const { data: directorData, error: directorError } = await supabase
-        .from('directors')
-        .insert({ name, position, image_path, company, person_group })
-        .select()
-        .single();
-
-    if (directorError) {
-        return { error: directorError.message };
-    }
+    const db = await getDb();
+    const directorResult = await db.request()
+        .input('name', name)
+        .input('position', position)
+        .input('image_path', image_path)
+        .input('company', company)
+        .input('person_group', person_group)
+        .query('INSERT INTO directors (name, position, image_path, company, person_group) OUTPUT INSERTED.id VALUES (@name, @position, @image_path, @company, @person_group)');
+    const directorId = directorResult.recordset[0].id;
 
     if (sections) {
         const parsedSections = JSON.parse(sections);
         for (const [sectionIndex, section] of parsedSections.entries()) {
-            const { data: sectionData, error: sectionError } = await supabase
-                .from('director_sections')
-                .insert({ director_id: directorData.id, section_order: sectionIndex, layout: section.layout })
-                .select()
-                .single();
-
-            if (sectionError) return { error: `Failed to create section: ${sectionError.message}` };
+            const sectionResult = await db.request()
+                .input('director_id', directorId)
+                .input('section_order', sectionIndex)
+                .input('layout', section.layout)
+                .query('INSERT INTO director_sections (director_id, section_order, layout) OUTPUT INSERTED.id VALUES (@director_id, @section_order, @layout)');
+            const sectionId = sectionResult.recordset[0].id;
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
                 if (contentBlock.content_type === 'image_with_description') {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
-                        const sectionImagePath = await uploadImage(sectionImageFile, 'images');
+                        const sectionImagePath = await uploadFile(sectionImageFile);
                         if (!sectionImagePath) return { error: 'Failed to upload section image.' };
                         finalContent = { ...finalContent, image: sectionImagePath };
                     }
                 }
 
-                const { error: contentError } = await supabase
-                    .from('director_section_content')
-                    .insert({
-                        section_id: sectionData.id,
-                        content_order: contentIndex,
-                        content_type: contentBlock.content_type,
-                        content: finalContent,
-                    });
-
-                if (contentError) return { error: `Failed to create content: ${contentError.message}` };
+                await db.request()
+                    .input('section_id', sectionId)
+                    .input('content_order', contentIndex)
+                    .input('content_type', contentBlock.content_type)
+                    .input('content', JSON.stringify(finalContent))
+                    .query('INSERT INTO director_section_content (section_id, content_order, content_type, content) VALUES (@section_id, @content_order, @content_type, @content)');
             }
         }
     }
@@ -83,22 +73,9 @@ export async function addDirector(formData: FormData) {
     return { success: 'Director added successfully.' };
 }
 
-export async function deleteDirector(id: number, image_path: string) {
-    // First, delete the image from storage
-    if (image_path) {
-        const { error: imageError } = await supabase.storage.from('images').remove([image_path]);
-        if (imageError) {
-            console.error('Error deleting image:', imageError);
-            // Don't block deletion of DB record if image deletion fails
-        }
-    }
-
-    // Then, delete the record from the database
-    const { error } = await supabase.from('directors').delete().eq('id', id);
-
-    if (error) {
-        return { error: error.message };
-    }
+export async function deleteDirector(id: number) {
+    const db = await getDb();
+    await db.request().input('id', id).query('DELETE FROM directors WHERE id = @id');
 
     revalidatePath('/admin');
     revalidatePath('/');
@@ -118,53 +95,48 @@ export async function addManagement(formData: FormData) {
         return { error: 'Missing required fields.' };
     }
 
-    const image_path = await uploadImage(image, 'images');
+    const image_path = await uploadFile(image);
     if (!image_path) {
         return { error: 'Failed to upload image.' };
     }
 
-    const { data: managementData, error: managementError } = await supabase
-        .from('management')
-        .insert({ name, position, image_path, company, person_group })
-        .select()
-        .single();
-
-    if (managementError) {
-        return { error: managementError.message };
-    }
+    const db = await getDb();
+    const managementResult = await db.request()
+        .input('name', name)
+        .input('position', position)
+        .input('image_path', image_path)
+        .input('company', company)
+        .input('person_group', person_group)
+        .query('INSERT INTO management (name, position, image_path, company, person_group) OUTPUT INSERTED.id VALUES (@name, @position, @image_path, @company, @person_group)');
+    const managementId = managementResult.recordset[0].id;
 
     if (sections) {
         const parsedSections = JSON.parse(sections);
         for (const [sectionIndex, section] of parsedSections.entries()) {
-            const { data: sectionData, error: sectionError } = await supabase
-                .from('management_sections')
-                .insert({ management_id: managementData.id, section_order: sectionIndex, layout: section.layout })
-                .select()
-                .single();
-
-            if (sectionError) return { error: `Failed to create section: ${sectionError.message}` };
+            const sectionResult = await db.request()
+                .input('management_id', managementId)
+                .input('section_order', sectionIndex)
+                .input('layout', section.layout)
+                .query('INSERT INTO management_sections (management_id, section_order, layout) OUTPUT INSERTED.id VALUES (@management_id, @section_order, @layout)');
+            const sectionId = sectionResult.recordset[0].id;
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
                 if (contentBlock.content_type === 'image_with_description') {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
-                        const sectionImagePath = await uploadImage(sectionImageFile, 'images');
+                        const sectionImagePath = await uploadFile(sectionImageFile);
                         if (!sectionImagePath) return { error: 'Failed to upload section image.' };
                         finalContent = { ...finalContent, image: sectionImagePath };
                     }
                 }
 
-                const { error: contentError } = await supabase
-                    .from('management_section_content')
-                    .insert({
-                        section_id: sectionData.id,
-                        content_order: contentIndex,
-                        content_type: contentBlock.content_type,
-                        content: finalContent,
-                    });
-
-                if (contentError) return { error: `Failed to create content: ${contentError.message}` };
+                await db.request()
+                    .input('section_id', sectionId)
+                    .input('content_order', contentIndex)
+                    .input('content_type', contentBlock.content_type)
+                    .input('content', JSON.stringify(finalContent))
+                    .query('INSERT INTO management_section_content (section_id, content_order, content_type, content) VALUES (@section_id, @content_order, @content_type, @content)');
             }
         }
     }
@@ -174,21 +146,17 @@ export async function addManagement(formData: FormData) {
     return { success: 'Management person added successfully.' };
 }
 
-export async function deleteManagement(id: number, image_path: string) {
-    if (image_path) {
-        const { error: imageError } = await supabase.storage.from('images').remove([image_path]);
-        if (imageError) {
-            console.error('Error deleting image:', imageError);
-        }
-    }
-
-    const { error } = await supabase.from('management').delete().eq('id', id);
-
-    if (error) {
-        return { error: error.message };
-    }
+export async function deleteManagement(id: number) {
+    const db = await getDb();
+    await db.request().input('id', id).query('DELETE FROM management WHERE id = @id');
 
     revalidatePath('/admin');
     revalidatePath('/');
     return { success: 'Management person deleted successfully.' };
+}
+
+export async function getManagement() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM management ORDER BY created_at DESC');
+    return result.recordset;
 }
