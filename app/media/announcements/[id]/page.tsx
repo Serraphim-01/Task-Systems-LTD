@@ -4,19 +4,30 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
-import { parseRichText } from '@/lib/content-parser';
+import SectionRenderer from '@/components/media/SectionRenderer';
 
 export const revalidate = 0;
 
 async function getAnnouncement(id: string) {
-  const db = await getDb();
-  const result = await db.request().input('id', id).query('SELECT * FROM announcements WHERE id = @id');
-  const announcement = result.recordset[0];
+    const db = await getDb();
+    const announcementResult = await db.request().input('id', id).query('SELECT * FROM announcements WHERE id = @id');
+    const announcement = announcementResult.recordset[0];
 
-  if (!announcement) {
-    notFound();
-  }
-  return announcement;
+    if (!announcement) {
+        notFound();
+    }
+
+    const sectionsResult = await db.request().input('announcement_id', id).query('SELECT * FROM announcement_sections WHERE announcement_id = @announcement_id');
+    const sections = sectionsResult.recordset;
+
+    for (const section of sections) {
+        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM announcement_section_content WHERE section_id = @section_id');
+        section.announcement_section_content = contentResult.recordset;
+    }
+
+    announcement.announcement_sections = sections;
+
+    return announcement;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -61,7 +72,7 @@ const AnnouncementDetailPage = async ({ params }: { params: { id:string } }) => 
             </div>
           )}
 
-          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: parseRichText(announcement.full_text) }} />
+          <SectionRenderer sections={announcement.announcement_sections} />
 
           <footer className="mt-6 pt-6 border-t border-border">
             {docUrl && (
@@ -74,7 +85,7 @@ const AnnouncementDetailPage = async ({ params }: { params: { id:string } }) => 
             )}
 
             <div className="flex flex-wrap gap-3">
-              {announcement.links?.map((link: any, index: number) => (
+              {announcement.links && JSON.parse(announcement.links).map((link: any, index: number) => (
                 <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                   <ExternalLink className="h-4 w-4" />
                   <span>{link.text}</span>

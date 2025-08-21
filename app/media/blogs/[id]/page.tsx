@@ -86,7 +86,7 @@ const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
             )}
 
             <div className="flex flex-wrap gap-3">
-              {blog.links?.map((link: any, index: number) => (
+              {blog.links && JSON.parse(blog.links).map((link: any, index: number) => (
                 <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                   <ExternalLink className="h-4 w-4" />
                   <span>{link.text}</span>

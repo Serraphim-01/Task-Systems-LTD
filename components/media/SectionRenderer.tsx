@@ -6,11 +6,11 @@ const TextContent = ({ content }: { content: any }) => (
 );
 
 const ImageWithDescriptionContent = ({ content }: { content: any }) => {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const imageUrl = `${supabaseUrl}/storage/v1/object/public/images/${content.image}`;
+    // The `content.image` should now contain the full URL from Azure Blob Storage
+    const imageUrl = content.image;
     return (
         <div className="space-y-4">
-            <Image src={imageUrl} alt={content.description || 'Blog section image'} width={800} height={450} className="rounded-md object-cover" unoptimized/>
+            <Image src={imageUrl} alt={content.description || 'Section image'} width={800} height={450} className="rounded-md object-cover" unoptimized/>
             {content.description && <p className="text-center text-muted-foreground">{content.description}</p>}
         </div>
     );

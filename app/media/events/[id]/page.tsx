@@ -4,18 +4,30 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import React from 'react';
+import SectionRenderer from '@/components/media/SectionRenderer';
 
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getEvent(id: string) {
-  const db = await getDb();
-  const result = await db.request().input('id', id).query('SELECT * FROM events WHERE id = @id');
-  const event = result.recordset[0];
+    const db = await getDb();
+    const eventResult = await db.request().input('id', id).query('SELECT * FROM events WHERE id = @id');
+    const event = eventResult.recordset[0];
 
-  if (!event) {
-    notFound();
-  }
-  return event;
+    if (!event) {
+        notFound();
+    }
+
+    const sectionsResult = await db.request().input('event_id', id).query('SELECT * FROM event_sections WHERE event_id = @event_id');
+    const sections = sectionsResult.recordset;
+
+    for (const section of sections) {
+        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM event_section_content WHERE section_id = @section_id');
+        section.event_section_content = contentResult.recordset;
+    }
+
+    event.event_sections = sections;
+
+    return event;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
@@ -62,7 +74,7 @@ const EventDetailPage = async ({ params }: { params: { id:string } }) => {
             </div>
           )}
 
-          {event.full_text && <div className="prose prose-lg max-w-none mt-6" dangerouslySetInnerHTML={{ __html: event.full_text }} />}
+          <SectionRenderer sections={event.event_sections} />
 
           <footer className="mt-6 pt-6 border-t border-border">
             {docUrl && (
@@ -75,7 +87,7 @@ const EventDetailPage = async ({ params }: { params: { id:string } }) => {
             )}
 
             <div className="flex flex-wrap gap-3">
-              {event.links?.map((link: any, index: number) => (
+              {event.links && JSON.parse(event.links).map((link: any, index: number) => (
                 <Link key={index} href={link.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors">
                   <ExternalLink className="h-4 w-4" />
                   <span>{link.text}</span>
