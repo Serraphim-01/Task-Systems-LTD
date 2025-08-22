@@ -16,10 +16,6 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.pexels.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'tasksiteimages.blob.core.windows.net', // ✅ new storage account
-      },
     ],
   },
 };

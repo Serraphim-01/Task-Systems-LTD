@@ -8,6 +8,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PlusCircle, X, Image as ImageIcon, FileText } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import ClientOnly from '../ui/client-only';
 
 const RichTextEditor = dynamic(() => import('../ui/rich-text-editor'), { ssr: false });
 
@@ -56,7 +57,9 @@ const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout }: { s
                   <FormItem>
                     <FormLabel>Text</FormLabel>
                     <FormControl>
-                      <RichTextEditor {...richTextField} />
+                      <ClientOnly>
+                        <RichTextEditor {...richTextField} />
+                      </ClientOnly>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
