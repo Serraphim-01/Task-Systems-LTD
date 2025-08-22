@@ -50,7 +50,7 @@ export async function addDirector(formData: FormData) {
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
-                if (contentBlock.content_type === 'image_with_description') {
+                if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
                         const sectionImagePath = await uploadFile(sectionImageFile);
@@ -128,7 +128,7 @@ export async function addManagement(formData: FormData) {
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
-                if (contentBlock.content_type === 'image_with_description') {
+                if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
                         const sectionImagePath = await uploadFile(sectionImageFile);

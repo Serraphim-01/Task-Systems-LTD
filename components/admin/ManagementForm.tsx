@@ -128,7 +128,7 @@ const ManagementForm = () => {
               </FormItem>
           )} />
 
-          <SectionEditor />
+          <SectionEditor uploadOnSubmit={true} />
 
           <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Adding..." : "Add Management Person"}

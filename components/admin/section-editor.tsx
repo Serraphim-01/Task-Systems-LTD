@@ -13,7 +13,7 @@ import type { Section } from '@/types/content';
 
 const RichTextEditor = dynamic(() => import('../ui/rich-text-editor'), { ssr: false });
 
-const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout }: { sectionIndex: number, contentIndex: number, removeContent: (index: number) => void, layout: 'one_column' | 'two_column' }) => {
+const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout, uploadOnSubmit }: { sectionIndex: number, contentIndex: number, removeContent: (index: number) => void, layout: 'one_column' | 'two_column', uploadOnSubmit?: boolean }) => {
   const { control, register } = useFormContext();
 
   return (
@@ -83,16 +83,20 @@ const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout }: { s
                             const file = e.target.files?.[0];
                             if (!file) return;
 
-                            const formData = new FormData();
-                            formData.append("file", file);
+                            if (uploadOnSubmit) {
+                              field.onChange(e.target.files);
+                            } else {
+                              const formData = new FormData();
+                              formData.append("file", file);
 
-                            const res = await fetch("/api/upload", {
-                              method: "POST",
-                              body: formData,
-                            });
+                              const res = await fetch("/api/upload", {
+                                method: "POST",
+                                body: formData,
+                              });
 
-                            const data = await res.json();
-                            field.onChange(data.url); // save blob URL to form
+                              const data = await res.json();
+                              field.onChange(data.url); // save blob URL to form
+                            }
                           }}
                         />
                       </FormControl>
@@ -124,7 +128,7 @@ const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout }: { s
 };
 
 
-const Section = ({ sectionIndex, removeSection }: { sectionIndex: number, removeSection: (index: number) => void }) => {
+const Section = ({ sectionIndex, removeSection, uploadOnSubmit }: { sectionIndex: number, removeSection: (index: number) => void, uploadOnSubmit?: boolean }) => {
   const { control, watch } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -166,7 +170,7 @@ const Section = ({ sectionIndex, removeSection }: { sectionIndex: number, remove
         <FormLabel>Content</FormLabel>
         <div className={`mt-2 grid gap-4 ${layout === 'two_column' ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
           {fields.map((field, index) => (
-            <ContentBlock key={field.id} sectionIndex={sectionIndex} contentIndex={index} removeContent={remove} layout={layout} />
+            <ContentBlock key={field.id} sectionIndex={sectionIndex} contentIndex={index} removeContent={remove} layout={layout} uploadOnSubmit={uploadOnSubmit} />
           ))}
         </div>
         <Button type="button" variant="outline" onClick={() => append({ content_type: 'text', content: { text: '' } })} className="mt-4">
@@ -178,7 +182,7 @@ const Section = ({ sectionIndex, removeSection }: { sectionIndex: number, remove
 }
 
 
-export const SectionEditor = () => {
+export const SectionEditor = ({ uploadOnSubmit }: { uploadOnSubmit?: boolean }) => {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -190,7 +194,7 @@ export const SectionEditor = () => {
       <FormLabel>Sections</FormLabel>
       <div className="space-y-4">
         {fields.map((field, index) => (
-          <Section key={field.id} sectionIndex={index} removeSection={remove} />
+          <Section key={field.id} sectionIndex={index} removeSection={remove} uploadOnSubmit={uploadOnSubmit} />
         ))}
         <Button type="button" variant="outline" onClick={() => append({ layout: 'one_column', content: [] })}>
           <PlusCircle className="h-4 w-4 mr-2" />Add Section
