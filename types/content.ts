@@ -6,7 +6,7 @@ export type ContentBlock =
     }
   | {
       content_type: "image_with_description";
-      content: { imageUrl: string; description: string };
+      content: { image: string; description: string };
     };
 
 export type Section = {
