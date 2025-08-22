@@ -29,7 +29,6 @@ const RichTextEditor = React.forwardRef<HTMLDivElement, RichTextEditorProps>(
       onUpdate({ editor }) {
         onChange(editor.getHTML());
       },
-      immediatelyRender: false,
     });
 
     return (
