@@ -59,7 +59,7 @@ export async function addAnnouncement(formData: FormData) {
             .input('title', formData.get('title'))
             .input('short_description', formData.get('short_description'))
             .input('expires_at', formData.get('expires_at') || null)
-            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
             .query('INSERT INTO announcements (title, short_description, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @expires_at, @links, @image_path, @document_path)');
@@ -118,7 +118,7 @@ export async function addBlog(formData: FormData) {
             .input('short_description', formData.get('short_description'))
             .input('author', formData.get('author'))
             .input('expires_at', formData.get('expires_at') || null)
-            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
             .query('INSERT INTO blogs (title, short_description, author, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @author, @expires_at, @links, @image_path, @document_path)');
@@ -147,7 +147,7 @@ export async function addEvent(formData: FormData) {
             .input('date', formData.get('date'))
             .input('location', formData.get('location'))
             .input('expires_at', formData.get('expires_at') || null)
-            .input('links', formData.get('links') ? JSON.parse(formData.get('links') as string) : null)
+            .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
             .query('INSERT INTO events (title, short_description, time, date, location, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @time, @date, @location, @expires_at, @links, @image_path, @document_path)');
