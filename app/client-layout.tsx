@@ -12,6 +12,7 @@ import { Toaster } from "@/components/ui/toaster";
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const pathname = usePathname();
+  const isAdminPage = pathname.startsWith('/admin');
 
   useEffect(() => {
     // 🌐 Hidden developer claim
@@ -33,9 +34,9 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <LoadingScreen />
         ) : (
           <>
-            <Navbar />
+            {!isAdminPage && <Navbar />}
             <main>{children}</main>
-            <Footer />
+            {!isAdminPage && <Footer />}
             <Toaster />
           </>
         )}
