@@ -3,145 +3,95 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Trophy, Award, Star, CheckCircle } from "lucide-react";
+import Image from "next/image";
 
-const portfolioTabs = [
-  {
-    id: "achievements",
-    title: "Achievements",
-    icon: Trophy,
-    content: [
-        {
-            type: 'paragraph',
-            text: 'Over three decades of excellence in the ICT industry, Task Systems has achieved numerous milestones that demonstrate our commitment to delivering world-class solutions. We have successfully implemented over 500 enterprise-level projects across Nigeria and Sub-Saharan Africa, serving clients in critical sectors including Oil & Gas, Banking, Telecommunications, Manufacturing, and Public sector organizations.'
-        },
-        {
-            type: 'paragraph',
-            text: 'Our achievements include being recognized as a Microsoft Gold Partner, Cisco Premier Partner, and maintaining ISO 9001:2015 certification for quality management systems. We have consistently delivered projects on time and within budget, maintaining a 98% client satisfaction rate and establishing long-term partnerships with leading global technology vendors.'
-        },
-        {
-            type: 'heading',
-            text: 'Key Achievements Include:'
-        },
-        {
-            type: 'list',
-            items: [
-                'Successful deployment of nationwide network infrastructure for major telecommunications providers.',
-                'Implementation of core banking systems for tier-1 financial institutions.',
-                'Development of custom enterprise applications that have transformed business operations for our clients.'
-            ]
-        }
-    ]
-  },
-  {
-    id: "awards",
-    title: "Awards",
-    icon: Award,
-    content: [
-        {
-            type: 'paragraph',
-            text: 'Task Systems has been honored with multiple industry awards and recognitions that validate our expertise and commitment to excellence in ICT solutions delivery.'
-        },
-        {
-            type: 'heading',
-            text: 'Awards and Recognitions:'
-        },
-        {
-            type: 'list',
-            items: [
-                'ICT Company of the Year - Nigeria Technology Awards 2023',
-                'Excellence in System Integration - West Africa ICT Awards 2022',
-                'Best Enterprise Solutions Provider - Lagos Business Excellence Awards 2021',
-                'Innovation in Digital Transformation - Nigeria ICT Innovation Awards 2020',
-                'Outstanding Partnership Award - Microsoft Nigeria 2019',
-                'Cisco Partner of Excellence Award - West Africa Region 2018'
-            ]
-        },
-        {
-            type: 'paragraph',
-            text: 'These awards reflect our dedication to innovation, quality service delivery, and our role as a trusted technology partner. Our recognition by industry peers and clients alike demonstrates our consistent ability to exceed expectations and deliver solutions that drive business success.'
-        }
-    ]
-  },
-  {
-    id: "references",
-    title: "References",
-    icon: Star,
-    content: [
-        {
-            type: 'paragraph',
-            text: "Task Systems has built strong relationships with leading organizations across various industries. Our client references span multiple sectors and include some of the most respected names in Nigerian and Sub-Saharan business."
-        },
-        {
-            type: 'heading',
-            text: 'Banking & Financial Services:'
-        },
-        {
-            type: 'paragraph',
-            text: 'Our solutions have powered critical operations for major commercial banks, enabling secure transaction processing, regulatory compliance, and digital banking transformation initiatives.'
-        },
-        {
-            type: 'heading',
-            text: 'Oil & Gas Sector:'
-        },
-        {
-            type: 'paragraph',
-            text: 'We have implemented robust ICT infrastructure for upstream, midstream, and downstream operations, supporting mission-critical applications in challenging environments.'
-        },
-        {
-            type: 'heading',
-            text: 'Telecommunications:'
-        },
-        {
-            type: 'paragraph',
-            text: 'Our network solutions and managed services have enabled telecommunications providers to deliver reliable services to millions of subscribers across the region.'
-        },
-        {
-            type: 'heading',
-            text: 'Public Sector:'
-        },
-        {
-            type: 'paragraph',
-            text: 'Our e-governance solutions have enhanced service delivery for government agencies, improving citizen engagement and operational efficiency.'
-        },
-        {
-            type: 'paragraph',
-            text: 'All our client relationships are built on trust, transparency, and proven results. We maintain confidentiality agreements that protect our clients\' sensitive information while demonstrating our capability through successful project outcomes.'
-        }
-    ]
-  },
-];
-
-const ContentRenderer = ({ content }: { content: any[] }) => {
+const AchievementsContent = ({ description, items }: { description: string, items: any[] }) => {
     return (
         <div className="prose prose-lg max-w-none text-muted-foreground">
-            {content.map((item, index) => {
-                switch (item.type) {
-                    case 'paragraph':
-                        return <p key={index} className="leading-relaxed">{item.text}</p>;
-                    case 'heading':
-                        return <h3 key={index} className="text-xl font-semibold text-foreground mt-6 mb-2">{item.text}</h3>;
-                    case 'list':
-                        return (
-                            <ul key={index} className="space-y-2 list-none p-0">
-                                {item.items.map((li: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-3">
-                                        <CheckCircle className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
-                                        <span>{li}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        );
-                    default:
-                        return null;
-                }
-            })}
+            {description && <p className="leading-relaxed">{description}</p>}
+            <div className="space-y-8 mt-8">
+                {items.map((item: any) => (
+                    <div key={item.id} className="flex items-start gap-6">
+                        <div className="flex-shrink-0">
+                            <Trophy className="h-8 w-8 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const AwardsContent = ({ description, items }: { description: string, items: any[] }) => {
+    return (
+        <div className="prose prose-lg max-w-none text-muted-foreground">
+            {description && <p className="leading-relaxed">{description}</p>}
+            <div className="space-y-8 mt-8">
+                {items.map((item: any) => (
+                    <div key={item.id} className="flex items-start gap-6">
+                        <div className="flex-shrink-0">
+                            <Award className="h-8 w-8 text-primary" />
+                        </div>
+                        <div>
+                            <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
+                            <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+};
+
+const CertificatesContent = ({ items }: { items: any[] }) => {
+    return (
+        <div>
+             <p className="text-base md:text-lg text-muted-foreground text-center max-w-3xl mx-auto mb-12">
+                We hold numerous certifications from our global technology partners, a testament to our skills and adherence to the highest industry standards.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
+                {items.map((item: any) => (
+                <div key={item.id} className="flex flex-col items-center justify-center gap-4 text-center group">
+                    <div className="w-40 h-40 rounded-lg bg-card p-4 shadow-md flex items-center justify-center transition-transform group-hover:scale-105 border">
+                        <Image src={item.image_path} alt={item.title} width={150} height={150} className="object-contain" unoptimized />
+                    </div>
+                    <h2 className="font-semibold text-md group-hover:text-primary transition-colors">{item.title}</h2>
+                </div>
+                ))}
+            </div>
         </div>
     );
 };
 
 
-export default function PortfolioPage() {
+export default function PortfolioPageClient({ data }: { data: any }) {
   const [activeTab, setActiveTab] = useState("achievements");
+
+  const portfolioTabs = [
+    {
+      id: "achievements",
+      title: "Achievements",
+      icon: Trophy,
+      content: <AchievementsContent description={data.achievements.description} items={data.achievements.items} />
+    },
+    {
+      id: "awards",
+      title: "Awards",
+      icon: Award,
+      content: <AwardsContent description={data.awards.description} items={data.awards.items} />
+    },
+    {
+      id: "certificates",
+      title: "Certificates",
+      icon: Star,
+      content: <CertificatesContent items={data.certificates.items} />
+    },
+  ];
+
   const activeContent = portfolioTabs.find((tab) => tab.id === activeTab);
 
   return (
@@ -159,8 +109,8 @@ export default function PortfolioPage() {
               Our Portfolio
             </h1>
             <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Discover our achievements, awards, and client references that
-              showcase our expertise and commitment to excellence
+              Discover our achievements, awards, and certificates that
+              showcase our expertise and commitment to excellence.
             </p>
           </motion.div>
         </div>
@@ -201,7 +151,7 @@ export default function PortfolioPage() {
                   <activeContent.icon className="h-8 w-8 text-primary" />
                   {activeContent.title}
                 </h2>
-                <ContentRenderer content={activeContent.content} />
+                {activeContent.content}
               </div>
             )}
           </motion.div>
