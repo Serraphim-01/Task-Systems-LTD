@@ -136,3 +136,35 @@ CREATE TABLE jobs (
     apply_link NVARCHAR(MAX),
     expires_at DATETIMEOFFSET
 );
+
+-- Create the page_descriptions table
+CREATE TABLE page_descriptions (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    page_key NVARCHAR(255) NOT NULL UNIQUE,
+    description NVARCHAR(MAX),
+    updated_at DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
+);
+
+-- Create the achievements table
+CREATE TABLE achievements (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(MAX) NOT NULL,
+    description NVARCHAR(MAX),
+    created_at DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
+);
+
+-- Create the awards table
+CREATE TABLE awards (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(MAX) NOT NULL,
+    description NVARCHAR(MAX),
+    created_at DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
+);
+
+-- Create the certificates table
+CREATE TABLE certificates (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(MAX) NOT NULL,
+    image_path NVARCHAR(MAX),
+    created_at DATETIMEOFFSET NOT NULL DEFAULT SYSDATETIMEOFFSET()
+);

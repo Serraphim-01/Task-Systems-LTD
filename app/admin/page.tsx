@@ -14,6 +14,9 @@ import { EventList } from '@/components/admin/EventList';
 import { JobList } from '@/components/admin/JobList';
 import { PartnerList } from '@/components/admin/PartnerList';
 import PeopleManager from '@/components/admin/PeopleManager';
+import AchievementManager from '@/components/admin/AchievementManager';
+import AwardManager from '@/components/admin/AwardManager';
+import CertificateManager from '@/components/admin/CertificateManager';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ListSkeleton = () => (
@@ -122,6 +125,33 @@ const AdminPage = () => {
             <h2 className="text-2xl font-semibold mb-6">Manage People</h2>
             <PeopleManager />
             </div>
+        ),
+    },
+    {
+        value: "achievements",
+        label: "Achievements",
+        content: (
+            <Suspense fallback={<ListSkeleton />}>
+                <AchievementManager />
+            </Suspense>
+        ),
+    },
+    {
+        value: "awards",
+        label: "Awards",
+        content: (
+            <Suspense fallback={<ListSkeleton />}>
+                <AwardManager />
+            </Suspense>
+        ),
+    },
+    {
+        value: "certificates",
+        label: "Certificates",
+        content: (
+            <Suspense fallback={<ListSkeleton />}>
+                <CertificateManager />
+            </Suspense>
         ),
     },
   ];

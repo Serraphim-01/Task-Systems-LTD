@@ -42,6 +42,9 @@ const navigationItems = [
     href: "/discover-us",
     dropdown: [
       { name: "Discover Us", href: "/discover-us" },
+      { name: "Achievements", href: "/discover-us/achievements" },
+      { name: "Awards", href: "/discover-us/awards" },
+      { name: "Certificates", href: "/discover-us/certificates" },
       { name: "Careers", href: "/careers" },
     ],
   },
