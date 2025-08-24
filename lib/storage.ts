@@ -5,11 +5,19 @@ const blobServiceClient = BlobServiceClient.fromConnectionString(
 );
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME!;
 
-export async function uploadFile(file: File) {
+export async function uploadFile(
+  file: File,
+  folder: string,
+  fileNameBase: string
+) {
   const containerClient = blobServiceClient.getContainerClient(containerName);
-  const timestamp = Date.now();
-  const fileName = `${timestamp}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-  const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+
+  const extension = file.name.split(".").pop() || "bin";
+  const sanitizedFileName = fileNameBase.toLowerCase().replace(/[^a-z0-9]/g, "-");
+
+  const blobName = `${folder}/${sanitizedFileName}.${extension}`;
+
+  const blockBlobClient = containerClient.getBlockBlobClient(blobName);
   const buffer = await file.arrayBuffer();
   await blockBlobClient.upload(buffer, buffer.byteLength);
   return blockBlobClient.url;

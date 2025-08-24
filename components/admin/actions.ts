@@ -4,22 +4,15 @@ import { getDb } from '@/lib/azure';
 import { uploadFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
 
-// Generic function to handle file uploads and return the path
-async function handleFileUpload(formData: FormData, fieldName: string): Promise<string | null> {
-    const file = formData.get(fieldName) as File;
-    if (file && file.size > 0) {
-        return await uploadFile(file);
-    }
-    return null;
-}
-
 async function handleSectionUploads(
     entityId: number,
     entityType: 'announcement' | 'blog' | 'event',
+    entityTitle: string,
     formData: FormData
 ) {
     const sections = formData.get('sections') ? JSON.parse(formData.get('sections') as string) : [];
     const db = await getDb();
+    const sanitizedEntityTitle = entityTitle.toLowerCase().replace(/[^a-z0-9]/g, '-');
 
     for (const [sectionIndex, section] of sections.entries()) {
         const sectionResult = await db.request()
@@ -34,7 +27,11 @@ async function handleSectionUploads(
             if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                 const imageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                 if (imageFile) {
-                    const imagePath = await uploadFile(imageFile);
+                    const imagePath = await uploadFile(
+                        imageFile,
+                        `${entityType}s/${sanitizedEntityTitle}`,
+                        `section-${sectionIndex}-${contentIndex}`
+                    );
                     contentToInsert = { ...contentToInsert, image: imagePath };
                 }
             }
@@ -51,12 +48,25 @@ async function handleSectionUploads(
 
 export async function addAnnouncement(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image');
-        const document_path = await handleFileUpload(formData, 'document');
+        const title = formData.get('title') as string;
+        if (!title) return { error: 'Title is required.' };
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+        let image_path = null;
+        let document_path = null;
+
+        if (imageFile && imageFile.size > 0) {
+            image_path = await uploadFile(imageFile, 'announcements', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            document_path = await uploadFile(documentFile, 'announcements', `${title}-document`);
+        }
+
         const db = await getDb();
 
         const result = await db.request()
-            .input('title', formData.get('title'))
+            .input('title', title)
             .input('short_description', formData.get('short_description'))
             .input('expires_at', formData.get('expires_at') || null)
             .input('links', formData.get('links') as string || null)
@@ -65,7 +75,7 @@ export async function addAnnouncement(formData: FormData) {
             .query('INSERT INTO announcements (title, short_description, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @expires_at, @links, @image_path, @document_path)');
         const newAnnouncementId = result.recordset[0].id;
 
-        await handleSectionUploads(newAnnouncementId, 'announcement', formData);
+        await handleSectionUploads(newAnnouncementId, 'announcement', title, formData);
 
         revalidatePath('/media/announcements');
         revalidatePath(`/media/announcements/${newAnnouncementId}`);
@@ -75,46 +85,27 @@ export async function addAnnouncement(formData: FormData) {
     }
 }
 
-export async function deleteJob(id: number) {
-    try {
-        const db = await getDb();
-        await db.request().input('id', id).query('DELETE FROM jobs WHERE id = @id');
-
-        revalidatePath('/careers');
-        revalidatePath('/admin');
-        return { success: 'Job deleted.' };
-    } catch (e: any) {
-        return { error: e.message };
-    }
-}
-
-export async function deletePartner(id: number, logoPath?: string) {
-  try {
-    const db = await getDb();
-    await db.request().input("id", id).query("DELETE FROM partners WHERE id = @id");
-
-    // Optional: clean up logo from Blob storage later
-    if (logoPath) {
-      // await deleteBlob(logoPath);
-    }
-
-    revalidatePath("/");
-    revalidatePath("/admin");
-    return { success: "Partner deleted." };
-  } catch (e: any) {
-    return { error: e.message };
-  }
-}
-
-
 export async function addBlog(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image');
-        const document_path = await handleFileUpload(formData, 'document');
+        const title = formData.get('title') as string;
+        if (!title) return { error: 'Title is required.' };
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+        let image_path = null;
+        let document_path = null;
+
+        if (imageFile && imageFile.size > 0) {
+            image_path = await uploadFile(imageFile, 'blogs', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            document_path = await uploadFile(documentFile, 'blogs', `${title}-document`);
+        }
+
         const db = await getDb();
 
         const result = await db.request()
-            .input('title', formData.get('title'))
+            .input('title', title)
             .input('short_description', formData.get('short_description'))
             .input('author', formData.get('author'))
             .input('expires_at', formData.get('expires_at') || null)
@@ -124,7 +115,7 @@ export async function addBlog(formData: FormData) {
             .query('INSERT INTO blogs (title, short_description, author, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @author, @expires_at, @links, @image_path, @document_path)');
         const newBlogId = result.recordset[0].id;
 
-        await handleSectionUploads(newBlogId, 'blog', formData);
+        await handleSectionUploads(newBlogId, 'blog', title, formData);
 
         revalidatePath('/media/blogs');
         revalidatePath(`/media/blogs/${newBlogId}`);
@@ -136,12 +127,25 @@ export async function addBlog(formData: FormData) {
 
 export async function addEvent(formData: FormData) {
     try {
-        const image_path = await handleFileUpload(formData, 'image');
-        const document_path = await handleFileUpload(formData, 'document');
+        const title = formData.get('title') as string;
+        if (!title) return { error: 'Title is required.' };
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+        let image_path = null;
+        let document_path = null;
+
+        if (imageFile && imageFile.size > 0) {
+            image_path = await uploadFile(imageFile, 'events', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            document_path = await uploadFile(documentFile, 'events', `${title}-document`);
+        }
+
         const db = await getDb();
 
         const result = await db.request()
-            .input('title', formData.get('title'))
+            .input('title', title)
             .input('short_description', formData.get('short_description'))
             .input('time', formData.get('time'))
             .input('date', formData.get('date'))
@@ -153,7 +157,7 @@ export async function addEvent(formData: FormData) {
             .query('INSERT INTO events (title, short_description, time, date, location, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @time, @date, @location, @expires_at, @links, @image_path, @document_path)');
         const newEventId = result.recordset[0].id;
 
-        await handleSectionUploads(newEventId, 'event', formData);
+        await handleSectionUploads(newEventId, 'event', title, formData);
 
         revalidatePath('/media/events');
         revalidatePath(`/media/events/${newEventId}`);
@@ -165,14 +169,22 @@ export async function addEvent(formData: FormData) {
 
 export async function addPartner(formData: FormData) {
     try {
-        const logo_path = await handleFileUpload(formData, 'logo');
-        const db = await getDb();
+        const name = formData.get('name') as string;
+        if (!name) return { error: 'Partner name is required.' };
 
+        const logoFile = formData.get('logo') as File;
+        let logo_path = null;
+
+        if (logoFile && logoFile.size > 0) {
+            logo_path = await uploadFile(logoFile, 'partners', name);
+        }
+
+        const db = await getDb();
         const services = formData.get('services') as string;
         const servicesArray = services ? services.split(',').map(s => s.trim()) : [];
 
         await db.request()
-            .input('name', formData.get('name'))
+            .input('name', name)
             .input('status', formData.get('status'))
             .input('link', formData.get('link'))
             .input('services', JSON.stringify(servicesArray))
@@ -186,6 +198,8 @@ export async function addPartner(formData: FormData) {
         return { error: e.message };
     }
 }
+
+// ... (keep delete and addJob functions as they are, since they don't handle file uploads)
 
 export async function addJob(formData: FormData) {
   try {
@@ -289,3 +303,33 @@ export async function deleteEvent(
   }
 }
 
+export async function deletePartner(id: number, logoPath?: string) {
+  try {
+    const db = await getDb();
+    await db.request().input("id", id).query("DELETE FROM partners WHERE id = @id");
+
+    // Optional: clean up logo from Blob storage later
+    if (logoPath) {
+      // await deleteBlob(logoPath);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/admin");
+    return { success: "Partner deleted." };
+  } catch (e: any) {
+    return { error: e.message };
+  }
+}
+
+export async function deleteJob(id: number) {
+    try {
+        const db = await getDb();
+        await db.request().input('id', id).query('DELETE FROM jobs WHERE id = @id');
+
+        revalidatePath('/careers');
+        revalidatePath('/admin');
+        return { success: 'Job deleted.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}

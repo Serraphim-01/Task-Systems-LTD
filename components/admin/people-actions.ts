@@ -23,7 +23,7 @@ export async function addDirector(formData: FormData) {
         return { error: 'Missing required fields.' };
     }
 
-    const image_path = await uploadFile(image);
+    const image_path = await uploadFile(image, 'directors', name);
     if (!image_path) {
         return { error: 'Failed to upload image.' };
     }
@@ -53,7 +53,12 @@ export async function addDirector(formData: FormData) {
                 if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
-                        const sectionImagePath = await uploadFile(sectionImageFile);
+                        const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                        const sectionImagePath = await uploadFile(
+                            sectionImageFile,
+                            `directors/${sanitizedName}`,
+                            `section-${sectionIndex}-${contentIndex}`
+                        );
                         if (!sectionImagePath) return { error: 'Failed to upload section image.' };
                         finalContent = { ...finalContent, image: sectionImagePath };
                     }
@@ -101,7 +106,7 @@ export async function addManagement(formData: FormData) {
         return { error: 'Missing required fields.' };
     }
 
-    const image_path = await uploadFile(image);
+    const image_path = await uploadFile(image, 'management', name);
     if (!image_path) {
         return { error: 'Failed to upload image.' };
     }
@@ -131,7 +136,12 @@ export async function addManagement(formData: FormData) {
                 if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
                     const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
                     if (sectionImageFile) {
-                        const sectionImagePath = await uploadFile(sectionImageFile);
+                        const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                        const sectionImagePath = await uploadFile(
+                            sectionImageFile,
+                            `management/${sanitizedName}`,
+                            `section-${sectionIndex}-${contentIndex}`
+                        );
                         if (!sectionImagePath) return { error: 'Failed to upload section image.' };
                         finalContent = { ...finalContent, image: sectionImagePath };
                     }
