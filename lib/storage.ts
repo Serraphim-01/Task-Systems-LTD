@@ -32,13 +32,11 @@ export async function deleteFile(fileUrl: string) {
     if (!blobName) {
       throw new Error("Could not determine blob name from URL.");
     }
-    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
 
-    // Use deleteIfExists to prevent errors for non-existent blobs
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     const response = await blockBlobClient.deleteIfExists();
 
-    if (!response.didExist) {
-      // For debugging, it can be useful to know if a blob was not found
+    if (!response.succeeded) {
       console.warn(`Blob not found for deletion: ${blobName}`);
     }
 

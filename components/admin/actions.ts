@@ -282,17 +282,42 @@ async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event')
     }
 }
 
-export async function deleteAnnouncement(id: number) {
+export async function deleteAnnouncement(
+  id: number,
+  image_path?: string,
+  document_path?: string
+) {
+    // Do custom cleanup
+    if (image_path) await deleteFile(image_path);
+    if (document_path) await deleteFile(document_path);
+
     return deleteEntity(id, 'announcement');
 }
 
-export async function deleteBlog(id: number) {
+
+export async function deleteBlog(
+  id: number,
+  image_path?: string,
+  document_path?: string
+) {
+    if (image_path) await deleteFile(image_path);
+    if (document_path) await deleteFile(document_path);
+
     return deleteEntity(id, 'blog');
 }
 
-export async function deleteEvent(id: number) {
+
+export async function deleteEvent(
+  id: number,
+  image_path?: string,
+  document_path?: string
+) {
+    if (image_path) await deleteFile(image_path);
+    if (document_path) await deleteFile(document_path);
+
     return deleteEntity(id, 'event');
 }
+
 
 export async function deletePartner(id: number) {
     const db = await getDb();

@@ -19,11 +19,12 @@ export async function PartnerList() {
                 {partners.map((item, index) => (
                     <div key={item.id} className={`flex items-center justify-between p-4 ${index < partners.length - 1 ? 'border-b' : ''}`}>
                         <span className="truncate pr-4">{item.name}</span>
-                        <form action={deletePartner.bind(null, item.id, item.logo_path ?? undefined)}>
+                        <form action={deletePartner.bind(null, item.id)}>
                             <Button variant="ghost" size="icon" type="submit" aria-label="Delete partner">
                                 <Trash2 className="h-4 w-4 text-destructive" />
                             </Button>
                         </form>
+
                     </div>
                 ))}
                 {partners.length === 0 && <p className="p-4 text-sm text-muted-foreground">No partners found.</p>}
