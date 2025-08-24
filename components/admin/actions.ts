@@ -86,6 +86,12 @@ export async function addAnnouncement(formData: FormData) {
     }
 }
 
+export async function getAnnouncements() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM announcements ORDER BY created_at DESC');
+    return result.recordset;
+}
+
 export async function addBlog(formData: FormData) {
     try {
         const title = formData.get('title') as string;
@@ -124,6 +130,12 @@ export async function addBlog(formData: FormData) {
     } catch (e: any) {
         return { error: e.message };
     }
+}
+
+export async function getBlogs() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM blogs ORDER BY created_at DESC');
+    return result.recordset;
 }
 
 export async function addEvent(formData: FormData) {
@@ -168,6 +180,12 @@ export async function addEvent(formData: FormData) {
     }
 }
 
+export async function getEvents() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM events ORDER BY created_at DESC');
+    return result.recordset;
+}
+
 export async function addPartner(formData: FormData) {
     try {
         const name = formData.get('name') as string;
@@ -198,6 +216,12 @@ export async function addPartner(formData: FormData) {
     } catch (e: any) {
         return { error: e.message };
     }
+}
+
+export async function getPartners() {
+    const db = await getDb();
+    const result = await db.request().query('SELECT * FROM partners ORDER BY name ASC');
+    return result.recordset;
 }
 
 export async function addJob(formData: FormData) {
