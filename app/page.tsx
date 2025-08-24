@@ -4,7 +4,7 @@ import { HeroSection } from '@/components/home/hero-section';
 import { AboutIntro } from '@/components/home/about-intro';
 import { VideoAboutSection } from '@/components/home/video-about-section';
 import { SolutionsSlideshow } from '@/components/home/solutions-slideshow';
-import { SolutionsGrid } from '@/components/home/solutions-grid';
+// import { SolutionsGrid } from '@/components/home/solutions-grid';
 import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
 import { PartnersSection } from '@/components/home/partners-section';
@@ -26,7 +26,7 @@ export default async function Home() {
       <AboutIntro />
       <VideoAboutSection />
       <SolutionsSlideshow />
-      <SolutionsGrid />
+      {/* <SolutionsGrid /> */}
       <DirectorsSection />
       <ManagementSection />
       <PartnersSection partners={partners} />
