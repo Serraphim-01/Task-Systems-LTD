@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getBlog(id: string) {
-    const db = await getDb();
+    const db = await getRoDb();
     const blogResult = await db.request().input('id', id).query('SELECT * FROM blogs WHERE id = @id');
     const blog = blogResult.recordset[0];
 

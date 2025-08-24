@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 0;
 
 async function getAnnouncement(id: string) {
-    const db = await getDb();
+    const db = await getRoDb();
     const announcementResult = await db.request().input('id', id).query('SELECT * FROM announcements WHERE id = @id');
     const announcement = announcementResult.recordset[0];
 

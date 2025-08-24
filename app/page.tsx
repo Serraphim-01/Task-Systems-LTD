@@ -9,10 +9,10 @@ import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
 import { PartnersSection } from '@/components/home/partners-section';
 import { NewsletterSection } from '@/components/home/newsletter-section';
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 
 async function getPartners() {
-  const db = await getDb();
+  const db = await getRoDb();
   const result = await db.request().query('SELECT * FROM partners');
   return result.recordset;
 }

@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60;
 
 async function getDirector(id: string) {
-    const db = await getDb();
+    const db = await getRoDb();
     const directorResult = await db.request().input('id', id).query('SELECT * FROM directors WHERE id = @id');
     const director = directorResult.recordset[0];
 

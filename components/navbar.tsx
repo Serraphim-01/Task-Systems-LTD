@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/command";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { SEARCH_DATA } from "@/lib/search";
-import { getDb } from "@/lib/azure";
 
 const navigationItems = [
   { name: "Home", href: "/" },

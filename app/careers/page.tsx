@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { Wind } from 'lucide-react';
 import React from 'react';
 
@@ -10,7 +10,7 @@ export const metadata = {
 };
 
 async function getJobs() {
-  const db = await getDb();
+  const db = await getRoDb();
   const result = await db.request().query`
     SELECT *
     FROM jobs

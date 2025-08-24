@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { Rss } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -13,7 +13,7 @@ export const metadata = {
 };
 
 async function getBlogs() {
-  const db = await getDb();
+  const db = await getRoDb();
   const result = await db.request().query`
     SELECT *
     FROM blogs

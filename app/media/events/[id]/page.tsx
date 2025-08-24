@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { Paperclip, ExternalLink, ArrowLeft, Calendar, Clock, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ import SectionRenderer from '@/components/media/SectionRenderer';
 export const revalidate = 60; // Revalidate every 60 seconds
 
 async function getEvent(id: string) {
-    const db = await getDb();
+    const db = await getRoDb();
     const eventResult = await db.request().input('id', id).query('SELECT * FROM events WHERE id = @id');
     const event = eventResult.recordset[0];
 

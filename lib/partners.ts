@@ -1,9 +1,9 @@
 "use server";
 
-import { getDb } from "@/lib/azure";
+import { getRoDb } from "@/lib/azure";
 
 export async function getPartners() {
-  const db = await getDb();
+  const db = await getRoDb();
   const result = await db.request().query("SELECT name FROM partners");
   return result.recordset;
 }

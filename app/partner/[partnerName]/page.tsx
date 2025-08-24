@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/azure';
 import { ArrowLeft, CheckCircle, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import React from 'react';
 
 async function getPartner(name: string) {
   const partnerName = decodeURIComponent(name);
-  const db = await getDb();
+  const db = await getRoDb();
   const result = await db.request().input('name', partnerName).query('SELECT * FROM partners WHERE name = @name');
   const partner = result.recordset[0];
 
