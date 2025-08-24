@@ -22,7 +22,16 @@ async function getBlog(id: string) {
 
     for (const section of sections) {
         const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM blog_section_content WHERE section_id = @section_id');
-        section.blog_section_content = contentResult.recordset;
+        section.blog_section_content = contentResult.recordset.map((content: any) => {
+            if (typeof content.content === 'string') {
+                try {
+                    content.content = JSON.parse(content.content);
+                } catch (e) {
+                    console.error("Failed to parse content JSON", e);
+                }
+            }
+            return content;
+        });
     }
 
     blog.blog_sections = sections;
