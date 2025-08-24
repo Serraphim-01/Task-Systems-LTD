@@ -129,7 +129,7 @@ const AnnouncementForm = () => {
           </FormItem>
         )} />
 
-        <SectionEditor />
+        <SectionEditor uploadOnSubmit />
 
         <FormField control={form.control} name="image" render={({ field }) => (
             <FormItem>

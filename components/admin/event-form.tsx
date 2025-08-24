@@ -143,7 +143,7 @@ const EventForm = () => {
           <FormItem><FormLabel>Short Description (Optional)</FormLabel><FormControl><Textarea placeholder="A brief summary of the event" {...field} /></FormControl><FormMessage /></FormItem>
         )} />
 
-        <SectionEditor />
+        <SectionEditor uploadOnSubmit />
 
         <FormField control={form.control} name="image" render={({ field }) => (
           <FormItem><FormLabel>Image (Optional)</FormLabel><FormControl><Input type="file" accept="image/*" {...imageRef} /></FormControl><FormMessage /></FormItem>
