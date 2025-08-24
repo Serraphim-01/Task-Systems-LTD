@@ -3,22 +3,11 @@
 import { useToast } from '@/hooks/use-toast';
 import { deleteDirector } from './people-actions';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import { X, Edit } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { getDirectors } from './people-actions';
 
-const DirectorList = () => {
-  const [directors, setDirectors] = useState<any[]>([]);
+export default function DirectorList({ directors, onEdit, onUpdate }: { directors: any[], onEdit: (director: any) => void, onUpdate: () => void }) {
   const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchDirectors = async () => {
-        const result = await getDirectors();
-        setDirectors(result);
-    };
-    fetchDirectors();
-  }, []);
 
   const handleDelete = async (id: number) => {
     if (confirm('Are you sure you want to delete this director?')) {
@@ -27,7 +16,7 @@ const DirectorList = () => {
         toast({ title: 'Error', description: result.error, variant: 'destructive' });
       } else {
         toast({ title: 'Success', description: result.success });
-        setDirectors(directors.filter(d => d.id !== id));
+        onUpdate();
       }
     }
   };
@@ -46,8 +35,11 @@ const DirectorList = () => {
               height={300}
               className="rounded-md object-cover"
             />
-            <div className="absolute top-1 right-1">
-              <Button variant="destructive" size="icon" onClick={() => handleDelete(director.id)}>
+            <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => onEdit(director)}>
+                <Edit className="h-4 w-4" />
+              </Button>
+              <Button variant="destructive" size="icon" className="h-7 w-7" onClick={() => handleDelete(director.id)}>
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -61,5 +53,3 @@ const DirectorList = () => {
     </div>
   );
 };
-
-export default DirectorList;

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2 } from 'lucide-react';
-import { updatePageDescription, addAward, deleteAward } from './content-actions';
+import { Trash2, Edit, XCircle } from 'lucide-react';
+import { updatePageDescription, addAward, updateAward, deleteAward } from './content-actions';
 
 // --- Page Description Form ---
 const descriptionSchema = z.object({
@@ -17,7 +18,7 @@ const descriptionSchema = z.object({
 });
 type DescriptionFormValues = z.infer<typeof descriptionSchema>;
 
-export function PageDescriptionForm({ initialDescription }: { initialDescription: string }) {
+function PageDescriptionForm({ initialDescription }: { initialDescription: string }) {
   const { toast } = useToast();
   const form = useForm<DescriptionFormValues>({
     resolver: zodResolver(descriptionSchema),
@@ -61,37 +62,53 @@ export function PageDescriptionForm({ initialDescription }: { initialDescription
   );
 }
 
-// --- Add Award Form ---
+// --- Award Form (for Add/Edit) ---
 const awardSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
 });
 type AwardFormValues = z.infer<typeof awardSchema>;
 
-export function AddAwardForm() {
+function AwardForm({ award, onFinished }: { award?: any; onFinished: () => void }) {
   const { toast } = useToast();
   const form = useForm<AwardFormValues>({
     resolver: zodResolver(awardSchema),
-    defaultValues: { title: '', description: '' },
+    defaultValues: award || { title: '', description: '' },
   });
 
-  const onAwardSubmit = async (values: AwardFormValues) => {
+  const isEditMode = !!award;
+
+  const onSubmit = async (values: AwardFormValues) => {
     const formData = new FormData();
     formData.append('title', values.title);
     formData.append('description', values.description);
-    const result = await addAward(formData);
+
+    let result;
+    if (isEditMode) {
+      formData.append('id', award.id);
+      result = await updateAward(formData);
+    } else {
+      result = await addAward(formData);
+    }
+
     if (result.error) {
       toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: result.success });
       form.reset();
+      onFinished();
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onAwardSubmit)} className="space-y-4 mt-6 p-4 border rounded-lg">
-        <h3 className="text-lg font-semibold">Add New Award</h3>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6 p-4 border rounded-lg relative">
+        <h3 className="text-lg font-semibold">{isEditMode ? 'Edit Award' : 'Add New Award'}</h3>
+        {isEditMode && (
+            <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={onFinished}>
+                <XCircle className="h-5 w-5" />
+            </Button>
+        )}
         <FormField
           control={form.control}
           name="title"
@@ -115,7 +132,7 @@ export function AddAwardForm() {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? 'Adding...' : 'Add Award'}
+          {form.formState.isSubmitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Award' : 'Add Award')}
         </Button>
       </form>
     </Form>
@@ -123,7 +140,7 @@ export function AddAwardForm() {
 }
 
 // --- Award List ---
-export function AwardList({ awards }: { awards: any[] }) {
+function AwardList({ awards, onEdit }: { awards: any[]; onEdit: (award: any) => void }) {
     const { toast } = useToast();
     const handleDelete = async (id: number) => {
         if (confirm('Are you sure you want to delete this award?')) {
@@ -146,12 +163,38 @@ export function AwardList({ awards }: { awards: any[] }) {
                             <p className="font-bold">{item.title}</p>
                             <p className="text-sm text-muted-foreground">{item.description}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => onEdit(item)}>
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>
         </div>
     );
+}
+
+// --- Main Editor Component ---
+export function AwardEditor({ initialDescription, awards }: { initialDescription: string; awards: any[] }) {
+    const [editingAward, setEditingAward] = useState<any | null>(null);
+
+    const handleEdit = (award: any) => {
+        setEditingAward(award);
+    };
+
+    const handleFinished = () => {
+        setEditingAward(null);
+    };
+
+    return (
+        <div>
+            <PageDescriptionForm initialDescription={initialDescription} />
+            <AwardForm award={editingAward} onFinished={handleFinished} />
+            <AwardList awards={awards} onEdit={handleEdit} />
+        </div>
+    )
 }

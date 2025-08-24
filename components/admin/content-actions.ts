@@ -89,6 +89,31 @@ export async function deleteAchievement(id: number) {
     }
 }
 
+export async function updateAchievement(formData: FormData) {
+    try {
+        const id = formData.get('id') as string;
+        const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
+
+        if (!id || !title) {
+            return { error: 'ID and Title are required.' };
+        }
+
+        const db = await getDb();
+        await db.request()
+            .input('id', sql.Int, id)
+            .input('title', sql.NVarChar, title)
+            .input('description', sql.NVarChar, description)
+            .query('UPDATE achievements SET title = @title, description = @description WHERE id = @id');
+
+        revalidatePath('/admin');
+        revalidatePath('/discover-us/achievements');
+        return { success: 'Achievement updated successfully.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 // Awards
 export async function getAwards() {
     const db = await getDb();
@@ -131,6 +156,31 @@ export async function deleteAward(id: number) {
     }
 }
 
+export async function updateAward(formData: FormData) {
+    try {
+        const id = formData.get('id') as string;
+        const title = formData.get('title') as string;
+        const description = formData.get('description') as string;
+
+        if (!id || !title) {
+            return { error: 'ID and Title are required.' };
+        }
+
+        const db = await getDb();
+        await db.request()
+            .input('id', sql.Int, id)
+            .input('title', sql.NVarChar, title)
+            .input('description', sql.NVarChar, description)
+            .query('UPDATE awards SET title = @title, description = @description WHERE id = @id');
+
+        revalidatePath('/admin');
+        revalidatePath('/discover-us/awards');
+        return { success: 'Award updated successfully.' };
+    } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
 // Certificates
 export async function getCertificates() {
     const db = await getDb();
@@ -162,6 +212,56 @@ export async function addCertificate(formData: FormData) {
         revalidatePath('/discover-us/certificates');
         return { success: 'Certificate added successfully.' };
     } catch (e: any) {
+        return { error: e.message };
+    }
+}
+
+export async function updateCertificate(formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const id = formData.get('id') as string;
+        const title = formData.get('title') as string;
+        const image = formData.get('image') as File;
+
+        if (!id || !title) {
+            return { error: 'ID and Title are required.' };
+        }
+
+        let new_image_path: string | null = null;
+        if (image && image.size > 0) {
+            // New image was uploaded
+            const certResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path FROM certificates WHERE id = @id_fetch');
+            const oldCert = certResult.recordset[0];
+            if (oldCert && oldCert.image_path) {
+                await deleteFile(oldCert.image_path);
+            }
+            new_image_path = await uploadFile(image, 'certificates', title);
+        }
+
+        const updateRequest = new sql.Request(transaction);
+        updateRequest.input('id', sql.Int, id);
+        updateRequest.input('title', sql.NVarChar, title);
+
+        let query = 'UPDATE certificates SET title = @title';
+        if (new_image_path) {
+            query += ', image_path = @image_path';
+            updateRequest.input('image_path', sql.NVarChar, new_image_path);
+        }
+        query += ' WHERE id = @id';
+
+        await updateRequest.query(query);
+
+        await transaction.commit();
+
+        revalidatePath('/admin');
+        revalidatePath('/discover-us/certificates');
+        return { success: 'Certificate updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
         return { error: e.message };
     }
 }

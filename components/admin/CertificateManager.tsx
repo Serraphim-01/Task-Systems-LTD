@@ -1,13 +1,10 @@
 import { getCertificates } from './content-actions';
-import { AddCertificateForm, CertificateList } from './CertificateForms';
+import { CertificateEditor } from './CertificateForms';
 
 export default async function CertificateManager() {
   const certificates = await getCertificates();
 
   return (
-    <div>
-      <AddCertificateForm />
-      <CertificateList certificates={certificates} />
-    </div>
+    <CertificateEditor certificates={certificates} />
   );
 }

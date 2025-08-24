@@ -3,20 +3,16 @@ import { redirect } from 'next/navigation';
 import React, { Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { AdminTabs } from '@/components/admin/admin-tabs';
-import AnnouncementForm from '@/components/admin/announcement-form';
-import BlogForm from '@/components/admin/blog-form';
-import EventForm from '@/components/admin/event-form';
 import JobForm from '@/components/admin/job-form';
-import PartnerForm from '@/components/admin/partner-form';
-import { AnnouncementList } from '@/components/admin/AnnouncementList';
-import { BlogList } from '@/components/admin/BlogList';
-import { EventList } from '@/components/admin/EventList';
 import { JobList } from '@/components/admin/JobList';
-import { PartnerList } from '@/components/admin/PartnerList';
 import PeopleManager from '@/components/admin/PeopleManager';
+import AnnouncementManager from '@/components/admin/AnnouncementManager';
+import BlogManager from '@/components/admin/BlogManager';
 import AchievementManager from '@/components/admin/AchievementManager';
 import AwardManager from '@/components/admin/AwardManager';
 import CertificateManager from '@/components/admin/CertificateManager';
+import EventManager from '@/components/admin/EventManager';
+import PartnerManager from '@/components/admin/PartnerManager';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ListSkeleton = () => (
@@ -46,45 +42,27 @@ const AdminPage = () => {
       value: "announcements",
       label: "Announcements",
       content: (
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Add New Announcement</h2>
-            <AnnouncementForm />
-          </div>
-          <Suspense fallback={<ListSkeleton />}>
-            <AnnouncementList />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ListSkeleton />}>
+          <AnnouncementManager />
+        </Suspense>
       ),
     },
     {
       value: "blogs",
       label: "Blogs",
       content: (
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Add New Blog Post</h2>
-            <BlogForm />
-          </div>
-          <Suspense fallback={<ListSkeleton />}>
-            <BlogList />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ListSkeleton />}>
+          <BlogManager />
+        </Suspense>
       ),
     },
     {
       value: "events",
       label: "Events",
       content: (
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Add New Event</h2>
-            <EventForm />
-          </div>
-          <Suspense fallback={<ListSkeleton />}>
-            <EventList />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ListSkeleton />}>
+          <EventManager />
+        </Suspense>
       ),
     },
     {
@@ -106,15 +84,9 @@ const AdminPage = () => {
       value: "partners",
       label: "Partners",
       content: (
-        <div className="grid md:grid-cols-2 gap-12">
-          <div>
-            <h2 className="text-2xl font-semibold mb-6">Add New Partner</h2>
-            <PartnerForm />
-          </div>
-          <Suspense fallback={<ListSkeleton />}>
-            <PartnerList />
-          </Suspense>
-        </div>
+        <Suspense fallback={<ListSkeleton />}>
+            <PartnerManager />
+        </Suspense>
       ),
     },
     {

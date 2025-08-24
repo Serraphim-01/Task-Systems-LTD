@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,8 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2 } from 'lucide-react';
-import { updatePageDescription, addAchievement, deleteAchievement } from './content-actions';
+import { Trash2, Edit, XCircle } from 'lucide-react';
+import { updatePageDescription, addAchievement, updateAchievement, deleteAchievement } from './content-actions';
 
 // --- Page Description Form ---
 const descriptionSchema = z.object({
@@ -17,7 +18,7 @@ const descriptionSchema = z.object({
 });
 type DescriptionFormValues = z.infer<typeof descriptionSchema>;
 
-export function PageDescriptionForm({ initialDescription }: { initialDescription: string }) {
+function PageDescriptionForm({ initialDescription }: { initialDescription: string }) {
   const { toast } = useToast();
   const form = useForm<DescriptionFormValues>({
     resolver: zodResolver(descriptionSchema),
@@ -61,37 +62,53 @@ export function PageDescriptionForm({ initialDescription }: { initialDescription
   );
 }
 
-// --- Add Achievement Form ---
+// --- Achievement Form (for Add/Edit) ---
 const achievementSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   description: z.string().min(1, 'Description is required.'),
 });
 type AchievementFormValues = z.infer<typeof achievementSchema>;
 
-export function AddAchievementForm() {
+function AchievementForm({ achievement, onFinished }: { achievement?: any; onFinished: () => void }) {
   const { toast } = useToast();
   const form = useForm<AchievementFormValues>({
     resolver: zodResolver(achievementSchema),
-    defaultValues: { title: '', description: '' },
+    defaultValues: achievement || { title: '', description: '' },
   });
 
-  const onAchievementSubmit = async (values: AchievementFormValues) => {
+  const isEditMode = !!achievement;
+
+  const onSubmit = async (values: AchievementFormValues) => {
     const formData = new FormData();
     formData.append('title', values.title);
     formData.append('description', values.description);
-    const result = await addAchievement(formData);
+
+    let result;
+    if (isEditMode) {
+      formData.append('id', achievement.id);
+      result = await updateAchievement(formData);
+    } else {
+      result = await addAchievement(formData);
+    }
+
     if (result.error) {
       toast({ title: 'Error', description: result.error, variant: 'destructive' });
     } else {
       toast({ title: 'Success', description: result.success });
       form.reset();
+      onFinished();
     }
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onAchievementSubmit)} className="space-y-4 mt-6 p-4 border rounded-lg">
-        <h3 className="text-lg font-semibold">Add New Achievement</h3>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-6 p-4 border rounded-lg relative">
+        <h3 className="text-lg font-semibold">{isEditMode ? 'Edit Achievement' : 'Add New Achievement'}</h3>
+        {isEditMode && (
+            <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={onFinished}>
+                <XCircle className="h-5 w-5" />
+            </Button>
+        )}
         <FormField
           control={form.control}
           name="title"
@@ -115,7 +132,7 @@ export function AddAchievementForm() {
           )}
         />
         <Button type="submit" disabled={form.formState.isSubmitting}>
-          {form.formState.isSubmitting ? 'Adding...' : 'Add Achievement'}
+          {form.formState.isSubmitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Achievement' : 'Add Achievement')}
         </Button>
       </form>
     </Form>
@@ -123,7 +140,7 @@ export function AddAchievementForm() {
 }
 
 // --- Achievement List ---
-export function AchievementList({ achievements }: { achievements: any[] }) {
+function AchievementList({ achievements, onEdit }: { achievements: any[]; onEdit: (achievement: any) => void }) {
     const { toast } = useToast();
     const handleDelete = async (id: number) => {
         if (confirm('Are you sure you want to delete this achievement?')) {
@@ -146,12 +163,38 @@ export function AchievementList({ achievements }: { achievements: any[] }) {
                             <p className="font-bold">{item.title}</p>
                             <p className="text-sm text-muted-foreground">{item.description}</p>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" size="icon" onClick={() => onEdit(item)}>
+                                <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                        </div>
                     </div>
                 ))}
             </div>
         </div>
     );
+}
+
+// --- Main Editor Component ---
+export function AchievementEditor({ initialDescription, achievements }: { initialDescription: string; achievements: any[] }) {
+    const [editingAchievement, setEditingAchievement] = useState<any | null>(null);
+
+    const handleEdit = (achievement: any) => {
+        setEditingAchievement(achievement);
+    };
+
+    const handleFinished = () => {
+        setEditingAchievement(null);
+    };
+
+    return (
+        <div>
+            <PageDescriptionForm initialDescription={initialDescription} />
+            <AchievementForm achievement={editingAchievement} onFinished={handleFinished} />
+            <AchievementList achievements={achievements} onEdit={handleEdit} />
+        </div>
+    )
 }

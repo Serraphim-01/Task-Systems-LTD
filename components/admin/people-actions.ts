@@ -80,6 +80,105 @@ export async function addDirector(formData: FormData) {
     return { success: 'Director added successfully.' };
 }
 
+export async function updateDirector(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const name = formData.get('name') as string;
+        if (!name) {
+            await transaction.rollback();
+            return { error: 'Name is required.' };
+        }
+
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path FROM directors WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let image_path = oldEntity.image_path;
+        const imageFile = formData.get('image') as File;
+        if (imageFile && imageFile.size > 0) {
+            if (oldEntity.image_path) await deleteFile(oldEntity.image_path);
+            image_path = await uploadFile(imageFile, 'directors', name);
+        }
+
+        await request
+            .input('id_update', sql.Int, id)
+            .input('name', sql.NVarChar, name)
+            .input('position', sql.NVarChar, formData.get('position') as string)
+            .input('company', sql.NVarChar, formData.get('company') as string)
+            .input('person_group', sql.NVarChar, formData.get('person_group') as string)
+            .input('image_path', sql.NVarChar, image_path)
+            .query(`UPDATE directors SET
+                        name = @name,
+                        position = @position,
+                        company = @company,
+                        person_group = @person_group,
+                        image_path = @image_path
+                    WHERE id = @id_update`);
+
+        // Delete old sections and recreate
+        const sectionsResult = await request.input('director_id_del', sql.Int, id).query('SELECT id FROM director_sections WHERE director_id = @director_id_del');
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM director_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) await deleteFile(content.image);
+                } catch (e) { /* ignore */ }
+            }
+            await contentRequest.query(`DELETE FROM director_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            await request.input('director_id_del2', sql.Int, id).query('DELETE FROM director_sections WHERE director_id = @director_id_del2');
+        }
+
+        // Add new sections
+        const sections = formData.get('sections') as string;
+        if (sections) {
+            const parsedSections = JSON.parse(sections);
+            for (const [sectionIndex, section] of parsedSections.entries()) {
+                const sectionResult = await new sql.Request(transaction)
+                    .input('director_id', id)
+                    .input('section_order', sectionIndex)
+                    .input('layout', section.layout)
+                    .query('INSERT INTO director_sections (director_id, section_order, layout) OUTPUT INSERTED.id VALUES (@director_id, @section_order, @layout)');
+                const sectionId = sectionResult.recordset[0].id;
+                for (const [contentIndex, contentBlock] of section.content.entries()) {
+                    let finalContent = contentBlock.content;
+                    if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
+                        const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
+                        if (sectionImageFile) {
+                            const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                            const sectionImagePath = await uploadFile(sectionImageFile, `directors/${sanitizedName}`, `section-${sectionIndex}-${contentIndex}`);
+                            if (!sectionImagePath) throw new Error('Failed to upload section image.');
+                            finalContent = { ...finalContent, image: sectionImagePath };
+                        }
+                    }
+                    await new sql.Request(transaction)
+                        .input('section_id', sectionId)
+                        .input('content_order', contentIndex)
+                        .input('content_type', contentBlock.content_type)
+                        .input('content', JSON.stringify(finalContent))
+                        .query('INSERT INTO director_section_content (section_id, content_order, content_type, content) VALUES (@section_id, @content_order, @content_type, @content)');
+                }
+            }
+        }
+
+        await transaction.commit();
+
+        revalidatePath('/admin');
+        revalidatePath('/');
+        return { success: 'Director updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
+}
+
 export async function deleteDirector(id: number): Promise<{ success?: string; error?: string }> {
   const db = await getDb();
   const transaction = new sql.Transaction(db);
@@ -216,6 +315,105 @@ export async function addManagement(formData: FormData) {
 }
 
 type DeleteResult = { success: string } | { error: string };
+
+export async function updateManagement(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const name = formData.get('name') as string;
+        if (!name) {
+            await transaction.rollback();
+            return { error: 'Name is required.' };
+        }
+
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path FROM management WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let image_path = oldEntity.image_path;
+        const imageFile = formData.get('image') as File;
+        if (imageFile && imageFile.size > 0) {
+            if (oldEntity.image_path) await deleteFile(oldEntity.image_path);
+            image_path = await uploadFile(imageFile, 'management', name);
+        }
+
+        await request
+            .input('id_update', sql.Int, id)
+            .input('name', sql.NVarChar, name)
+            .input('position', sql.NVarChar, formData.get('position') as string)
+            .input('company', sql.NVarChar, formData.get('company') as string)
+            .input('person_group', sql.NVarChar, formData.get('person_group') as string)
+            .input('image_path', sql.NVarChar, image_path)
+            .query(`UPDATE management SET
+                        name = @name,
+                        position = @position,
+                        company = @company,
+                        person_group = @person_group,
+                        image_path = @image_path
+                    WHERE id = @id_update`);
+
+        // Delete old sections and recreate
+        const sectionsResult = await request.input('management_id_del', sql.Int, id).query('SELECT id FROM management_sections WHERE management_id = @management_id_del');
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM management_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) await deleteFile(content.image);
+                } catch (e) { /* ignore */ }
+            }
+            await contentRequest.query(`DELETE FROM management_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            await request.input('management_id_del2', sql.Int, id).query('DELETE FROM management_sections WHERE management_id = @management_id_del2');
+        }
+
+        // Add new sections
+        const sections = formData.get('sections') as string;
+        if (sections) {
+            const parsedSections = JSON.parse(sections);
+            for (const [sectionIndex, section] of parsedSections.entries()) {
+                const sectionResult = await new sql.Request(transaction)
+                    .input('management_id', id)
+                    .input('section_order', sectionIndex)
+                    .input('layout', section.layout)
+                    .query('INSERT INTO management_sections (management_id, section_order, layout) OUTPUT INSERTED.id VALUES (@management_id, @section_order, @layout)');
+                const sectionId = sectionResult.recordset[0].id;
+                for (const [contentIndex, contentBlock] of section.content.entries()) {
+                    let finalContent = contentBlock.content;
+                    if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image) {
+                        const sectionImageFile = formData.get(`section_image_${sectionIndex}_${contentIndex}`) as File;
+                        if (sectionImageFile) {
+                            const sanitizedName = name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                            const sectionImagePath = await uploadFile(sectionImageFile, `management/${sanitizedName}`, `section-${sectionIndex}-${contentIndex}`);
+                            if (!sectionImagePath) throw new Error('Failed to upload section image.');
+                            finalContent = { ...finalContent, image: sectionImagePath };
+                        }
+                    }
+                    await new sql.Request(transaction)
+                        .input('section_id', sectionId)
+                        .input('content_order', contentIndex)
+                        .input('content_type', contentBlock.content_type)
+                        .input('content', JSON.stringify(finalContent))
+                        .query('INSERT INTO management_section_content (section_id, content_order, content_type, content) VALUES (@section_id, @content_order, @content_type, @content)');
+                }
+            }
+        }
+
+        await transaction.commit();
+
+        revalidatePath('/admin');
+        revalidatePath('/');
+        return { success: 'Management person updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
+}
 
 export async function deleteManagement(id: number): Promise<DeleteResult> {
   const db = await getDb();

@@ -282,16 +282,315 @@ async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event')
     }
 }
 
+export async function updateAnnouncement(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const title = formData.get('title') as string;
+        if (!title) {
+            await transaction.rollback();
+            return { error: 'Title is required.' };
+        }
+
+        // Fetch old entity to get old file paths
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path, document_path FROM announcements WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let image_path = oldEntity.image_path;
+        let document_path = oldEntity.document_path;
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+
+        if (imageFile && imageFile.size > 0) {
+            if (oldEntity.image_path) await deleteFile(oldEntity.image_path);
+            image_path = await uploadFile(imageFile, 'announcements', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            if (oldEntity.document_path) await deleteFile(oldEntity.document_path);
+            document_path = await uploadFile(documentFile, 'announcements', `${title}-document`);
+        }
+
+        // Update main entity
+        await request
+            .input('id_update', sql.Int, id)
+            .input('title', sql.NVarChar, title)
+            .input('short_description', sql.NVarChar, formData.get('short_description') as string)
+            .input('expires_at', formData.get('expires_at') ? sql.DateTimeOffset : null, formData.get('expires_at') ? new Date(formData.get('expires_at') as string) : null)
+            .input('links', sql.NVarChar, formData.get('links') as string)
+            .input('image_path', sql.NVarChar, image_path)
+            .input('document_path', sql.NVarChar, document_path)
+            .query(`UPDATE announcements SET
+                        title = @title,
+                        short_description = @short_description,
+                        expires_at = @expires_at,
+                        links = @links,
+                        image_path = @image_path,
+                        document_path = @document_path
+                    WHERE id = @id_update`);
+
+        // Delete old sections and content
+        const sectionsResult = await request.input('announcement_id_del', sql.Int, id).query('SELECT id FROM announcement_sections WHERE announcement_id = @announcement_id_del');
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM announcement_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) await deleteFile(content.image);
+                } catch (e) { /* ignore */ }
+            }
+            await contentRequest.query(`DELETE FROM announcement_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            await request.input('announcement_id_del2', sql.Int, id).query('DELETE FROM announcement_sections WHERE announcement_id = @announcement_id_del2');
+        }
+
+        // Add new sections
+        await handleSectionUploads(id, 'announcement', title, formData);
+
+        await transaction.commit();
+
+        revalidatePath('/media/announcements');
+        revalidatePath(`/media/announcements/${id}`);
+        return { success: 'Announcement updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
+}
+
 export async function deleteAnnouncement(id: number) {
     return deleteEntity(id, 'announcement');
+}
+
+export async function updateBlog(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const title = formData.get('title') as string;
+        if (!title) {
+            await transaction.rollback();
+            return { error: 'Title is required.' };
+        }
+
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path, document_path FROM blogs WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let image_path = oldEntity.image_path;
+        let document_path = oldEntity.document_path;
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+
+        if (imageFile && imageFile.size > 0) {
+            if (oldEntity.image_path) await deleteFile(oldEntity.image_path);
+            image_path = await uploadFile(imageFile, 'blogs', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            if (oldEntity.document_path) await deleteFile(oldEntity.document_path);
+            document_path = await uploadFile(documentFile, 'blogs', `${title}-document`);
+        }
+
+        await request
+            .input('id_update', sql.Int, id)
+            .input('title', sql.NVarChar, title)
+            .input('short_description', sql.NVarChar, formData.get('short_description') as string)
+            .input('author', sql.NVarChar, formData.get('author') as string)
+            .input('expires_at', formData.get('expires_at') ? sql.DateTimeOffset : null, formData.get('expires_at') ? new Date(formData.get('expires_at') as string) : null)
+            .input('links', sql.NVarChar, formData.get('links') as string)
+            .input('image_path', sql.NVarChar, image_path)
+            .input('document_path', sql.NVarChar, document_path)
+            .query(`UPDATE blogs SET
+                        title = @title,
+                        short_description = @short_description,
+                        author = @author,
+                        expires_at = @expires_at,
+                        links = @links,
+                        image_path = @image_path,
+                        document_path = @document_path
+                    WHERE id = @id_update`);
+
+        const sectionsResult = await request.input('blog_id_del', sql.Int, id).query('SELECT id FROM blog_sections WHERE blog_id = @blog_id_del');
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM blog_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) await deleteFile(content.image);
+                } catch (e) { /* ignore */ }
+            }
+            await contentRequest.query(`DELETE FROM blog_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            await request.input('blog_id_del2', sql.Int, id).query('DELETE FROM blog_sections WHERE blog_id = @blog_id_del2');
+        }
+
+        await handleSectionUploads(id, 'blog', title, formData);
+
+        await transaction.commit();
+
+        revalidatePath('/media/blogs');
+        revalidatePath(`/media/blogs/${id}`);
+        return { success: 'Blog updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
 }
 
 export async function deleteBlog(id: number) {
     return deleteEntity(id, 'blog');
 }
 
+export async function updateEvent(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const title = formData.get('title') as string;
+        if (!title) {
+            await transaction.rollback();
+            return { error: 'Title is required.' };
+        }
+
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT image_path, document_path FROM events WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let image_path = oldEntity.image_path;
+        let document_path = oldEntity.document_path;
+
+        const imageFile = formData.get('image') as File;
+        const documentFile = formData.get('document') as File;
+
+        if (imageFile && imageFile.size > 0) {
+            if (oldEntity.image_path) await deleteFile(oldEntity.image_path);
+            image_path = await uploadFile(imageFile, 'events', title);
+        }
+        if (documentFile && documentFile.size > 0) {
+            if (oldEntity.document_path) await deleteFile(oldEntity.document_path);
+            document_path = await uploadFile(documentFile, 'events', `${title}-document`);
+        }
+
+        await request
+            .input('id_update', sql.Int, id)
+            .input('title', sql.NVarChar, title)
+            .input('short_description', sql.NVarChar, formData.get('short_description') as string)
+            .input('time', sql.NVarChar, formData.get('time') as string)
+            .input('date', formData.get('date') ? sql.DateTimeOffset : null, formData.get('date') ? new Date(formData.get('date') as string) : null)
+            .input('location', sql.NVarChar, formData.get('location') as string)
+            .input('expires_at', formData.get('expires_at') ? sql.DateTimeOffset : null, formData.get('expires_at') ? new Date(formData.get('expires_at') as string) : null)
+            .input('links', sql.NVarChar, formData.get('links') as string)
+            .input('image_path', sql.NVarChar, image_path)
+            .input('document_path', sql.NVarChar, document_path)
+            .query(`UPDATE events SET
+                        title = @title,
+                        short_description = @short_description,
+                        time = @time,
+                        date = @date,
+                        location = @location,
+                        expires_at = @expires_at,
+                        links = @links,
+                        image_path = @image_path,
+                        document_path = @document_path
+                    WHERE id = @id_update`);
+
+        const sectionsResult = await request.input('event_id_del', sql.Int, id).query('SELECT id FROM event_sections WHERE event_id = @event_id_del');
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM event_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) await deleteFile(content.image);
+                } catch (e) { /* ignore */ }
+            }
+            await contentRequest.query(`DELETE FROM event_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+            await request.input('event_id_del2', sql.Int, id).query('DELETE FROM event_sections WHERE event_id = @event_id_del2');
+        }
+
+        await handleSectionUploads(id, 'event', title, formData);
+
+        await transaction.commit();
+
+        revalidatePath('/media/events');
+        revalidatePath(`/media/events/${id}`);
+        return { success: 'Event updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
+}
+
 export async function deleteEvent(id: number) {
     return deleteEntity(id, 'event');
+}
+
+export async function updatePartner(id: number, formData: FormData) {
+    const db = await getDb();
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
+
+        const name = formData.get('name') as string;
+        if (!name) {
+            await transaction.rollback();
+            return { error: 'Partner name is required.' };
+        }
+
+        const oldResult = await request.input('id_fetch', sql.Int, id).query('SELECT logo_path FROM partners WHERE id = @id_fetch');
+        const oldEntity = oldResult.recordset[0];
+
+        let logo_path = oldEntity.logo_path;
+        const logoFile = formData.get('logo') as File;
+
+        if (logoFile && logoFile.size > 0) {
+            if (oldEntity.logo_path) await deleteFile(oldEntity.logo_path);
+            logo_path = await uploadFile(logoFile, 'partners', name);
+        }
+
+        const services = formData.get('services') as string;
+        const servicesArray = services ? services.split(',').map(s => s.trim()) : [];
+
+        await request
+            .input('id_update', sql.Int, id)
+            .input('name', sql.NVarChar, name)
+            .input('status', sql.NVarChar, formData.get('status') as string)
+            .input('link', sql.NVarChar, formData.get('link') as string)
+            .input('services', sql.NVarChar, JSON.stringify(servicesArray))
+            .input('logo_path', sql.NVarChar, logo_path)
+            .query(`UPDATE partners SET
+                        name = @name,
+                        status = @status,
+                        link = @link,
+                        services = @services,
+                        logo_path = @logo_path
+                    WHERE id = @id_update`);
+
+        await transaction.commit();
+
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: 'Partner updated successfully.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
+    }
 }
 
 export async function deletePartner(id: number) {
