@@ -1,8 +1,9 @@
 'use server';
 
 import { getDb } from '@/lib/azure';
-import { uploadFile } from '@/lib/storage';
+import { uploadFile, deleteFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
+import sql from 'mssql';
 
 async function handleSectionUploads(
     entityId: number,
@@ -199,8 +200,6 @@ export async function addPartner(formData: FormData) {
     }
 }
 
-// ... (keep delete and addJob functions as they are, since they don't handle file uploads)
-
 export async function addJob(formData: FormData) {
   try {
     const db = await getDb();
@@ -222,103 +221,104 @@ export async function addJob(formData: FormData) {
   }
 }
 
-export async function deleteAnnouncement(
-  id: number,
-  imagePath?: string,
-  documentPath?: string
-) {
-  try {
+async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event') {
     const db = await getDb();
-    await db.request().input("id", id).query("DELETE FROM announcements WHERE id = @id");
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
 
-    // optionally remove files from Blob Storage
-    if (imagePath) {
-      // await deleteBlob(imagePath);
-    }
-    if (documentPath) {
-      // await deleteBlob(documentPath);
-    }
+        const request = new sql.Request(transaction);
+        const result = await request.input('id', sql.Int, id).query(`SELECT * FROM ${type}s WHERE id = @id`);
+        const entity = result.recordset[0];
 
-    revalidatePath("/media/announcements");
-    revalidatePath("/admin");
-    return { success: "Announcement deleted." };
-  } catch (e: any) {
-    return { error: e.message };
-  }
+        if (!entity) {
+            await transaction.rollback();
+            return { error: `${type} not found.` };
+        }
+
+        const filesToDelete: string[] = [];
+        if (entity.image_path) filesToDelete.push(entity.image_path);
+        if (entity.document_path) filesToDelete.push(entity.document_path);
+
+        const sectionsResult = await request.input(`${type}_id`, sql.Int, id).query(`SELECT id FROM ${type}_sections WHERE ${type}_id = @${type}_id`);
+        const sectionIds = sectionsResult.recordset.map(s => s.id);
+
+        if (sectionIds.length > 0) {
+            const contentRequest = new sql.Request(transaction);
+            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+            const contentResult = await contentRequest.query(`SELECT content FROM ${type}_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) filesToDelete.push(content.image);
+                } catch (e) { /* ignore */ }
+            }
+
+            const deleteContentRequest = new sql.Request(transaction);
+            const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+            sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
+            await deleteContentRequest.query(`DELETE FROM ${type}_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
+
+            await request.input(`${type}_id_del`, sql.Int, id).query(`DELETE FROM ${type}_sections WHERE ${type}_id = @${type}_id_del`);
+        }
+
+        await request.input('id_del', sql.Int, id).query(`DELETE FROM ${type}s WHERE id = @id_del`);
+
+        await transaction.commit();
+
+        for (const fileUrl of filesToDelete) {
+            await deleteFile(fileUrl);
+        }
+
+        revalidatePath(`/media/${type}s`);
+        revalidatePath(`/media/${type}s/${id}`);
+        revalidatePath('/admin');
+        return { success: `${type} deleted successfully.` };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message ?? `Failed to delete ${type}.` };
+    }
 }
 
-
-export async function deleteBlog(
-  id: number,
-  imagePath?: string,
-  documentPath?: string
-) {
-  try {
-    const db = await getDb();
-    await db.request()
-      .input("id", id)
-      .query("DELETE FROM blogs WHERE id = @id");
-
-    // TODO: delete from Azure Blob if needed
-    if (imagePath) {
-      // await deleteBlob(imagePath);
-    }
-    if (documentPath) {
-      // await deleteBlob(documentPath);
-    }
-
-    revalidatePath("/media/blogs");
-    revalidatePath("/admin");
-    return { success: "Blog post deleted." };
-  } catch (e: any) {
-    return { error: e.message };
-  }
+export async function deleteAnnouncement(id: number) {
+    return deleteEntity(id, 'announcement');
 }
 
-
-
-export async function deleteEvent(
-  id: number,
-  imagePath?: string,
-  documentPath?: string
-) {
-  try {
-    const db = await getDb();
-    await db.request().input("id", id).query("DELETE FROM events WHERE id = @id");
-
-    // If you want to also delete files from Blob storage:
-    if (imagePath) {
-      // await deleteBlob(imagePath);
-    }
-    if (documentPath) {
-      // await deleteBlob(documentPath);
-    }
-
-    revalidatePath("/media/events");
-    revalidatePath("/admin");
-
-    return { success: "Event deleted." };
-  } catch (e: any) {
-    return { error: e.message };
-  }
+export async function deleteBlog(id: number) {
+    return deleteEntity(id, 'blog');
 }
 
-export async function deletePartner(id: number, logoPath?: string) {
-  try {
+export async function deleteEvent(id: number) {
+    return deleteEntity(id, 'event');
+}
+
+export async function deletePartner(id: number) {
     const db = await getDb();
-    await db.request().input("id", id).query("DELETE FROM partners WHERE id = @id");
+    const transaction = new sql.Transaction(db);
+    try {
+        await transaction.begin();
+        const request = new sql.Request(transaction);
 
-    // Optional: clean up logo from Blob storage later
-    if (logoPath) {
-      // await deleteBlob(logoPath);
+        const partnerResult = await request.input('id', sql.Int, id).query('SELECT logo_path FROM partners WHERE id = @id');
+        const partner = partnerResult.recordset[0];
+
+        if (partner && partner.logo_path) {
+            await deleteFile(partner.logo_path);
+        }
+
+        await request.input('id_del', sql.Int, id).query('DELETE FROM partners WHERE id = @id_del');
+
+        await transaction.commit();
+
+        revalidatePath('/');
+        revalidatePath('/admin');
+        return { success: 'Partner deleted.' };
+    } catch (e: any) {
+        await transaction.rollback();
+        return { error: e.message };
     }
-
-    revalidatePath("/");
-    revalidatePath("/admin");
-    return { success: "Partner deleted." };
-  } catch (e: any) {
-    return { error: e.message };
-  }
 }
 
 export async function deleteJob(id: number) {

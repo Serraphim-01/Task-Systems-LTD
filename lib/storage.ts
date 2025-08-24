@@ -22,3 +22,19 @@ export async function uploadFile(
   await blockBlobClient.upload(buffer, buffer.byteLength);
   return blockBlobClient.url;
 }
+
+export async function deleteFile(fileUrl: string) {
+  try {
+    const containerClient = blobServiceClient.getContainerClient(containerName);
+    const blobName = fileUrl.split("/").pop();
+    if (!blobName) {
+      throw new Error("Could not determine blob name from URL.");
+    }
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    await blockBlobClient.delete();
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete blob:", error.message);
+    return { success: false, error: error.message };
+  }
+}

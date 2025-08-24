@@ -1,8 +1,9 @@
 'use server';
 
 import { getDb } from '@/lib/azure';
-import { uploadFile } from '@/lib/storage';
+import { uploadFile, deleteFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
+import sql from 'mssql';
 
 export async function getDirectors() {
     const db = await getDb();
@@ -80,14 +81,66 @@ export async function addDirector(formData: FormData) {
 }
 
 export async function deleteDirector(id: number): Promise<{ success?: string; error?: string }> {
+  const db = await getDb();
+  const transaction = new sql.Transaction(db);
   try {
-    const db = await getDb();
-    await db.request().input('id', id).query('DELETE FROM directors WHERE id = @id');
+    await transaction.begin();
+
+    const request = new sql.Request(transaction);
+    const directorResult = await request.input('id', sql.Int, id).query('SELECT * FROM directors WHERE id = @id');
+    const director = directorResult.recordset[0];
+
+    if (!director) {
+      await transaction.rollback();
+      return { error: 'Director not found.' };
+    }
+
+    const filesToDelete: string[] = [];
+    if (director.image_path) {
+      filesToDelete.push(director.image_path);
+    }
+
+    const sectionsResult = await request.input('director_id', sql.Int, id).query('SELECT id FROM director_sections WHERE director_id = @director_id');
+    const sectionIds = sectionsResult.recordset.map(s => s.id);
+
+    if (sectionIds.length > 0) {
+      const contentRequest = new sql.Request(transaction);
+      const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+      sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+
+      const contentResult = await contentRequest.query(`SELECT content FROM director_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+
+      for (const row of contentResult.recordset) {
+        try {
+          const content = JSON.parse(row.content);
+          if (content.image) {
+            filesToDelete.push(content.image);
+          }
+        } catch (e) { /* ignore content that is not valid JSON */ }
+      }
+
+      const deleteContentRequest = new sql.Request(transaction);
+      const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+      sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
+      await deleteContentRequest.query(`DELETE FROM director_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
+
+      await request.input('director_id_del', sql.Int, id).query('DELETE FROM director_sections WHERE director_id = @director_id_del');
+    }
+
+    await request.input('id_del', sql.Int, id).query('DELETE FROM directors WHERE id = @id_del');
+
+    await transaction.commit();
+
+    for (const fileUrl of filesToDelete) {
+      await deleteFile(fileUrl);
+    }
 
     revalidatePath('/admin');
     revalidatePath('/');
     return { success: 'Director deleted successfully.' };
+
   } catch (e: any) {
+    await transaction.rollback();
     return { error: e.message ?? 'Failed to delete director.' };
   }
 }
@@ -165,16 +218,67 @@ export async function addManagement(formData: FormData) {
 type DeleteResult = { success: string } | { error: string };
 
 export async function deleteManagement(id: number): Promise<DeleteResult> {
+  const db = await getDb();
+  const transaction = new sql.Transaction(db);
   try {
-    const db = await getDb();
-    await db.request().input("id", id).query("DELETE FROM management WHERE id = @id");
+    await transaction.begin();
 
-    revalidatePath("/admin");
-    revalidatePath("/");
+    const request = new sql.Request(transaction);
+    const managementResult = await request.input('id', sql.Int, id).query('SELECT * FROM management WHERE id = @id');
+    const management = managementResult.recordset[0];
 
-    return { success: "Management person deleted successfully." };
+    if (!management) {
+      await transaction.rollback();
+      return { error: 'Management not found.' };
+    }
+
+    const filesToDelete: string[] = [];
+    if (management.image_path) {
+      filesToDelete.push(management.image_path);
+    }
+
+    const sectionsResult = await request.input('management_id', sql.Int, id).query('SELECT id FROM management_sections WHERE management_id = @management_id');
+    const sectionIds = sectionsResult.recordset.map(s => s.id);
+
+    if (sectionIds.length > 0) {
+      const contentRequest = new sql.Request(transaction);
+      const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+      sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
+
+      const contentResult = await contentRequest.query(`SELECT content FROM management_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
+
+      for (const row of contentResult.recordset) {
+        try {
+          const content = JSON.parse(row.content);
+          if (content.image) {
+            filesToDelete.push(content.image);
+          }
+        } catch (e) { /* ignore content that is not valid JSON */ }
+      }
+
+      const deleteContentRequest = new sql.Request(transaction);
+      const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
+      sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
+      await deleteContentRequest.query(`DELETE FROM management_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
+
+      await request.input('management_id_del', sql.Int, id).query('DELETE FROM management_sections WHERE management_id = @management_id_del');
+    }
+
+    await request.input('id_del', sql.Int, id).query('DELETE FROM management WHERE id = @id_del');
+
+    await transaction.commit();
+
+    for (const fileUrl of filesToDelete) {
+      await deleteFile(fileUrl);
+    }
+
+    revalidatePath('/admin');
+    revalidatePath('/');
+    return { success: 'Management person deleted successfully.' };
+
   } catch (e: any) {
-    return { error: e.message };
+    await transaction.rollback();
+    return { error: e.message ?? 'Failed to delete management person.' };
   }
 }
 
