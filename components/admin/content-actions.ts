@@ -1,6 +1,6 @@
 'use server';
 
-import { getDb } from '@/lib/azure';
+import { getDb, getRoDb } from '@/lib/azure';
 import { uploadFile, deleteFile } from '@/lib/storage';
 import { revalidatePath } from 'next/cache';
 import sql from 'mssql';
@@ -133,7 +133,7 @@ export async function deleteAward(id: number) {
 
 // Certificates
 export async function getCertificates() {
-    const db = await getDb();
+    const db = await getRoDb();
     const result = await db.request().query('SELECT * FROM certificates ORDER BY created_at DESC');
     return result.recordset;
 }
