@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 
 type Certificate = {
@@ -15,40 +14,6 @@ type CertificatesSectionProps = {
 };
 
 export function CertificatesSection({ certificates }: CertificatesSectionProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const isSlideshow = certificates.length > 3;
-  const numPages = Math.ceil(certificates.length / 3);
-
-  useEffect(() => {
-    if (!isSlideshow) return;
-
-    const timer = setInterval(() => {
-      setCurrentIndex(prev => {
-        const currentPage = Math.floor(prev / 3);
-        const nextPage = (currentPage + 1) % numPages;
-        return nextPage * 3;
-      });
-    }, 5000);
-
-    return () => clearInterval(timer);
-  }, [isSlideshow, numPages]);
-
-  const getSlidesForCurrentView = () => {
-    if (!isSlideshow) {
-      return certificates;
-    }
-    const slides = [];
-    for (let i = 0; i < 3; i++) {
-      const index = currentIndex + i;
-      if (index < certificates.length) {
-        slides.push(certificates[index]);
-      }
-    }
-    return slides;
-  };
-
-  const slidesToDisplay = getSlidesForCurrentView();
-
   return (
     <section className="py-16 bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,30 +32,27 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
           </p>
         </motion.div>
 
-        <div className={`relative ${isSlideshow ? 'overflow-hidden' : ''}`}>
-          <AnimatePresence mode="wait">
+        {certificates.length > 0 ? (
             <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, x: isSlideshow ? 100 : 0 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: isSlideshow ? -100 : 0 }}
-              transition={{ duration: 0.8 }}
-              className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${!isSlideshow ? 'justify-center' : ''}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, staggerChildren: 0.1 }}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 justify-center items-center"
             >
-              {slidesToDisplay.map((certificate, index) => (
+              {certificates.map((certificate, index) => (
                 <motion.div
                   key={`${certificate.id}-${index}`}
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className={`relative group cursor-pointer mx-auto ${!isSlideshow ? 'max-w-sm' : ''}`}
+                  transition={{ duration: 0.6 }}
+                  className="relative group cursor-pointer mx-auto max-w-sm"
                 >
                   <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg bg-white">
                     <Image
                       src={certificate.image_path}
                       alt={certificate.title}
                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 33vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
                       className="object-contain p-4"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
@@ -102,24 +64,10 @@ export function CertificatesSection({ certificates }: CertificatesSectionProps) 
                 </motion.div>
               ))}
             </motion.div>
-          </AnimatePresence>
-        </div>
-
-        {isSlideshow && (
-          <div className="flex justify-center mt-8 space-x-2">
-            {Array.from({ length: numPages }).map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index * 3)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  Math.floor(currentIndex / 3) === index
-                    ? "bg-[#ffbb00]"
-                    : "bg-border"
-                }`}
-                aria-label={`Go to slide group ${index + 1}`}
-              />
-            ))}
-          </div>
+        ) : (
+            <div className="text-center text-muted-foreground">
+                <p>No certificates to display at this time.</p>
+            </div>
         )}
       </div>
     </section>
