@@ -21,20 +21,8 @@ export default async function Home() {
   const partners = await getPartners();
   let certificates = await getCertificates();
 
-  // Ensure certificates is an array before processing
-  if (Array.isArray(certificates)) {
-    // As per user request, duplicate certificates if there are 1-3 to create a looping slideshow effect.
-    if (certificates.length > 0 && certificates.length <= 3) {
-      const originalCerts = [...certificates];
-      // Duplicate until we have enough for two slides
-      while (certificates.length < 6) {
-        certificates = certificates.concat(originalCerts);
-      }
-      // Ensure the array is exactly 6 items long for consistency
-      certificates = certificates.slice(0, 6);
-    }
-  } else {
-    // If getCertificates returns something unexpected, default to an empty array to prevent crashing
+  // Ensure certificates is an array to prevent crashes, but do not duplicate.
+  if (!Array.isArray(certificates)) {
     certificates = [];
   }
 

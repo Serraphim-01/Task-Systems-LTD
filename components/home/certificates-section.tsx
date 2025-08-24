@@ -16,7 +16,7 @@ type CertificatesSectionProps = {
 
 export function CertificatesSection({ certificates }: CertificatesSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const isSlideshow = certificates.length >= 3;
+  const isSlideshow = certificates.length > 3;
   const numPages = Math.ceil(certificates.length / 3);
 
   useEffect(() => {
