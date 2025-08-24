@@ -11,7 +11,7 @@ const quickLinks = [
   { name: "Solutions", href: "/solutions" },
   { name: "Discover Us", href: "/discover-us" },
   { name: "Careers", href: "/careers" },
-  { name: "Reach Us", href: "/reach-us" },
+  { name: "Contact Us", href: "/contact-us" },
   { name: "Privacy Policy", href: "/privacy-policy" },
 ];
 

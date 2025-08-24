@@ -13,7 +13,7 @@ export const SEARCH_DATA = [
   { name: "Discover Us", href: "/discover-us" },
   { name: "Media", href: "/media" },
   { name: "Careers", href: "/careers" },
-  { name: "Reach Us", href: "/reach-us" },
+  { name: "Contact Us", href: "/contact-us" },
   { name: "Privacy Policy", href: "/privacy-policy" },
   { name: "Announcements", href: "/media/announcements" },
   { name: "Blogs", href: "/media/blogs" },

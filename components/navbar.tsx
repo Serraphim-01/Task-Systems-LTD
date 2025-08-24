@@ -43,7 +43,7 @@ const navigationItems = [
     dropdown: [{ name: "Careers", href: "/careers" }],
   },
   { name: "Blog", href: "/media" },
-  { name: "Reach Us", href: "/reach-us" },
+  { name: "Contact Us", href: "/contact-us" },
 ];
 
 const SearchComponent = ({

@@ -41,7 +41,7 @@ const contactInfo = [
   },
 ];
 
-export default function ReachUsPage() {
+export default function ContactUsPage() {
   return (
     <div className="bg-background text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-20 lg:py-24">
@@ -52,7 +52,7 @@ export default function ReachUsPage() {
           className="text-center mb-16"
         >
           <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">
-            Reach Us
+            Contact Us
           </h1>
           <p className="text-base md:text-lg text-muted-foreground">
             We&apos;re here to help and answer any question you might have.
@@ -68,7 +68,7 @@ export default function ReachUsPage() {
           >
             <div className="relative w-full h-96 md:h-full">
               <Image
-                src="/reach-us/location.png"
+                src="/contact-us/location.png"
                 alt="Task Systems Office Location"
                 fill
                 className="object-cover"
