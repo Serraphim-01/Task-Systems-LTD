@@ -27,7 +27,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://tasksystems.com",
+    url: "https://task-systems.netlify.app",
     siteName: "Task Systems LTD",
     images: [
       {
@@ -42,7 +42,9 @@ export const metadata = {
     card: "summary_large_image",
     site: "@tasksystems",
     creator: "@tasksystems",
+    images: ["https://task-systems.netlify.app/og-image.png"],
   },
+
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
