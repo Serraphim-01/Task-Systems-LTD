@@ -119,11 +119,10 @@ export default function SolutionsPage() {
               <button
                 key={tab.id}
                 onClick={() => handleTabClick(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-all duration-300 ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-t-lg transition-all duration-300 ${activeTab === tab.id
                     ? 'bg-[#ffbb00] text-black border-b-2 border-[#ffbb00]'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                }`}
+                  }`}
               >
                 <tab.icon className="h-4 w-4" />
                 {tab.title}

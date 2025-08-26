@@ -116,7 +116,7 @@ export async function deleteDirector(id: number): Promise<{ success?: string; er
           if (content.image) {
             filesToDelete.push(content.image);
           }
-        } catch (e) { /* ignore content that is not valid JSON */ }
+        } catch (e) { }
       }
 
       const deleteContentRequest = new sql.Request(transaction);
@@ -253,7 +253,7 @@ export async function deleteManagement(id: number): Promise<DeleteResult> {
           if (content.image) {
             filesToDelete.push(content.image);
           }
-        } catch (e) { /* ignore content that is not valid JSON */ }
+        } catch (e) { }
       }
 
       const deleteContentRequest = new sql.Request(transaction);

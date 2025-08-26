@@ -1,4 +1,3 @@
-// types/content.ts
 export type ContentBlock =
   | {
       content_type: "text";

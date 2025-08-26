@@ -20,17 +20,17 @@ import CertificateManager from '@/components/admin/CertificateManager';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ListSkeleton = () => (
-    <div className="space-y-4">
-        <h3 className="text-xl font-semibold"><Skeleton className="h-7 w-48" /></h3>
-        <div className="border rounded-md">
-            {[...Array(3)].map((_, i) => (
-                <div key={i} className="flex items-center justify-between p-4 border-b">
-                    <Skeleton className="h-5 w-3/4" />
-                    <Skeleton className="h-8 w-8" />
-                </div>
-            ))}
+  <div className="space-y-4">
+    <h3 className="text-xl font-semibold"><Skeleton className="h-7 w-48" /></h3>
+    <div className="border rounded-md">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="flex items-center justify-between p-4 border-b">
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-8 w-8" />
         </div>
+      ))}
     </div>
+  </div>
 );
 
 const AdminPage = () => {
@@ -118,41 +118,41 @@ const AdminPage = () => {
       ),
     },
     {
-        value: "people",
-        label: "People",
-        content: (
-            <div>
-            <h2 className="text-2xl font-semibold mb-6">Manage People</h2>
-            <PeopleManager />
-            </div>
-        ),
+      value: "people",
+      label: "People",
+      content: (
+        <div>
+          <h2 className="text-2xl font-semibold mb-6">Manage People</h2>
+          <PeopleManager />
+        </div>
+      ),
     },
     {
-        value: "achievements",
-        label: "Achievements",
-        content: (
-            <Suspense fallback={<ListSkeleton />}>
-                <AchievementManager />
-            </Suspense>
-        ),
+      value: "achievements",
+      label: "Achievements",
+      content: (
+        <Suspense fallback={<ListSkeleton />}>
+          <AchievementManager />
+        </Suspense>
+      ),
     },
     {
-        value: "awards",
-        label: "Awards",
-        content: (
-            <Suspense fallback={<ListSkeleton />}>
-                <AwardManager />
-            </Suspense>
-        ),
+      value: "awards",
+      label: "Awards",
+      content: (
+        <Suspense fallback={<ListSkeleton />}>
+          <AwardManager />
+        </Suspense>
+      ),
     },
     {
-        value: "certificates",
-        label: "Certificates",
-        content: (
-            <Suspense fallback={<ListSkeleton />}>
-                <CertificateManager />
-            </Suspense>
-        ),
+      value: "certificates",
+      label: "Certificates",
+      content: (
+        <Suspense fallback={<ListSkeleton />}>
+          <CertificateManager />
+        </Suspense>
+      ),
     },
   ];
 

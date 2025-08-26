@@ -30,7 +30,6 @@ export function VideoHero() {
     }
   }, [startTyping]);
 
-  // Measure the video height dynamically
   useEffect(() => {
     const video = videoRef.current;
     const container = containerRef.current;

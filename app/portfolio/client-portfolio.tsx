@@ -6,65 +6,65 @@ import { Trophy, Award, Star, CheckCircle } from "lucide-react";
 import Image from "next/image";
 
 const AchievementsContent = ({ description, items }: { description: string, items: any[] }) => {
-    return (
-        <div className="prose prose-lg max-w-none text-muted-foreground">
-            {description && <p className="leading-relaxed">{description}</p>}
-            <div className="space-y-8 mt-8">
-                {items.map((item: any) => (
-                    <div key={item.id} className="flex items-start gap-6">
-                        <div className="flex-shrink-0">
-                            <Trophy className="h-8 w-8 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
-                            <p className="text-muted-foreground leading-relaxed">{item.description}</p>
-                        </div>
-                    </div>
-                ))}
+  return (
+    <div className="prose prose-lg max-w-none text-muted-foreground">
+      {description && <p className="leading-relaxed">{description}</p>}
+      <div className="space-y-8 mt-8">
+        {items.map((item: any) => (
+          <div key={item.id} className="flex items-start gap-6">
+            <div className="flex-shrink-0">
+              <Trophy className="h-8 w-8 text-primary" />
             </div>
-        </div>
-    );
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const AwardsContent = ({ description, items }: { description: string, items: any[] }) => {
-    return (
-        <div className="prose prose-lg max-w-none text-muted-foreground">
-            {description && <p className="leading-relaxed">{description}</p>}
-            <div className="space-y-8 mt-8">
-                {items.map((item: any) => (
-                    <div key={item.id} className="flex items-start gap-6">
-                        <div className="flex-shrink-0">
-                            <Award className="h-8 w-8 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
-                            <p className="text-muted-foreground leading-relaxed">{item.description}</p>
-                        </div>
-                    </div>
-                ))}
+  return (
+    <div className="prose prose-lg max-w-none text-muted-foreground">
+      {description && <p className="leading-relaxed">{description}</p>}
+      <div className="space-y-8 mt-8">
+        {items.map((item: any) => (
+          <div key={item.id} className="flex items-start gap-6">
+            <div className="flex-shrink-0">
+              <Award className="h-8 w-8 text-primary" />
             </div>
-        </div>
-    );
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-1">{item.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const CertificatesContent = ({ items }: { items: any[] }) => {
-    return (
-        <div>
-             <p className="text-base md:text-lg text-muted-foreground text-center max-w-3xl mx-auto mb-12">
-                We hold numerous certifications from our global technology partners, a testament to our skills and adherence to the highest industry standards.
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
-                {items.map((item: any) => (
-                <div key={item.id} className="flex flex-col items-center justify-center gap-4 text-center group">
-                    <div className="w-40 h-40 rounded-lg bg-card p-4 shadow-md flex items-center justify-center transition-transform group-hover:scale-105 border">
-                        <Image src={item.image_path} alt={item.title} width={150} height={150} className="object-contain" unoptimized />
-                    </div>
-                    <h2 className="font-semibold text-md group-hover:text-primary transition-colors">{item.title}</h2>
-                </div>
-                ))}
+  return (
+    <div>
+      <p className="text-base md:text-lg text-muted-foreground text-center max-w-3xl mx-auto mb-12">
+        We hold numerous certifications from our global technology partners, a testament to our skills and adherence to the highest industry standards.
+      </p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center">
+        {items.map((item: any) => (
+          <div key={item.id} className="flex flex-col items-center justify-center gap-4 text-center group">
+            <div className="w-40 h-40 rounded-lg bg-card p-4 shadow-md flex items-center justify-center transition-transform group-hover:scale-105 border">
+              <Image src={item.image_path} alt={item.title} width={150} height={150} className="object-contain" unoptimized />
             </div>
-        </div>
-    );
+            <h2 className="font-semibold text-md group-hover:text-primary transition-colors">{item.title}</h2>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 
@@ -125,11 +125,10 @@ export default function PortfolioPageClient({ data }: { data: any }) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-t-lg transition-all duration-300 ${
-                  activeTab === tab.id
+                className={`flex items-center gap-2 px-6 py-3 text-lg font-medium rounded-t-lg transition-all duration-300 ${activeTab === tab.id
                     ? "bg-primary text-black border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                }`}
+                  }`}
               >
                 <tab.icon className="h-5 w-5" />
                 {tab.title}

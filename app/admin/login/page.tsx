@@ -24,14 +24,11 @@ const AdminLoginPage = () => {
         setError(result.error);
       }
     } catch (e: any) {
-      // The `redirect()` call in the server action throws an error that Next.js handles.
-      // If the error is NEXT_REDIRECT, we don't need to do anything.
-      // For any other error, we might want to show it.
       if (e.message !== 'NEXT_REDIRECT') {
-          setError('An unexpected error occurred.');
+        setError('An unexpected error occurred.');
       }
     } finally {
-        setIsPending(false);
+      setIsPending(false);
     }
   };
 

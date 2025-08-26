@@ -159,7 +159,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 pt-8 border-t border-border">
+        <div className="mt-8 pt-2 border-t border-border">
           <div className="text-center text-muted-foreground">
             © 2025 | Task Systems Limited
           </div>

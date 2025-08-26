@@ -88,7 +88,6 @@ const EventForm = () => {
       formData.append('links', JSON.stringify(values.links));
     }
     if (values.sections && values.sections.length > 0) {
-        // Handle file uploads in sections
         const sectionsWithFilePaths = await Promise.all(values.sections.map(async (section, sectionIndex) => {
             const contentWithFilePaths = await Promise.all(section.content.map(async (contentBlock, contentIndex) => {
                 if (contentBlock.content_type === 'image_with_description' && contentBlock.content.image?.[0]) {
@@ -98,7 +97,7 @@ const EventForm = () => {
                         ...contentBlock,
                         content: {
                             ...contentBlock.content,
-                            image: imageFile.name, // or a placeholder to be replaced by the server
+                            image: imageFile.name,
                         }
                     };
                 }

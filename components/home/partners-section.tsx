@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useRef, useLayoutEffect } from "react";
 
-// Define the type for a single partner
 interface Partner {
   id: number;
   name: string;
@@ -13,7 +12,6 @@ interface Partner {
   logo_path: string | null;
 }
 
-// Define the props for the PartnersSection component
 interface PartnersSectionProps {
   partners: Partner[];
 }
@@ -27,19 +25,16 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
     if (initialPartners.length > 0) {
       let extendedPartners = [...initialPartners];
       if (marqueeRef.current) {
-        // Calculate how many partners fit on screen
         const containerWidth = marqueeRef.current.offsetWidth;
-        const partnerWidth = 160; // Approx width of one partner item (w-24 + mx-8*2)
+        const partnerWidth = 160; 
         const partnersNeeded = Math.ceil(containerWidth / partnerWidth) + 2;
 
         while (extendedPartners.length < partnersNeeded) {
           extendedPartners = [...extendedPartners, ...initialPartners];
         }
       }
-      // For a seamless loop, we need at least one full set of duplicates
       setPartners([...extendedPartners, ...extendedPartners]);
 
-      // Adjust animation speed based on number of items
       const newDuration = extendedPartners.length * 2.5;
       setAnimationDuration(Math.max(30, newDuration));
     }
@@ -47,7 +42,7 @@ export function PartnersSection({ partners: initialPartners }: PartnersSectionPr
 
   const marqueeVariants = {
     animate: {
-      x: [0, - (partners.length / 2) * 160], // Animate by half the total width
+      x: [0, - (partners.length / 2) * 160],
       transition: {
         x: {
           repeat: Infinity,

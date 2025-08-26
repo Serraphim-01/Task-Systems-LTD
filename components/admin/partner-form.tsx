@@ -9,10 +9,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { addPartner } from './actions';
 import { useToast } from '@/hooks/use-toast';
 
-// Zod schema for validation
 const formSchema = z.object({
   name: z.string().min(1, { message: 'Partner name is required.' }),
-  logo: z.any().optional(), // Using z.any() for file uploads
+  logo: z.any().optional(),
   status: z.string().min(1, { message: 'Status is required.' }),
   link: z.string().url({ message: 'Please enter a valid URL.' }),
   services: z.string().min(1, { message: 'Services are required.' }),
@@ -30,7 +29,6 @@ const PartnerForm = () => {
     },
   });
 
-  // react-hook-form's `register` is needed for file inputs
   const logoRef = form.register('logo');
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -40,7 +38,6 @@ const PartnerForm = () => {
     formData.append('link', values.link);
     formData.append('services', values.services);
 
-    // Append the file if it exists
     if (values.logo && values.logo[0]) {
       formData.append('logo', values.logo[0]);
     }

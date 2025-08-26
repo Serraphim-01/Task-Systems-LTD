@@ -6,7 +6,6 @@ const TextContent = ({ content }: { content: any }) => (
 );
 
 const ImageWithDescriptionContent = ({ content }: { content: any }) => {
-    // The `content.image` should now contain the full URL from Azure Blob Storage
     const imageUrl = content.image;
 
     if (!imageUrl) return null;
@@ -40,7 +39,6 @@ const ContentBlock = ({ block }: { block: any }) => {
 const SectionRenderer = ({ sections }: { sections: any[] }) => {
     if (!sections) return null;
 
-    // Sort sections and their content by order
     const sortedSections = [...sections].sort((a, b) => a.section_order - b.section_order);
     sortedSections.forEach(section => {
         const contentKey = Object.keys(section).find(key => key.endsWith('_section_content'));

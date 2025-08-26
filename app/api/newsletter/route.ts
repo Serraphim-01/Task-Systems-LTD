@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       status: "subscribed",
       merge_fields: {
         FNAME: name,
-        MERGE7: company, // ✔ Correct "Company"
+        MERGE7: company,
         MMERGE2: role,
       },
     }),

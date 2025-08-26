@@ -266,9 +266,8 @@ export default function DiscoverUsPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
                 viewport={{ once: true }}
-                className={`flex flex-col lg:flex-row items-center gap-12 ${
-                  index % 2 !== 0 ? "lg:flex-row-reverse" : ""
-                }`}
+                className={`flex flex-col lg:flex-row items-center gap-12 ${index % 2 !== 0 ? "lg:flex-row-reverse" : ""
+                  }`}
               >
                 {/* Text Content */}
                 <div className="lg:w-1/2">

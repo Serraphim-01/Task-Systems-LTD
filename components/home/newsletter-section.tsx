@@ -12,7 +12,7 @@ export function NewsletterSection() {
     name: "",
     email: "",
     company: "",
-    role: "", // 👈 Add this
+    role: "", 
     privacyAccepted: false,
   });
 

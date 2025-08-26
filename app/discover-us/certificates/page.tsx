@@ -28,7 +28,7 @@ const CertificatesPage = async () => {
             {certificates.map((item: any) => (
               <div key={item.id} className="flex flex-col items-center justify-center gap-4 text-center group">
                 <div className="w-40 h-40 rounded-lg bg-card p-4 shadow-md flex items-center justify-center transition-transform group-hover:scale-105 border">
-                    <Image src={item.image_path} alt={item.title} width={150} height={150} className="object-contain" unoptimized />
+                  <Image src={item.image_path} alt={item.title} width={150} height={150} className="object-contain" unoptimized />
                 </div>
                 <h2 className="font-semibold text-md group-hover:text-primary transition-colors">{item.title}</h2>
               </div>

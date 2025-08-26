@@ -51,7 +51,7 @@ To get the project up and running locally, follow these steps:
     ```
 
 3.  **Set up environment variables**:
-    Create a `.env.local` file in the root of the project. Copy the contents of `.env.example` (if it exists) or `AZURE_CONFIGURATION.md` and fill in the required values for the Azure SQL database and Azure Blob Storage.
+    Create a `.env.local` file in the root of the project. Copy the contents of `.env.example` (if it exists) or `AZURE_INTEGRATION.md` and fill in the required values for the Azure SQL database and Azure Blob Storage.
 
 4.  **Run the development server**:
     ```bash

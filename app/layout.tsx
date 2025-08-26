@@ -31,7 +31,7 @@ export const metadata = {
     siteName: "Task Systems LTD",
     images: [
       {
-        url: "/og-image.png",
+        url: "https://task-systems.netlify.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "Task Systems",

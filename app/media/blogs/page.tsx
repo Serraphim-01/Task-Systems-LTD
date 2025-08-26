@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React from 'react';
 import { MediaNav } from '@/components/media-nav';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
 
 export const metadata = {
   title: "Blogs",
@@ -46,7 +46,7 @@ const BlogsListPage = async () => {
                 <Link href={`/media/blogs/${blog.id}`} key={blog.id} className="bg-card border border-border rounded-lg overflow-hidden flex flex-col shadow-md hover:shadow-lg transition-shadow group">
                   <div className="relative w-full h-48 bg-muted">
                     {imageUrl ? (
-                      <Image src={imageUrl} alt={blog.title} layout="fill" className="object-cover" unoptimized/>
+                      <Image src={imageUrl} alt={blog.title} layout="fill" className="object-cover" unoptimized />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Rss className="w-12 h-12 text-muted-foreground" />
@@ -56,8 +56,8 @@ const BlogsListPage = async () => {
                   <div className="p-6 flex flex-col flex-grow">
                     <h2 className="text-xl font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">{blog.title}</h2>
                     <p className="text-sm text-muted-foreground mb-4">
-                        {new Date(blog.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                        {blog.author && ` • By ${blog.author}`}
+                      {new Date(blog.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                      {blog.author && ` • By ${blog.author}`}
                     </p>
                     {blog.short_description && <p className="text-muted-foreground flex-grow line-clamp-3">{blog.short_description}</p>}
                   </div>

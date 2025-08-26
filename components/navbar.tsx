@@ -62,7 +62,7 @@ const SearchComponent = ({
 
   useEffect(() => {
     const fetchPartners = async () => {
-    const partners = await getPartners(); // ✅ safe call
+    const partners = await getPartners();
     if (partners) {
       const partnerSearchData = partners.map((partner: any) => ({
         name: partner.name,

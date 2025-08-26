@@ -6,55 +6,55 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import SectionRenderer from '@/components/media/SectionRenderer';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
 
 async function getBlog(id: string) {
-    const db = await getRoDb();
-    const blogResult = await db.request().input('id', id).query('SELECT * FROM blogs WHERE id = @id');
-    const blog = blogResult.recordset[0];
+  const db = await getRoDb();
+  const blogResult = await db.request().input('id', id).query('SELECT * FROM blogs WHERE id = @id');
+  const blog = blogResult.recordset[0];
 
-    if (!blog) {
-        notFound();
-    }
+  if (!blog) {
+    notFound();
+  }
 
-    const sectionsResult = await db.request().input('blog_id', id).query('SELECT * FROM blog_sections WHERE blog_id = @blog_id');
-    const sections = sectionsResult.recordset;
+  const sectionsResult = await db.request().input('blog_id', id).query('SELECT * FROM blog_sections WHERE blog_id = @blog_id');
+  const sections = sectionsResult.recordset;
 
-    for (const section of sections) {
-        const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM blog_section_content WHERE section_id = @section_id');
-        section.blog_section_content = contentResult.recordset.map((content: any) => {
-            if (typeof content.content === 'string') {
-                try {
-                    content.content = JSON.parse(content.content);
-                } catch (e) {
-                    console.error("Failed to parse content JSON", e);
-                }
-            }
-            return content;
-        });
-    }
+  for (const section of sections) {
+    const contentResult = await db.request().input('section_id', section.id).query('SELECT * FROM blog_section_content WHERE section_id = @section_id');
+    section.blog_section_content = contentResult.recordset.map((content: any) => {
+      if (typeof content.content === 'string') {
+        try {
+          content.content = JSON.parse(content.content);
+        } catch (e) {
+          console.error("Failed to parse content JSON", e);
+        }
+      }
+      return content;
+    });
+  }
 
-    blog.blog_sections = sections;
+  blog.blog_sections = sections;
 
-    return blog;
+  return blog;
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    try {
-        const blog = await getBlog(params.id);
-        return {
-            title: blog.title,
-            description: blog.short_description,
-        };
-    } catch (error) {
-        return {
-            title: 'Blog Post Not Found',
-            description: 'The requested blog post could not be found.',
-        }
+  try {
+    const blog = await getBlog(params.id);
+    return {
+      title: blog.title,
+      description: blog.short_description,
+    };
+  } catch (error) {
+    return {
+      title: 'Blog Post Not Found',
+      description: 'The requested blog post could not be found.',
     }
+  }
 }
 
-const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
+const BlogDetailPage = async ({ params }: { params: { id: string } }) => {
   const blog = await getBlog(params.id);
   const imageUrl = blog.image_path;
   const docUrl = blog.document_path;
@@ -63,8 +63,8 @@ const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
     <div className="bg-background text-foreground">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         <Link href="/media/blogs" className="inline-flex items-center gap-2 text-primary hover:underline mb-8 font-semibold">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Blogs
+          <ArrowLeft className="h-4 w-4" />
+          Back to Blogs
         </Link>
         <article className="bg-card border border-border rounded-lg p-6 md:p-8 shadow-sm">
           <header>
@@ -78,7 +78,7 @@ const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
 
           {imageUrl && (
             <div className="my-6">
-                <Image src={imageUrl} alt={blog.title} width={800} height={450} className="rounded-md object-cover" unoptimized/>
+              <Image src={imageUrl} alt={blog.title} width={800} height={450} className="rounded-md object-cover" unoptimized />
             </div>
           )}
 
@@ -88,8 +88,8 @@ const BlogDetailPage = async ({ params }: { params: { id:string } }) => {
             {docUrl && (
               <a href={docUrl} target="_blank" rel="noopener noreferrer" className="block mb-4 text-primary hover:underline font-semibold">
                 <div className="inline-flex items-center gap-2">
-                    <Paperclip className="h-5 w-5" />
-                    Download Attached Document
+                  <Paperclip className="h-5 w-5" />
+                  Download Attached Document
                 </div>
               </a>
             )}

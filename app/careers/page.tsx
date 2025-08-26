@@ -2,7 +2,7 @@ import { getRoDb } from '@/lib/azure';
 import { Wind } from 'lucide-react';
 import React from 'react';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
 
 export const metadata = {
   title: "Careers",

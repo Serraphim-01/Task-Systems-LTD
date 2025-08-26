@@ -93,7 +93,7 @@ const BlogForm = () => {
                         ...contentBlock,
                         content: {
                             ...contentBlock.content,
-                            image: imageFile.name, // or a placeholder to be replaced by the server
+                            image: imageFile.name,
                         }
                     };
                 }

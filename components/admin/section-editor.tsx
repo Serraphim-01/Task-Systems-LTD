@@ -95,7 +95,7 @@ const ContentBlock = ({ sectionIndex, contentIndex, removeContent, layout, uploa
                               });
 
                               const data = await res.json();
-                              field.onChange(data.url); // save blob URL to form
+                              field.onChange(data.url);
                             }
                           }}
                         />

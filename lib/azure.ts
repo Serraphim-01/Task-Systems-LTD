@@ -1,4 +1,3 @@
-// lib/db.ts (server-only)
 "use server";
 import sql from "mssql";
 

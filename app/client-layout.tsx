@@ -15,7 +15,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   const isAdminPage = pathname.startsWith('/admin');
 
   useEffect(() => {
-    // 🌐 Hidden developer claim
     if (typeof window !== "undefined") {
       window.__SERRAPHIM = "c2VycmFwaGltOjpkZXZlbG9wZXItY2xhaW06OjIwMjU=";
     }

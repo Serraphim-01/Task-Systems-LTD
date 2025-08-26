@@ -5,7 +5,7 @@ import Link from 'next/link';
 import React from 'react';
 import { MediaNav } from '@/components/media-nav';
 
-export const revalidate = 60; // Revalidate every 60 seconds
+export const revalidate = 60;
 
 export const metadata = {
   title: "Announcements",

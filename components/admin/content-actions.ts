@@ -38,7 +38,6 @@ export async function updatePageDescription(formData: FormData) {
             `);
 
         revalidatePath('/admin');
-        // Also revalidate the public page, assuming a path structure
         revalidatePath(`/discover-us/${page_key.replace('_page', '')}`);
 
         return { success: 'Description updated successfully.' };
