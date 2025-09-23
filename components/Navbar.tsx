@@ -110,8 +110,12 @@ export default function Navbar() {
 
       {/* Dropdown */}
       <div
-        className={`absolute left-0 top-full w-screen overflow-hidden border-t border-gray-200 bg-white shadow-lg transition-all duration-500 ease-in-out
-        ${open !== null ? "max-h-96 opacity-100" : "max-h-0 opacity-0"}`}
+        className={`absolute left-0 top-full w-screen overflow-hidden border-t border-gray-200 bg-white shadow-lg transition-all duration-300 ease-in-out
+        ${
+          open !== null
+            ? "max-h-96 opacity-100 translate-y-0"
+            : "max-h-0 opacity-0 -translate-y-4"
+        }`}
       >
         {open !== null && "links" in navItems[open] && (
           <div className="mx-auto max-w-7xl px-6 py-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -119,10 +123,14 @@ export default function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`block rounded-md px-4 py-3 text-base font-medium transition-all duration-500 ease-out
-                  ${open !== null ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                className={`block rounded-md px-4 py-3 text-base font-medium transition-all duration-300 ease-out
+                  ${
+                    open !== null
+                      ? "translate-y-0 opacity-100"
+                      : "translate-y-4 opacity-0"
+                  }`}
                 style={{
-                  transitionDelay: `${idx * 100}ms`,
+                  transitionDelay: `${idx * 50}ms`,
                 }}
               >
                 {link.name}
