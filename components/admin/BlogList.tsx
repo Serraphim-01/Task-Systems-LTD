@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/sqlite';
+import { getDb } from '@/lib/postgres';
 import { Trash2 } from 'lucide-react';
 import { deleteBlog } from './actions';
 import { Button } from '@/components/ui/button';
