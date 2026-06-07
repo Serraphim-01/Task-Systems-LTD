@@ -1,4 +1,4 @@
-import { getDb } from '@/lib/azure';
+import { getDb } from '@/lib/sqlite';
 import { Trash2 } from 'lucide-react';
 import { deletePartner } from './actions';
 import { Button } from '@/components/ui/button';

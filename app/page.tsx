@@ -9,7 +9,7 @@ import { DirectorsSection } from '@/components/home/directors-section';
 import { ManagementSection } from '@/components/home/management-section';
 import { PartnersSection } from '@/components/home/partners-section';
 import { NewsletterSection } from '@/components/home/newsletter-section';
-import { getRoDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/postgres';
 
 async function getPartners() {
   const db = await getRoDb();

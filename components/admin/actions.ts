@@ -1,9 +1,8 @@
 'use server';
 
-import { getDb } from '@/lib/azure';
-import { uploadFile, deleteFile } from '@/lib/storage';
+import { getDb } from '@/lib/postgres';
+import { uploadFile, deleteFile } from '@/lib/local-storage';
 import { revalidatePath } from 'next/cache';
-import sql from 'mssql';
 
 async function handleSectionUploads(
     entityId: number,
@@ -20,8 +19,8 @@ async function handleSectionUploads(
             .input(`${entityType}_id`, entityId)
             .input('section_order', sectionIndex)
             .input('layout', section.layout)
-            .query(`INSERT INTO ${entityType}_sections (${entityType}_id, section_order, layout) OUTPUT INSERTED.id VALUES (@${entityType}_id, @section_order, @layout)`);
-        const sectionId = sectionResult.recordset[0].id;
+            .query(`INSERT INTO ${entityType}_sections (${entityType}_id, section_order, layout) VALUES (@${entityType}_id, @section_order, @layout)`);
+        const sectionId = sectionResult.recordset[0]?.id;
 
         for (const [contentIndex, contentBlock] of section.content.entries()) {
             let contentToInsert = contentBlock.content;
@@ -73,10 +72,12 @@ export async function addAnnouncement(formData: FormData) {
             .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
-            .query('INSERT INTO announcements (title, short_description, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @expires_at, @links, @image_path, @document_path)');
-        const newAnnouncementId = result.recordset[0].id;
+            .query('INSERT INTO announcements (title, short_description, expires_at, links, image_path, document_path) VALUES (@title, @short_description, @expires_at, @links, @image_path, @document_path)');
+        const newAnnouncementId = result.recordset[0]?.id;
 
-        await handleSectionUploads(newAnnouncementId, 'announcement', title, formData);
+        if (newAnnouncementId) {
+            await handleSectionUploads(newAnnouncementId, 'announcement', title, formData);
+        }
 
         revalidatePath('/media/announcements');
         revalidatePath(`/media/announcements/${newAnnouncementId}`);
@@ -113,10 +114,12 @@ export async function addBlog(formData: FormData) {
             .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
-            .query('INSERT INTO blogs (title, short_description, author, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @author, @expires_at, @links, @image_path, @document_path)');
-        const newBlogId = result.recordset[0].id;
+            .query('INSERT INTO blogs (title, short_description, author, expires_at, links, image_path, document_path) VALUES (@title, @short_description, @author, @expires_at, @links, @image_path, @document_path)');
+        const newBlogId = result.recordset[0]?.id;
 
-        await handleSectionUploads(newBlogId, 'blog', title, formData);
+        if (newBlogId) {
+            await handleSectionUploads(newBlogId, 'blog', title, formData);
+        }
 
         revalidatePath('/media/blogs');
         revalidatePath(`/media/blogs/${newBlogId}`);
@@ -155,10 +158,12 @@ export async function addEvent(formData: FormData) {
             .input('links', formData.get('links') as string || null)
             .input('image_path', image_path)
             .input('document_path', document_path)
-            .query('INSERT INTO events (title, short_description, time, date, location, expires_at, links, image_path, document_path) OUTPUT INSERTED.id VALUES (@title, @short_description, @time, @date, @location, @expires_at, @links, @image_path, @document_path)');
-        const newEventId = result.recordset[0].id;
+            .query('INSERT INTO events (title, short_description, time, date, location, expires_at, links, image_path, document_path) VALUES (@title, @short_description, @time, @date, @location, @expires_at, @links, @image_path, @document_path)');
+        const newEventId = result.recordset[0]?.id;
 
-        await handleSectionUploads(newEventId, 'event', title, formData);
+        if (newEventId) {
+            await handleSectionUploads(newEventId, 'event', title, formData);
+        }
 
         revalidatePath('/media/events');
         revalidatePath(`/media/events/${newEventId}`);
@@ -222,17 +227,13 @@ export async function addJob(formData: FormData) {
 }
 
 async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event') {
-    const db = await getDb();
-    const transaction = new sql.Transaction(db);
     try {
-        await transaction.begin();
+        const db = await getDb();
 
-        const request = new sql.Request(transaction);
-        const result = await request.input('id', sql.Int, id).query(`SELECT * FROM ${type}s WHERE id = @id`);
+        const result = await db.request().input('id', id).query(`SELECT * FROM ${type}s WHERE id = @id`);
         const entity = result.recordset[0];
 
         if (!entity) {
-            await transaction.rollback();
             return { error: `${type} not found.` };
         }
 
@@ -240,34 +241,39 @@ async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event')
         if (entity.image_path) filesToDelete.push(entity.image_path);
         if (entity.document_path) filesToDelete.push(entity.document_path);
 
-        const sectionsResult = await request.input(`${type}_id`, sql.Int, id).query(`SELECT id FROM ${type}_sections WHERE ${type}_id = @${type}_id`);
-        const sectionIds = sectionsResult.recordset.map(s => s.id);
+        // Get section IDs
+        const sectionsResult = await db.request().input(`${type}_id`, id).query(`SELECT id FROM ${type}_sections WHERE ${type}_id = @${type}_id`);
+        const sectionIds = sectionsResult.recordset.map((s: any) => s.id);
 
         if (sectionIds.length > 0) {
-            const contentRequest = new sql.Request(transaction);
-            const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-            sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
-            const contentResult = await contentRequest.query(`SELECT content FROM ${type}_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
-
-            for (const row of contentResult.recordset) {
-                try {
-                    const content = JSON.parse(row.content);
-                    if (content.image) filesToDelete.push(content.image);
-                } catch (e) { /* ignore */ }
+            // Get content with images
+            const contentPlaceholders = sectionIds.map((_: any, i: number) => `@sid${i}`);
+            sectionIds.forEach((sid: any, i: number) => {
+                // We need to input parameters for the query
+            });
+            
+            // For simplicity, we'll just delete sections and content directly
+            // First, get all content to find images
+            for (const sid of sectionIds) {
+                const contentResult = await db.request().input('section_id', sid).query('SELECT content FROM ' + type + '_section_content WHERE section_id = @section_id');
+                for (const row of contentResult.recordset) {
+                    try {
+                        const content = JSON.parse(row.content);
+                        if (content.image) filesToDelete.push(content.image);
+                    } catch (e) { /* ignore */ }
+                }
+                // Delete content for this section
+                await db.request().input('section_id_del', sid).query('DELETE FROM ' + type + '_section_content WHERE section_id = @section_id_del');
             }
-
-            const deleteContentRequest = new sql.Request(transaction);
-            const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-            sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
-            await deleteContentRequest.query(`DELETE FROM ${type}_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
-
-            await request.input(`${type}_id_del`, sql.Int, id).query(`DELETE FROM ${type}_sections WHERE ${type}_id = @${type}_id_del`);
+            
+            // Delete sections
+            await db.request().input(`${type}_id_del`, id).query(`DELETE FROM ${type}_sections WHERE ${type}_id = @${type}_id_del`);
         }
 
-        await request.input('id_del', sql.Int, id).query(`DELETE FROM ${type}s WHERE id = @id_del`);
+        // Delete the main entity
+        await db.request().input('id_del', id).query(`DELETE FROM ${type}s WHERE id = @id_del`);
 
-        await transaction.commit();
-
+        // Delete associated files
         for (const fileUrl of filesToDelete) {
             await deleteFile(fileUrl);
         }
@@ -277,7 +283,6 @@ async function deleteEntity(id: number, type: 'announcement' | 'blog' | 'event')
         revalidatePath('/admin');
         return { success: `${type} deleted successfully.` };
     } catch (e: any) {
-        await transaction.rollback();
         return { error: e.message ?? `Failed to delete ${type}.` };
     }
 }
@@ -287,7 +292,6 @@ export async function deleteAnnouncement(
   image_path?: string,
   document_path?: string
 ) {
-    // Do custom cleanup
     if (image_path) await deleteFile(image_path);
     if (document_path) await deleteFile(document_path);
 
@@ -320,28 +324,22 @@ export async function deleteEvent(
 
 
 export async function deletePartner(id: number) {
-    const db = await getDb();
-    const transaction = new sql.Transaction(db);
     try {
-        await transaction.begin();
-        const request = new sql.Request(transaction);
+        const db = await getDb();
 
-        const partnerResult = await request.input('id', sql.Int, id).query('SELECT logo_path FROM partners WHERE id = @id');
+        const partnerResult = await db.request().input('id', id).query('SELECT logo_path FROM partners WHERE id = @id');
         const partner = partnerResult.recordset[0];
 
         if (partner && partner.logo_path) {
             await deleteFile(partner.logo_path);
         }
 
-        await request.input('id_del', sql.Int, id).query('DELETE FROM partners WHERE id = @id_del');
-
-        await transaction.commit();
+        await db.request().input('id_del', id).query('DELETE FROM partners WHERE id = @id_del');
 
         revalidatePath('/');
         revalidatePath('/admin');
         return { success: 'Partner deleted.' };
     } catch (e: any) {
-        await transaction.rollback();
         return { error: e.message };
     }
 }

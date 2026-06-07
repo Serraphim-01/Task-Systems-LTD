@@ -12,8 +12,8 @@ This is a Next.js web application for Task Systems, an enterprise ICT solutions 
 *   **Language**: [TypeScript](https://www.typescriptlang.org/)
 *   **Styling**: [Tailwind CSS](https://tailwindcss.com/)
 *   **UI Components**: [Shadcn UI](https://ui.shadcn.com/)
-*   **Database**: [Azure SQL](https://azure.microsoft.com/en-us/products/azure-sql/database/)
-*   **File Storage**: [Azure Blob Storage](https://azure.microsoft.com/en-us/products/storage/blobs)
+*   **Database**: [PostgreSQL](https://www.postgresql.org/)
+*   **File Storage**: Local file system
 *   **Form Management**: [React Hook Form](https://react-hook-form.com/)
 *   **Schema Validation**: [Zod](https://zod.dev/)
 
@@ -30,8 +30,8 @@ The project follows the standard Next.js `app` directory structure:
     *   `components/home/`: Components specific to the home page.
     *   `components/admin/`: Components for the admin panel.
 *   `lib/`: Contains utility functions and helper modules.
-    *   `lib/azure.ts`: Handles the connection to the Azure SQL database.
-    *   `lib/storage.ts`: Handles file uploads and deletions to Azure Blob Storage.
+*   `lib/postgres.ts`: Handles the connection to the PostgreSQL database.
+*   `lib/local-storage.ts`: Handles file uploads and deletions to local file system.
     *   `lib/utils.ts`: General utility functions.
 *   `public/`: Contains all the static assets like images, videos, and fonts.
 *   `types/`: Contains all the TypeScript type definitions.
@@ -51,7 +51,7 @@ To get the project up and running locally, follow these steps:
     ```
 
 3.  **Set up environment variables**:
-    Create a `.env.local` file in the root of the project. Copy the contents of `.env.example` (if it exists) or `AZURE_INTEGRATION.md` and fill in the required values for the Azure SQL database and Azure Blob Storage.
+     Create a `.env.local` file in the root of the project and fill in the required values for the PostgreSQL database.
 
 4.  **Run the development server**:
     ```bash

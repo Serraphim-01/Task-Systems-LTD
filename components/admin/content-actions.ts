@@ -1,15 +1,14 @@
 'use server';
 
-import { getDb, getRoDb } from '@/lib/azure';
-import { uploadFile, deleteFile } from '@/lib/storage';
+import { getDb, getRoDb } from '@/lib/postgres';
+import { uploadFile, deleteFile } from '@/lib/local-storage';
 import { revalidatePath } from 'next/cache';
-import sql from 'mssql';
 
 // Page Descriptions
 export async function getPageDescription(page_key: string) {
     const db = await getDb();
     const result = await db.request()
-        .input('page_key', sql.NVarChar, page_key)
+        .input('page_key', page_key)
         .query('SELECT description FROM page_descriptions WHERE page_key = @page_key');
     return result.recordset[0]?.description || '';
 }
@@ -25,16 +24,11 @@ export async function updatePageDescription(formData: FormData) {
 
         const db = await getDb();
         await db.request()
-            .input('page_key', sql.NVarChar, page_key)
-            .input('description', sql.NVarChar, description)
+            .input('page_key', page_key)
+            .input('description', description)
             .query(`
-                MERGE page_descriptions AS target
-                USING (SELECT @page_key AS page_key) AS source
-                ON (target.page_key = source.page_key)
-                WHEN MATCHED THEN
-                    UPDATE SET description = @description, updated_at = SYSDATETIMEOFFSET()
-                WHEN NOT MATCHED THEN
-                    INSERT (page_key, description) VALUES (@page_key, @description);
+                INSERT OR REPLACE INTO page_descriptions (page_key, description, updated_at) 
+                VALUES (@page_key, @description, CURRENT_TIMESTAMP)
             `);
 
         revalidatePath('/admin');
@@ -64,8 +58,8 @@ export async function addAchievement(formData: FormData) {
 
         const db = await getDb();
         await db.request()
-            .input('title', sql.NVarChar, title)
-            .input('description', sql.NVarChar, description)
+            .input('title', title)
+            .input('description', description)
             .query('INSERT INTO achievements (title, description) VALUES (@title, @description)');
 
         revalidatePath('/admin');
@@ -79,7 +73,7 @@ export async function addAchievement(formData: FormData) {
 export async function deleteAchievement(id: number) {
     try {
         const db = await getDb();
-        await db.request().input('id', sql.Int, id).query('DELETE FROM achievements WHERE id = @id');
+        await db.request().input('id', id).query('DELETE FROM achievements WHERE id = @id');
         revalidatePath('/admin');
         revalidatePath('/discover-us/achievements');
         return { success: 'Achievement deleted successfully.' };
@@ -106,8 +100,8 @@ export async function addAward(formData: FormData) {
 
         const db = await getDb();
         await db.request()
-            .input('title', sql.NVarChar, title)
-            .input('description', sql.NVarChar, description)
+            .input('title', title)
+            .input('description', description)
             .query('INSERT INTO awards (title, description) VALUES (@title, @description)');
 
         revalidatePath('/admin');
@@ -121,7 +115,7 @@ export async function addAward(formData: FormData) {
 export async function deleteAward(id: number) {
     try {
         const db = await getDb();
-        await db.request().input('id', sql.Int, id).query('DELETE FROM awards WHERE id = @id');
+        await db.request().input('id', id).query('DELETE FROM awards WHERE id = @id');
         revalidatePath('/admin');
         revalidatePath('/discover-us/awards');
         return { success: 'Award deleted successfully.' };
@@ -153,8 +147,8 @@ export async function addCertificate(formData: FormData) {
 
         const db = await getDb();
         await db.request()
-            .input('title', sql.NVarChar, title)
-            .input('image_path', sql.NVarChar, image_path)
+            .input('title', title)
+            .input('image_path', image_path)
             .query('INSERT INTO certificates (title, image_path) VALUES (@title, @image_path)');
 
         revalidatePath('/admin');
@@ -166,28 +160,22 @@ export async function addCertificate(formData: FormData) {
 }
 
 export async function deleteCertificate(id: number) {
-    const db = await getDb();
-    const transaction = new sql.Transaction(db);
     try {
-        await transaction.begin();
+        const db = await getDb();
 
-        const request = new sql.Request(transaction);
-        const result = await request.input('id', sql.Int, id).query('SELECT image_path FROM certificates WHERE id = @id');
+        const result = await db.request().input('id', id).query('SELECT image_path FROM certificates WHERE id = @id');
         const certificate = result.recordset[0];
 
         if (certificate && certificate.image_path) {
             await deleteFile(certificate.image_path);
         }
 
-        await request.input('id_del', sql.Int, id).query('DELETE FROM certificates WHERE id = @id_del');
-
-        await transaction.commit();
+        await db.request().input('id_del', id).query('DELETE FROM certificates WHERE id = @id_del');
 
         revalidatePath('/admin');
         revalidatePath('/discover-us/certificates');
         return { success: 'Certificate deleted successfully.' };
     } catch (e: any) {
-        await transaction.rollback();
         return { error: e.message };
     }
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import { getRoDb } from "@/lib/azure";
+import { getRoDb } from "@/lib/postgres";
 
 export async function getDirectorsForHome() {
   const db = await getRoDb();

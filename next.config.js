@@ -6,6 +6,7 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  output: 'standalone', // Required for Docker deployment
   images: {
     remotePatterns: [
       {

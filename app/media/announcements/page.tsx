@@ -1,4 +1,4 @@
-import { getRoDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/postgres';
 import { Megaphone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -14,12 +14,7 @@ export const metadata = {
 
 async function getAnnouncements() {
   const db = await getRoDb();
-  const result = await db.request().query`
-    SELECT *
-    FROM announcements
-    WHERE expires_at IS NULL OR expires_at > GETDATE()
-    ORDER BY created_at DESC
-  `;
+  const result = await db.request().query('SELECT * FROM announcements WHERE expires_at IS NULL OR expires_at > DATETIME("now") ORDER BY created_at DESC');
   return result.recordset;
 }
 

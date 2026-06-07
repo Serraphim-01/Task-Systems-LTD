@@ -1,4 +1,4 @@
-import { getRoDb } from '@/lib/azure';
+import { getRoDb } from '@/lib/postgres';
 import { Wind } from 'lucide-react';
 import React from 'react';
 
@@ -11,12 +11,7 @@ export const metadata = {
 
 async function getJobs() {
   const db = await getRoDb();
-  const result = await db.request().query`
-    SELECT *
-    FROM jobs
-    WHERE expires_at IS NULL OR expires_at > GETDATE()
-    ORDER BY title ASC
-  `;
+  const result = await db.request().query('SELECT * FROM jobs WHERE expires_at IS NULL OR expires_at > DATETIME("now") ORDER BY title ASC');
   return result.recordset;
 }
 

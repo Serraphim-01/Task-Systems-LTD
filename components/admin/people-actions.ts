@@ -1,9 +1,8 @@
 'use server';
 
-import { getDb } from '@/lib/azure';
-import { uploadFile, deleteFile } from '@/lib/storage';
+import { getDb } from '@/lib/postgres';
+import { uploadFile, deleteFile } from '@/lib/local-storage';
 import { revalidatePath } from 'next/cache';
-import sql from 'mssql';
 
 export async function getDirectors() {
     const db = await getDb();
@@ -36,18 +35,18 @@ export async function addDirector(formData: FormData) {
         .input('image_path', image_path)
         .input('company', company)
         .input('person_group', person_group)
-        .query('INSERT INTO directors (name, position, image_path, company, person_group) OUTPUT INSERTED.id VALUES (@name, @position, @image_path, @company, @person_group)');
-    const directorId = directorResult.recordset[0].id;
+        .query('INSERT INTO directors (name, position, image_path, company, person_group) VALUES (@name, @position, @image_path, @company, @person_group)');
+    const directorId = directorResult.recordset[0]?.id;
 
-    if (sections) {
+    if (sections && directorId) {
         const parsedSections = JSON.parse(sections);
         for (const [sectionIndex, section] of parsedSections.entries()) {
             const sectionResult = await db.request()
                 .input('director_id', directorId)
                 .input('section_order', sectionIndex)
                 .input('layout', section.layout)
-                .query('INSERT INTO director_sections (director_id, section_order, layout) OUTPUT INSERTED.id VALUES (@director_id, @section_order, @layout)');
-            const sectionId = sectionResult.recordset[0].id;
+                .query('INSERT INTO director_sections (director_id, section_order, layout) VALUES (@director_id, @section_order, @layout)');
+            const sectionId = sectionResult.recordset[0]?.id;
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
@@ -81,17 +80,13 @@ export async function addDirector(formData: FormData) {
 }
 
 export async function deleteDirector(id: number): Promise<{ success?: string; error?: string }> {
-  const db = await getDb();
-  const transaction = new sql.Transaction(db);
   try {
-    await transaction.begin();
+    const db = await getDb();
 
-    const request = new sql.Request(transaction);
-    const directorResult = await request.input('id', sql.Int, id).query('SELECT * FROM directors WHERE id = @id');
+    const directorResult = await db.request().input('id', id).query('SELECT * FROM directors WHERE id = @id');
     const director = directorResult.recordset[0];
 
     if (!director) {
-      await transaction.rollback();
       return { error: 'Director not found.' };
     }
 
@@ -100,37 +95,34 @@ export async function deleteDirector(id: number): Promise<{ success?: string; er
       filesToDelete.push(director.image_path);
     }
 
-    const sectionsResult = await request.input('director_id', sql.Int, id).query('SELECT id FROM director_sections WHERE director_id = @director_id');
-    const sectionIds = sectionsResult.recordset.map(s => s.id);
+    // Get section IDs
+    const sectionsResult = await db.request().input('director_id', id).query('SELECT id FROM director_sections WHERE director_id = @director_id');
+    const sectionIds = sectionsResult.recordset.map((s: any) => s.id);
 
     if (sectionIds.length > 0) {
-      const contentRequest = new sql.Request(transaction);
-      const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-      sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
-
-      const contentResult = await contentRequest.query(`SELECT content FROM director_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
-
-      for (const row of contentResult.recordset) {
-        try {
-          const content = JSON.parse(row.content);
-          if (content.image) {
-            filesToDelete.push(content.image);
-          }
-        } catch (e) { }
-      }
-
-      const deleteContentRequest = new sql.Request(transaction);
-      const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-      sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
-      await deleteContentRequest.query(`DELETE FROM director_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
-
-      await request.input('director_id_del', sql.Int, id).query('DELETE FROM director_sections WHERE director_id = @director_id_del');
+        // Get content with images
+        for (const sid of sectionIds) {
+            const contentResult = await db.request().input('section_id', sid).query('SELECT content FROM director_section_content WHERE section_id = @section_id');
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) {
+                        filesToDelete.push(content.image);
+                    }
+                } catch (e) { }
+            }
+            // Delete content for this section
+            await db.request().input('section_id_del', sid).query('DELETE FROM director_section_content WHERE section_id = @section_id_del');
+        }
+        
+        // Delete sections
+        await db.request().input('director_id_del', id).query('DELETE FROM director_sections WHERE director_id = @director_id_del');
     }
 
-    await request.input('id_del', sql.Int, id).query('DELETE FROM directors WHERE id = @id_del');
+    // Delete the director
+    await db.request().input('id_del', id).query('DELETE FROM directors WHERE id = @id_del');
 
-    await transaction.commit();
-
+    // Delete associated files
     for (const fileUrl of filesToDelete) {
       await deleteFile(fileUrl);
     }
@@ -140,7 +132,6 @@ export async function deleteDirector(id: number): Promise<{ success?: string; er
     return { success: 'Director deleted successfully.' };
 
   } catch (e: any) {
-    await transaction.rollback();
     return { error: e.message ?? 'Failed to delete director.' };
   }
 }
@@ -171,18 +162,18 @@ export async function addManagement(formData: FormData) {
         .input('image_path', image_path)
         .input('company', company)
         .input('person_group', person_group)
-        .query('INSERT INTO management (name, position, image_path, company, person_group) OUTPUT INSERTED.id VALUES (@name, @position, @image_path, @company, @person_group)');
-    const managementId = managementResult.recordset[0].id;
+        .query('INSERT INTO management (name, position, image_path, company, person_group) VALUES (@name, @position, @image_path, @company, @person_group)');
+    const managementId = managementResult.recordset[0]?.id;
 
-    if (sections) {
+    if (sections && managementId) {
         const parsedSections = JSON.parse(sections);
         for (const [sectionIndex, section] of parsedSections.entries()) {
             const sectionResult = await db.request()
                 .input('management_id', managementId)
                 .input('section_order', sectionIndex)
                 .input('layout', section.layout)
-                .query('INSERT INTO management_sections (management_id, section_order, layout) OUTPUT INSERTED.id VALUES (@management_id, @section_order, @layout)');
-            const sectionId = sectionResult.recordset[0].id;
+                .query('INSERT INTO management_sections (management_id, section_order, layout) VALUES (@management_id, @section_order, @layout)');
+            const sectionId = sectionResult.recordset[0]?.id;
 
             for (const [contentIndex, contentBlock] of section.content.entries()) {
                 let finalContent = contentBlock.content;
@@ -218,17 +209,13 @@ export async function addManagement(formData: FormData) {
 type DeleteResult = { success: string } | { error: string };
 
 export async function deleteManagement(id: number): Promise<DeleteResult> {
-  const db = await getDb();
-  const transaction = new sql.Transaction(db);
   try {
-    await transaction.begin();
+    const db = await getDb();
 
-    const request = new sql.Request(transaction);
-    const managementResult = await request.input('id', sql.Int, id).query('SELECT * FROM management WHERE id = @id');
+    const managementResult = await db.request().input('id', id).query('SELECT * FROM management WHERE id = @id');
     const management = managementResult.recordset[0];
 
     if (!management) {
-      await transaction.rollback();
       return { error: 'Management not found.' };
     }
 
@@ -237,37 +224,34 @@ export async function deleteManagement(id: number): Promise<DeleteResult> {
       filesToDelete.push(management.image_path);
     }
 
-    const sectionsResult = await request.input('management_id', sql.Int, id).query('SELECT id FROM management_sections WHERE management_id = @management_id');
-    const sectionIds = sectionsResult.recordset.map(s => s.id);
+    // Get section IDs
+    const sectionsResult = await db.request().input('management_id', id).query('SELECT id FROM management_sections WHERE management_id = @management_id');
+    const sectionIds = sectionsResult.recordset.map((s: any) => s.id);
 
     if (sectionIds.length > 0) {
-      const contentRequest = new sql.Request(transaction);
-      const contentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-      sectionIds.forEach((sid, i) => contentRequest.input(`sid${i}`, sql.Int, sid));
-
-      const contentResult = await contentRequest.query(`SELECT content FROM management_section_content WHERE section_id IN (${contentPlaceholders.join(',')})`);
-
-      for (const row of contentResult.recordset) {
-        try {
-          const content = JSON.parse(row.content);
-          if (content.image) {
-            filesToDelete.push(content.image);
-          }
-        } catch (e) { }
-      }
-
-      const deleteContentRequest = new sql.Request(transaction);
-      const deleteContentPlaceholders = sectionIds.map((sid, i) => `@sid${i}`);
-      sectionIds.forEach((sid, i) => deleteContentRequest.input(`sid${i}`, sql.Int, sid));
-      await deleteContentRequest.query(`DELETE FROM management_section_content WHERE section_id IN (${deleteContentPlaceholders.join(',')})`);
-
-      await request.input('management_id_del', sql.Int, id).query('DELETE FROM management_sections WHERE management_id = @management_id_del');
+        // Get content with images
+        for (const sid of sectionIds) {
+            const contentResult = await db.request().input('section_id', sid).query('SELECT content FROM management_section_content WHERE section_id = @section_id');
+            for (const row of contentResult.recordset) {
+                try {
+                    const content = JSON.parse(row.content);
+                    if (content.image) {
+                        filesToDelete.push(content.image);
+                    }
+                } catch (e) { }
+            }
+            // Delete content for this section
+            await db.request().input('section_id_del', sid).query('DELETE FROM management_section_content WHERE section_id = @section_id_del');
+        }
+        
+        // Delete sections
+        await db.request().input('management_id_del', id).query('DELETE FROM management_sections WHERE management_id = @management_id_del');
     }
 
-    await request.input('id_del', sql.Int, id).query('DELETE FROM management WHERE id = @id_del');
+    // Delete the management person
+    await db.request().input('id_del', id).query('DELETE FROM management WHERE id = @id_del');
 
-    await transaction.commit();
-
+    // Delete associated files
     for (const fileUrl of filesToDelete) {
       await deleteFile(fileUrl);
     }
@@ -277,7 +261,6 @@ export async function deleteManagement(id: number): Promise<DeleteResult> {
     return { success: 'Management person deleted successfully.' };
 
   } catch (e: any) {
-    await transaction.rollback();
     return { error: e.message ?? 'Failed to delete management person.' };
   }
 }
